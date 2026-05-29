@@ -43,6 +43,18 @@ KLXM Restricted loest genau dieses Problem mit einer zentralen Matrix und klaren
 - Theme-faehige Fragmente (`bootstrap`, `uikit3`, `tailwind`).
 - Profilverwaltung inkl. Passwortaenderung.
 
+### DB-Sessionverwaltung
+- Frontend-Sessions werden serverseitig in der Datenbank gespeichert (`rex_klxm_restricted_session`).
+- Inaktivitaet und maximale Laufzeit sind konfigurierbar.
+- Sessions werden beim Login angelegt, bei Aktivitaet aktualisiert und bei Logout entfernt.
+- Abgelaufene Sessions werden automatisch bereinigt.
+
+### Sessions im Backend
+- Eigene Unterseite `Restricted > Sessions`.
+- Filter nach Benutzer.
+- Sichtbar sind u. a. Session-ID, IP, User-Agent, Startzeit und letzte Aktivitaet.
+- Einzelne Sessions koennen aktiv beendet werden.
+
 ### Admin-Imitation
 - Admins koennen Frontend als gewaehlten Restricted-User testen.
 - Sichtbarer Imitationshinweis und sicherer Beenden-Flow.
@@ -82,6 +94,8 @@ composer install
    - Login-Artikel
    - Redirect nach Login
    - Theme-Framework
+  - Session Timeout (Minuten)
+  - Maximale Session-Laufzeit (Minuten)
 
 ## Empfohlene Erstkonfiguration
 
@@ -133,6 +147,13 @@ if ($pm->checkArticleAccess($user, 42)) {
 1. Ohne gesetzten Login-Artikel kann es zu unerwuenschtem Verhalten im Redirect-Flow kommen.
 2. Bei parallelem Einsatz weiterer Auth-Addons (z. B. YCom Auth) sollten Redirect-Zustaendigkeiten klar getrennt sein.
 3. Nach strukturellen Aenderungen immer Backend-Cache leeren.
+
+## Troubleshooting Login
+
+1. Pruefen, ob der Benutzer in `Restricted > Benutzer` aktiv ist (`status = 1`).
+2. E-Mail exakt gegen den gespeicherten Wert pruefen (Vertipper sind eine haeufige Ursache).
+3. Fehlversuche/Sperre kontrollieren (`failed_logins`, `login_locked_until`).
+4. Falls noetig Passwort neu setzen und erneut testen.
 
 ## Roadmap (Kurz)
 

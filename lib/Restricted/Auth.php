@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace KLXM\Restricted;
 
 use KLXM\Restricted\Auth\LoginThrottle;
+use KLXM\Restricted\Auth\SessionStore as AuthSessionStore;
 use rex;
 use rex_addon;
 use rex_login;
-use rex_request;
 use rex_sql;
 
 class Auth
@@ -38,6 +38,7 @@ class Auth
         }
 
         rex_login::startSession();
+        AuthSessionStore::clearExpiredSessions();
 
         // Check for impersonation (set by backend admin)
         $impersonate = rex_session(self::IMPERSONATE_KEY, 'array', []);
@@ -57,9 +58,16 @@ class Auth
         // Regular session login
         $userId = rex_session(self::SESSION_KEY, 'int', 0);
         if ($userId > 0) {
+            if (!AuthSessionStore::isCurrentSessionValid($userId)) {
+                $this->logout();
+                $this->initialized = true;
+                return;
+            }
+
             $user = User::findById($userId);
             if ($user !== null) {
                 $this->currentUser = $user;
+                AuthSessionStore::touchCurrentSession($user->id);
             } else {
                 $this->logout();
             }
@@ -104,7 +112,9 @@ class Auth
         }
 
         LoginThrottle::recordSuccess($user->id);
+        rex_login::regenerateSessionId();
         rex_set_session(self::SESSION_KEY, $user->id);
+        AuthSessionStore::storeCurrentSession($user->id);
         $this->currentUser = User::findById($user->id);
         $this->lastLoginError = '';
         return true;
@@ -117,7 +127,9 @@ class Auth
     {
         $user = User::findById($userId);
         if ($user !== null) {
+            rex_login::regenerateSessionId();
             rex_set_session(self::SESSION_KEY, $userId);
+            AuthSessionStore::storeCurrentSession($userId);
             $this->currentUser = $user;
             return true;
         }
@@ -135,6 +147,7 @@ class Auth
 
     public function logout(): void
     {
+        AuthSessionStore::clearCurrentSession();
         rex_unset_session(self::SESSION_KEY);
         rex_unset_session(self::IMPERSONATE_KEY);
         $this->currentUser = null;

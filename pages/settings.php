@@ -41,6 +41,20 @@ if ((string) $field->getValue() === '') {
     $field->setValue('15');
 }
 
+$field = $form->addInputField('number', 'session_timeout_minutes', null, ['min' => '1', 'max' => '1440', 'class' => 'form-control']);
+$field->setLabel('Session Timeout (Minuten)');
+$field->setNotice('Inaktivitaetsgrenze fuer DB-Sessions (Standard: 120).');
+if ((string) $field->getValue() === '') {
+    $field->setValue('120');
+}
+
+$field = $form->addInputField('number', 'session_max_lifetime_minutes', null, ['min' => '5', 'max' => '10080', 'class' => 'form-control']);
+$field->setLabel('Maximale Session-Laufzeit (Minuten)');
+$field->setNotice('Absolute Laufzeit einer Session unabhaengig von Aktivitaet (Standard: 1440).');
+if ((string) $field->getValue() === '') {
+    $field->setValue('1440');
+}
+
 $field = $form->addCheckboxField('require_email_verification');
 $field->setLabel('E-Mail-Verifizierung erforderlich');
 $field->addOption('Neue Nutzer müssen E-Mail-Adresse bestätigen', '1');

@@ -49,7 +49,20 @@ rex_sql_table::get(rex::getTable('klxm_restricted_access_request'))
     ->ensureIndex(new rex_sql_index('idx_request_status', ['status']))
     ->ensure();
 
-// 4. Import YForm tables for Users and Roles
+// 4. Database-backed frontend sessions
+rex_sql_table::get(rex::getTable('klxm_restricted_session'))
+    ->ensurePrimaryIdColumn()
+    ->ensureColumn(new rex_sql_column('session_id', 'varchar(191)'))
+    ->ensureColumn(new rex_sql_column('user_id', 'int(10) unsigned'))
+    ->ensureColumn(new rex_sql_column('ip', 'varchar(45)', true))
+    ->ensureColumn(new rex_sql_column('useragent', 'varchar(255)', true))
+    ->ensureColumn(new rex_sql_column('starttime', 'datetime'))
+    ->ensureColumn(new rex_sql_column('last_activity', 'datetime'))
+    ->ensureIndex(new rex_sql_index('idx_klxm_session_id', ['session_id'], rex_sql_index::UNIQUE))
+    ->ensureIndex(new rex_sql_index('idx_klxm_session_user', ['user_id']))
+    ->ensure();
+
+// 5. Import YForm tables for Users and Roles
 $tablesetPath = $addon->getPath('install/tablesets/yform_restricted.json');
 if (file_exists($tablesetPath)) {
     $tableset = rex_file::get($tablesetPath);
@@ -59,7 +72,7 @@ if (file_exists($tablesetPath)) {
     }
 }
 
-// 5. Ensure additional security columns on user table (added after initial install)
+// 6. Ensure additional security columns on user table (added after initial install)
 rex_sql_table::get(rex::getTable('klxm_restricted_user'))
     ->ensureColumn(new rex_sql_column('last_login', 'datetime', true))
     ->ensureColumn(new rex_sql_column('failed_logins', 'int(10) unsigned', false, '0'))

@@ -24,6 +24,9 @@ page:
         users:
             title: Benutzer
             icon: rex-icon fa-user
+        sessions:
+            title: Sessions
+            icon: rex-icon fa-clock-o
         requests:
             title: Zugriffsanfragen
             icon: rex-icon fa-inbox
