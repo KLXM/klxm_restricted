@@ -4,12 +4,12 @@ Zentrales Frontend-Berechtigungsaddon für REDAXO mit Rollenmatrix, Medienpool-S
 
 ## Warum dieses Addon?
 
-Viele Projekte scheitern nicht an fehlenden Rechten, sondern an fehlender Uebersicht:
-- Rechte sind verteilt ueber viele Artikel-Metafelder.
-- Regeln sind fuer Redakteure kaum nachvollziehbar.
-- Medien sind haeufig unabsichtlich oeffentlich.
+Viele Projekte scheitern nicht an fehlenden Rechten, sondern an fehlender Übersicht:
+- Rechte sind verteilt über viele Artikel-Metafelder.
+- Regeln sind für Redakteure kaum nachvollziehbar.
+- Medien sind häufig unabsichtlich öffentlich.
 
-KLXM Restricted loest genau dieses Problem mit einer zentralen Matrix und klaren Vererbungsregeln.
+KLXM Restricted löst genau dieses Problem mit einer zentralen Matrix und klaren Vererbungsregeln.
 
 ## Wichtige Abgrenzung zu YCom
 
@@ -20,16 +20,16 @@ Das Addon wurde auf konkreten Kundenwunsch entwickelt mit Fokus auf:
 - schnelle Inbetriebnahme mit mitgelieferten Modulen,
 - unkomplizierte Verwaltung von Zugriffsrechten im Projektalltag.
 
-Im Ausblick planen wir zusaetzlich optionale Social-/Fediverse-Login-Anbindungen (z. B. Google und Apple), ohne den Charakter als schlankes Berechtigungs- und Access-Addon zu verlieren.
+Im Ausblick planen wir zusätzlich optionale Social-/Fediverse-Login-Anbindungen (z. B. Google und Apple), ohne den Charakter als schlankes Berechtigungs- und Access-Addon zu verlieren.
 
 ## Die wichtigsten Vorteile
 
 1. 🚀 Zentrale Rechteverwaltung statt verstreuter Einzelfelder.
-2. 🧭 Kaskadierende Regeln fuer Kategorien und Unterseiten.
+2. 🧭 Kaskadierende Regeln für Kategorien und Unterseiten.
 3. 🛡️ Schutz von Artikeln und Medien mit derselben Logik.
 4. 👀 Sichtbare, reproduzierbare Entscheidungen im Frontend-Flow.
-5. 📬 Klarer Redaktionsworkflow fuer Zugriffsanfragen.
-6. 🔗 Temporaere, passwortgeschuetzte Medienfreigaben mit ZIP-Option.
+5. 📬 Klarer Redaktionsworkflow für Zugriffsanfragen.
+6. 🔗 Temporäre, passwortgeschützte Medienfreigaben mit ZIP-Option.
 7. 🔥 Einmal abrufbare Geheimtexte (Pastebin) mit Vernichtung nach Abruf.
 
 ## ⭐ Feature Highlights
@@ -39,11 +39,11 @@ Im Ausblick planen wir zusaetzlich optionale Social-/Fediverse-Login-Anbindungen
 | Feature | Was ist daran cool? | Für wen? |
 |---|---|---|
 | 🧩 Einfache Einrichtung mit mitgelieferten Modulen | Login, Registrierung, Profil und User-Widget sind sofort als Module synchronisierbar | Redaktion, Integratoren |
-| 🔐 Rechte-Matrix (Struktur + Medienpool) | Ein Ort fuer alle Regeln statt Metadaten-Chaos in vielen Artikeln | Admins, Redakteure |
+| 🔐 Rechte-Matrix (Struktur + Medienpool) | Ein Ort für alle Regeln statt Metadaten-Chaos in vielen Artikeln | Admins, Redakteure |
 | 🔗 Medien teilen im Mediapool | Share-Links mit Passwort, Ablauf, Limit, ZIP und Copy-Button direkt im Workflow | Redaktion, Projektteams |
 | 🔥 One-Time Pastebin | Sensible Inhalte nur einmal sichtbar, danach serverseitig vernichtet | Admins, DevOps, Support |
-| 🌗 Moderne Share/Pastebin-Seiten | Light/Dark/Auto + DE/EN Umschaltung ohne Framework-Zwang | Externe Empfaenger |
-| 🎨 Branding fuer oeffentliche Seiten | Eigener Titel, Untertitel und Akzentfarbe fuer professionellen Auftritt | Agenturen, Unternehmen |
+| 🌗 Moderne Share/Pastebin-Seiten | Light/Dark/Auto + DE/EN Umschaltung ohne Framework-Zwang | Externe Empfänger |
+| 🎨 Branding für öffentliche Seiten | Eigener Titel, Untertitel und Akzentfarbe für professionellen Auftritt | Agenturen, Unternehmen |
 | 🧠 DB-Sessionmanagement | Bessere Kontrolle laufender Sessions inkl. Backend-Ansicht und Beenden-Funktion | Admins |
 | 🧰 URL-Normalizer | Funktioniert robust auch mit HTML-escaped Copy/Paste-Links (`&amp;`, `&#038;`) | Alle Nutzer |
 
@@ -52,56 +52,56 @@ Im Ausblick planen wir zusaetzlich optionale Social-/Fediverse-Login-Anbindungen
 - Keine Rechte-Ratespiele mehr: Entscheidungen sind nachvollziehbar und reproduzierbar.
 - Sicheres Teilen ohne Extra-Portal: Mediapool-Link erzeugen, senden, fertig.
 - Geheime Daten bleiben nicht liegen: One-Time-Prinzip reduziert Risiken deutlich.
-- Bessere User Experience fuer Empfaenger: modern, mobil, mehrsprachig, hell/dunkel.
+- Bessere User Experience für Empfänger: modern, mobil, mehrsprachig, hell/dunkel.
 
-## Funktionsumfang im Ueberblick
+## Funktionsumfang im Überblick
 
 ### Rechte-Matrix (Struktur + Medienpool)
 - Verwaltung von Rollen auf Kategorie-, Artikel- und Medienkategorie-Ebene.
-- Pseudo-Rollen fuer typische Faelle:
-  - Oeffentlich
+- Pseudo-Rollen für typische Fälle:
+  - Öffentlich
   - Nur angemeldet
-  - Nur Gaeste
+  - Nur Gäste
 - Direkte Speicherung per AJAX.
 
 ### Vererbungslogik
 - Rechte auf Kategorie-Ebene werden an Unterkategorien/Artikel vererbt.
-- In Navigationsausgaben werden nicht erlaubte Elemente ueber `ART_IS_PERMITTED` und `CAT_IS_PERMITTED` ausgeblendet.
+- In Navigationsausgaben werden nicht erlaubte Elemente über `ART_IS_PERMITTED` und `CAT_IS_PERMITTED` ausgeblendet.
 
 ### Medienpool-/Media-Manager-Schutz
-- Zugriff wird in `MEDIA_MANAGER_BEFORE_SEND` geprueft.
-- Nur echte Medienpool-Dateien werden eingeschraenkt.
-- Nicht-restricted Inhalte bleiben verfuegbar.
+- Zugriff wird in `MEDIA_MANAGER_BEFORE_SEND` geprüft.
+- Nur echte Medienpool-Dateien werden eingeschränkt.
+- Nicht-restricted Inhalte bleiben verfügbar.
 
 ### Login, Profil, Registrierung
-- Eigener Auth-Flow fuer Restricted-User.
-- Theme-faehige Fragmente (`bootstrap`, `uikit3`, `tailwind`).
-- Profilverwaltung inkl. Passwortaenderung.
+- Eigener Auth-Flow für Restricted-User.
+- Theme-fähige Fragmente (`bootstrap`, `uikit3`, `tailwind`).
+- Profilverwaltung inkl. Passwortänderung.
 
 ### DB-Sessionverwaltung
 - Frontend-Sessions werden serverseitig in der Datenbank gespeichert (`rex_klxm_restricted_session`).
-- Inaktivitaet und maximale Laufzeit sind konfigurierbar.
-- Sessions werden beim Login angelegt, bei Aktivitaet aktualisiert und bei Logout entfernt.
+- Inaktivität und maximale Laufzeit sind konfigurierbar.
+- Sessions werden beim Login angelegt, bei Aktivität aktualisiert und bei Logout entfernt.
 - Abgelaufene Sessions werden automatisch bereinigt.
 
 ### Sessions im Backend
 - Eigene Unterseite `Restricted > Sessions`.
 - Filter nach Benutzer.
-- Sichtbar sind u. a. Session-ID, IP, User-Agent, Startzeit und letzte Aktivitaet.
-- Einzelne Sessions koennen aktiv beendet werden.
+- Sichtbar sind u. a. Session-ID, IP, User-Agent, Startzeit und letzte Aktivität.
+- Einzelne Sessions können aktiv beendet werden.
 
 ### Admin-Imitation
-- Admins koennen Frontend als gewaehlten Restricted-User testen.
+- Admins können Frontend als gewählten Restricted-User testen.
 - Sichtbarer Imitationshinweis und sicherer Beenden-Flow.
 
 ### Zugriffsanfragen
 - Optional pro Kategorie/Artikel aktivierbar (Matrix).
-- Besucher koennen Zugriff anfragen.
+- Besucher können Zugriff anfragen.
 - Backend-Inbox mit Statusfilter und Aktionen (`approve`, `reject`).
 
 ### Medien teilen (Mediapool)
 - Eigene Mediapool-Unterseite: `Mediapool > Medien teilen`.
-- Redakteure koennen eine Medienpool-Kategorie waehlen und Dateien freigeben.
+- Redakteure können eine Medienpool-Kategorie wählen und Dateien freigeben.
 - Optionen je Freigabe:
   - Ablaufzeit
   - Optionales Passwort
@@ -112,18 +112,18 @@ Im Ausblick planen wir zusaetzlich optionale Social-/Fediverse-Login-Anbindungen
 
 ### One-Time Pastebin (sensible Daten)
 - Eigene Addon-Seite: `Restricted > Pastebin`.
-- Einsatzzweck: Passwoerter, Zertifikate, Geheimtexte mit optionalen Medien-Anhaengen.
+- Einsatzzweck: Passwörter, Zertifikate, Geheimtexte mit optionalen Medien-Anhängen.
 - Sicherheitsverhalten:
   - Eintrag wird nach dem ersten Abruf serverseitig vernichtet.
   - Optionales Zugriffspasswort.
   - Optionales Ablaufdatum.
-  - Optionaler Download von Anhaengen (aus Medienpool-Kategorie).
+  - Optionaler Download von Anhängen (aus Medienpool-Kategorie).
 
-### Moderne oeffentliche Seiten (Share + Pastebin)
-- Framework-unabhaengiges Frontend-Design (kein Bootstrap/UITailwind-Zwang).
+### Moderne öffentliche Seiten (Share + Pastebin)
+- Framework-unabhängiges Frontend-Design (kein Bootstrap/UITailwind-Zwang).
 - Light / Dark / Auto umschaltbar.
 - Deutsch / Englisch umschaltbar.
-- Branding ueber Addon-Einstellungen:
+- Branding über Addon-Einstellungen:
   - Titel
   - Untertitel
   - Akzentfarbe
@@ -134,7 +134,7 @@ Stand heute bedeutet `approved` in der Inbox:
 - Statuswechsel der Anfrage.
 - Noch keine automatische Gast-Freigabe per Token.
 
-Das ist bewusst als naechster Ausbauschritt geplant (Issue im Projekt vorhanden).
+Das ist bewusst als nächster Ausbauschritt geplant (Issue im Projekt vorhanden).
 
 ## Voraussetzungen
 
@@ -145,7 +145,7 @@ Das ist bewusst als naechster Ausbauschritt geplant (Issue im Projekt vorhanden)
 
 ## Installation
 
-1. Im REDAXO-Backend den Installer oeffnen.
+1. Im REDAXO-Backend den Installer öffnen.
 2. Nach `KLXM Restricted` suchen und installieren.
 3. Das Addon aktivieren.
 4. Unter `Restricted > Einstellungen` mindestens konfigurieren:
@@ -157,10 +157,10 @@ Das ist bewusst als naechster Ausbauschritt geplant (Issue im Projekt vorhanden)
 
 ### Optionale manuelle Installation (Entwicklung)
 
-Nur fuer Entwicklungs-Setups ohne REDAXO-Installer:
+Nur für Entwicklungs-Setups ohne REDAXO-Installer:
 
 1. Addon nach `redaxo/src/addons/klxm_restricted` legen.
-2. Abhaengigkeiten installieren:
+2. Abhängigkeiten installieren:
 
 ```bash
 cd redaxo/src/addons/klxm_restricted
@@ -170,7 +170,7 @@ composer install
 
 ## ⚡ Einfache Einrichtung mit mitgelieferten Modulen
 
-Fuer den schnellen Start bringt das Addon fertige Frontend-Module mit, die per Klick synchronisiert werden koennen.
+Für den schnellen Start bringt das Addon fertige Frontend-Module mit, die per Klick synchronisiert werden können.
 
 1. Gehe zu `Restricted > Setup`.
 2. Klicke auf `Module synchronisieren`.
@@ -184,18 +184,18 @@ Damit bekommst du Login, Registrierung, Profil und Nutzerstatus ohne eigene Basi
 
 ## Berechtigungen (Redakteure)
 
-Neben Admin-Rechten koennen Features gezielt per Permission freigeschaltet werden:
-- `klxm_restricted[share]` fuer Medien-Freigabelinks im Mediapool
-- `klxm_restricted[pastebin]` fuer One-Time-Pastebin im Addon
+Neben Admin-Rechten können Features gezielt per Permission freigeschaltet werden:
+- `klxm_restricted[share]` für Medien-Freigabelinks im Mediapool
+- `klxm_restricted[pastebin]` für One-Time-Pastebin im Addon
 
 ## Changelog
 
-Alle Aenderungen stehen in [CHANGELOG.md](CHANGELOG.md).
+Alle Änderungen stehen in [CHANGELOG.md](CHANGELOG.md).
 
 ## Empfohlene Erstkonfiguration
 
 1. Rollen anlegen (`Restricted > Rollen`).
-2. Matrix fuellen (`Restricted > Rechte-Matrix`).
+2. Matrix füllen (`Restricted > Rechte-Matrix`).
 3. Login-Artikel setzen (`Restricted > Einstellungen`).
 4. Test als Gast und als angemeldeter User.
 5. Optional: Zugriffsanfragen aktivieren (pro Kategorie/Artikel).
@@ -213,7 +213,7 @@ use KLXM\Restricted\Frontend\LoginController;
 echo LoginController::processRequest();
 ```
 
-## API fuer Entwickler
+## API für Entwickler
 
 ```php
 <?php
@@ -239,23 +239,23 @@ if ($pm->checkArticleAccess($user, 42)) {
 
 ## Bekannte Hinweise
 
-1. Ohne gesetzten Login-Artikel kann es zu unerwuenschtem Verhalten im Redirect-Flow kommen.
-2. Bei parallelem Einsatz weiterer Auth-Addons (z. B. YCom Auth) sollten Redirect-Zustaendigkeiten klar getrennt sein.
-3. Nach strukturellen Aenderungen immer Backend-Cache leeren.
+1. Ohne gesetzten Login-Artikel kann es zu unerwünschtem Verhalten im Redirect-Flow kommen.
+2. Bei parallelem Einsatz weiterer Auth-Addons (z. B. YCom Auth) sollten Redirect-Zuständigkeiten klar getrennt sein.
+3. Nach strukturellen Änderungen immer Backend-Cache leeren.
 
 ## Troubleshooting Login
 
-1. Pruefen, ob der Benutzer in `Restricted > Benutzer` aktiv ist (`status = 1`).
-2. E-Mail exakt gegen den gespeicherten Wert pruefen (Vertipper sind eine haeufige Ursache).
+1. Prüfen, ob der Benutzer in `Restricted > Benutzer` aktiv ist (`status = 1`).
+2. E-Mail exakt gegen den gespeicherten Wert prüfen (Vertipper sind eine häufige Ursache).
 3. Fehlversuche/Sperre kontrollieren (`failed_logins`, `login_locked_until`).
-4. Falls noetig Passwort neu setzen und erneut testen.
+4. Falls nötig Passwort neu setzen und erneut testen.
 
 ## Roadmap (Kurz)
 
 1. Tokenbasierte Gast-Freigabe bei `approved`.
-2. Optionaler Mailversand fuer Anfragen/Freigaben.
-3. Ablauf- und Widerrufslogik fuer Freigaben.
+2. Optionaler Mailversand für Anfragen/Freigaben.
+3. Ablauf- und Widerrufslogik für Freigaben.
 
 ---
 
-KLXM Restricted fokussiert auf das, was in echten Projekten zaehlt: nachvollziehbare Rechte, sichere Auslieferung und einfache Bedienung fuer Redakteure.
+KLXM Restricted fokussiert auf das, was in echten Projekten zählt: nachvollziehbare Rechte, sichere Auslieferung und einfache Bedienung für Redakteure.
