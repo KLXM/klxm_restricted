@@ -2,7 +2,6 @@
 
 Ein modernes, performantes und zentral gesteuertes Berechtigungssystem für das REDAXO CMS. Verwalte den Frontend-Zugriff auf Artikel, Kategorien und den Media-Manager übersichtlich in einer einzigen Rechtematrix – ohne lästige Einzelkonfiguration in jedem Artikel!
 
-![Screenshot von Matrix Dashboard](https://via.placeholder.com/800x400.png?text=KLXM+Restricted+Dashboard)
 
 ## Inhaltsverzeichnis
 - [Philosophie](#philosophie)
