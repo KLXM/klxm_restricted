@@ -62,7 +62,50 @@ rex_sql_table::get(rex::getTable('klxm_restricted_session'))
     ->ensureIndex(new rex_sql_index('idx_klxm_session_user', ['user_id']))
     ->ensure();
 
-// 5. Import YForm tables for Users and Roles
+// 5. Public media share links for restricted files
+rex_sql_table::get(rex::getTable('klxm_restricted_media_share'))
+    ->ensurePrimaryIdColumn()
+    ->ensureColumn(new rex_sql_column('token_hash', 'varchar(64)'))
+    ->ensureColumn(new rex_sql_column('token_hint', 'varchar(16)', true))
+    ->ensureColumn(new rex_sql_column('token_plain', 'varchar(64)', true))
+    ->ensureColumn(new rex_sql_column('category_id', 'int(10) unsigned'))
+    ->ensureColumn(new rex_sql_column('title', 'varchar(191)', true))
+    ->ensureColumn(new rex_sql_column('media_files', 'text'))
+    ->ensureColumn(new rex_sql_column('allow_zip', 'tinyint(1)', false, '1'))
+    ->ensureColumn(new rex_sql_column('password_hash', 'varchar(255)', true))
+    ->ensureColumn(new rex_sql_column('expires_at', 'datetime', true))
+    ->ensureColumn(new rex_sql_column('max_downloads', 'int(10) unsigned', true))
+    ->ensureColumn(new rex_sql_column('download_count', 'int(10) unsigned', false, '0'))
+    ->ensureColumn(new rex_sql_column('status', 'tinyint(1)', false, '1'))
+    ->ensureColumn(new rex_sql_column('created_by', 'varchar(191)', true))
+    ->ensureColumn(new rex_sql_column('last_download', 'datetime', true))
+    ->ensureColumn(new rex_sql_column('createdate', 'datetime'))
+    ->ensureColumn(new rex_sql_column('updatedate', 'datetime'))
+    ->ensureIndex(new rex_sql_index('idx_klxm_share_token', ['token_hash'], rex_sql_index::UNIQUE))
+    ->ensureIndex(new rex_sql_index('idx_klxm_share_category', ['category_id']))
+    ->ensure();
+
+// 6. One-time pastebin entries with optional media attachments
+rex_sql_table::get(rex::getTable('klxm_restricted_pastebin'))
+    ->ensurePrimaryIdColumn()
+    ->ensureColumn(new rex_sql_column('token_hash', 'varchar(64)'))
+    ->ensureColumn(new rex_sql_column('token_hint', 'varchar(16)', true))
+    ->ensureColumn(new rex_sql_column('title', 'varchar(191)', true))
+    ->ensureColumn(new rex_sql_column('secret_content', 'longtext'))
+    ->ensureColumn(new rex_sql_column('attachment_files', 'text', true))
+    ->ensureColumn(new rex_sql_column('password_hash', 'varchar(255)', true))
+    ->ensureColumn(new rex_sql_column('expires_at', 'datetime', true))
+    ->ensureColumn(new rex_sql_column('status', 'tinyint(1)', false, '1'))
+    ->ensureColumn(new rex_sql_column('view_count', 'int(10) unsigned', false, '0'))
+    ->ensureColumn(new rex_sql_column('created_by', 'varchar(191)', true))
+    ->ensureColumn(new rex_sql_column('destroyedate', 'datetime', true))
+    ->ensureColumn(new rex_sql_column('createdate', 'datetime'))
+    ->ensureColumn(new rex_sql_column('updatedate', 'datetime'))
+    ->ensureIndex(new rex_sql_index('idx_klxm_paste_token', ['token_hash'], rex_sql_index::UNIQUE))
+    ->ensureIndex(new rex_sql_index('idx_klxm_paste_status', ['status']))
+    ->ensure();
+
+// 7. Import YForm tables for Users and Roles
 $tablesetPath = $addon->getPath('install/tablesets/yform_restricted.json');
 if (file_exists($tablesetPath)) {
     $tableset = rex_file::get($tablesetPath);
@@ -72,7 +115,7 @@ if (file_exists($tablesetPath)) {
     }
 }
 
-// 6. Ensure additional security columns on user table (added after initial install)
+// 8. Ensure additional security columns on user table (added after initial install)
 rex_sql_table::get(rex::getTable('klxm_restricted_user'))
     ->ensureColumn(new rex_sql_column('last_login', 'datetime', true))
     ->ensureColumn(new rex_sql_column('failed_logins', 'int(10) unsigned', false, '0'))

@@ -8,10 +8,13 @@ requires:
     redaxo: ^5.18
     php: ^8.4
     yform: ^5.0
+    packages:
+        mediapool: ^2.14
 
 autoload:
     classes:
         KLXM\Restricted\: lib/Restricted/
+
 
 page:
     title: KLXM Restricted
@@ -36,6 +39,9 @@ page:
         settings:
             title: Einstellungen
             icon: rex-icon fa-cogs
+        pastebin:
+            title: Pastebin
+            icon: rex-icon fa-clipboard
         setup:
             title: Setup
             icon: rex-icon fa-wrench
@@ -43,3 +49,14 @@ page:
             title: Hilfe
             subPath: README.md
             itemClass: 'pull-right'
+
+pages:
+    mediapool/klxm_restricted_share:
+        title: Medien teilen
+        perm: klxm_restricted[share]
+        icon: rex-icon fa-share-alt
+
+permissions:
+    - klxm_restricted[share]
+    - klxm_restricted[pastebin]
+

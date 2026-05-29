@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace KLXM\Restricted;
 
 use KLXM\Restricted\Media\MediaGuard;
+use KLXM\Restricted\Media\ShareService;
 use KLXM\Restricted\Backend\ArticleSidebar;
 use KLXM\Restricted\Frontend\LoginController;
+use KLXM\Restricted\Frontend\PastebinService;
 use rex;
 use rex_extension;
 use rex_extension_point;
@@ -26,9 +28,14 @@ use rex_be_controller;
 if (rex::isBackend() && rex::getUser()) {
     // Inject Matrix JS logic only on the respective backend page
     rex_extension::register('PACKAGES_INCLUDED', static function () {
+        $addon = rex_addon::get('klxm_restricted');
+
         if (rex_request::get('page', 'string') === 'klxm_restricted/matrix') {
-            $addon = rex_addon::get('klxm_restricted');
             rex_view::addJsFile($addon->getAssetsUrl('matrix.js'));
+        }
+
+        if (rex_request::get('page', 'string') === 'mediapool/klxm_restricted_share') {
+            rex_view::addJsFile($addon->getAssetsUrl('share-links.js'));
         }
 
         // Article sidebar: show assigned roles for the current article
@@ -40,6 +47,14 @@ if (rex::isBackend() && rex::getUser()) {
 
 // Frontend Permissions
 if (rex::isFrontend()) {
+    if (PastebinService::handleFrontendRequest()) {
+        exit;
+    }
+
+    if (ShareService::handleFrontendShareRequest()) {
+        exit;
+    }
+
     // Guard against self-referential returnTo loops from third-party auth forms.
     $returnTo = trim(rex_request::get('returnTo', 'string', ''));
     if ($returnTo !== '' && str_starts_with($returnTo, '/') && !str_contains($returnTo, '://')) {

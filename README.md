@@ -1,6 +1,6 @@
 # KLXM Restricted
 
-Zentrales Frontend-Berechtigungsaddon für REDAXO mit Rollenmatrix, Medienpool-Schutz, Login/Profil-Flow, Admin-Imitation und Zugriffsanfragen.
+Zentrales Frontend-Berechtigungsaddon für REDAXO mit Rollenmatrix, Medienpool-Schutz, Login/Profil-Flow, Admin-Imitation, Zugriffsanfragen, Medien-Freigabelinks und One-Time-Pastebin.
 
 ## Warum dieses Addon?
 
@@ -18,6 +18,8 @@ KLXM Restricted loest genau dieses Problem mit einer zentralen Matrix und klaren
 3. Schutz von Artikeln und Medien mit derselben Logik.
 4. Sichtbare, reproduzierbare Entscheidungen im Frontend-Flow.
 5. Klarer Redaktionsworkflow fuer Zugriffsanfragen.
+6. Temporaere, passwortgeschuetzte Medienfreigaben mit ZIP-Option.
+7. Einmal abrufbare Geheimtexte (Pastebin) mit Vernichtung nach Abruf.
 
 ## Funktionsumfang im Ueberblick
 
@@ -64,6 +66,35 @@ KLXM Restricted loest genau dieses Problem mit einer zentralen Matrix und klaren
 - Besucher koennen Zugriff anfragen.
 - Backend-Inbox mit Statusfilter und Aktionen (`approve`, `reject`).
 
+### Medien teilen (Mediapool)
+- Eigene Mediapool-Unterseite: `Mediapool > Medien teilen`.
+- Redakteure koennen eine Medienpool-Kategorie waehlen und Dateien freigeben.
+- Optionen je Freigabe:
+  - Ablaufzeit
+  - Optionales Passwort
+  - Optionales Download-Limit
+  - Einzeldatei-Download und optional ZIP-Download
+- Freigabelink wird als absolute URL mit Domain erzeugt.
+- Link ist in der Freigabe-Liste direkt kopierbar.
+
+### One-Time Pastebin (sensible Daten)
+- Eigene Addon-Seite: `Restricted > Pastebin`.
+- Einsatzzweck: Passwoerter, Zertifikate, Geheimtexte mit optionalen Medien-Anhaengen.
+- Sicherheitsverhalten:
+  - Eintrag wird nach dem ersten Abruf serverseitig vernichtet.
+  - Optionales Zugriffspasswort.
+  - Optionales Ablaufdatum.
+  - Optionaler Download von Anhaengen (aus Medienpool-Kategorie).
+
+### Moderne oeffentliche Seiten (Share + Pastebin)
+- Framework-unabhaengiges Frontend-Design (kein Bootstrap/UITailwind-Zwang).
+- Light / Dark / Auto umschaltbar.
+- Deutsch / Englisch umschaltbar.
+- Branding ueber Addon-Einstellungen:
+  - Titel
+  - Untertitel
+  - Akzentfarbe
+
 ## Wichtiger Hinweis zu Zugriffsanfragen
 
 Stand heute bedeutet `approved` in der Inbox:
@@ -77,6 +108,7 @@ Das ist bewusst als naechster Ausbauschritt geplant (Issue im Projekt vorhanden)
 - REDAXO >= 5.18
 - PHP >= 8.4
 - YForm >= 5.0
+- Mediapool
 - Composer (fuer Addon-Abhaengigkeiten)
 
 ## Installation
@@ -96,6 +128,16 @@ composer install
    - Theme-Framework
   - Session Timeout (Minuten)
   - Maximale Session-Laufzeit (Minuten)
+
+## Berechtigungen (Redakteure)
+
+Neben Admin-Rechten koennen Features gezielt per Permission freigeschaltet werden:
+- `klxm_restricted[share]` fuer Medien-Freigabelinks im Mediapool
+- `klxm_restricted[pastebin]` fuer One-Time-Pastebin im Addon
+
+## Changelog
+
+Alle Aenderungen stehen in [CHANGELOG.md](CHANGELOG.md).
 
 ## Empfohlene Erstkonfiguration
 

@@ -66,6 +66,18 @@ if ((string) $field->getValue() === '') {
     $field->setValue('1');
 }
 
+$field = $form->addInputField('text', 'share_brand_title', null, ['class' => 'form-control']);
+$field->setLabel('Downloadseite Branding: Titel');
+$field->setNotice('Optionaler Titel oberhalb der öffentlichen Share- und Pastebin-Seiten.');
+
+$field = $form->addInputField('text', 'share_brand_subtitle', null, ['class' => 'form-control']);
+$field->setLabel('Downloadseite Branding: Untertitel');
+$field->setNotice('Optionaler kurzer Hinweistext unter dem Titel.');
+
+$field = $form->addInputField('text', 'share_brand_accent', null, ['class' => 'form-control', 'placeholder' => '#0f6eb8']);
+$field->setLabel('Downloadseite Branding: Akzentfarbe');
+$field->setNotice('Optional, Hex-Farbe z. B. #0f6eb8. Leerlassen nutzt Standardfarben (ohne Lila).');
+
 $fragment = new rex_fragment();
 $fragment->setVar('class', 'edit', false);
 $fragment->setVar('title', 'Einstellungen', false);
