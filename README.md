@@ -1,171 +1,145 @@
-# KLXM Restricted (Modern REDAXO Access AddOn)
+# KLXM Restricted
 
-Ein modernes, performantes und zentral gesteuertes Berechtigungssystem für das REDAXO CMS. Verwalte den Frontend-Zugriff auf Artikel, Kategorien und den Media-Manager übersichtlich in einer einzigen Rechtematrix – ohne lästige Einzelkonfiguration in jedem Artikel!
+Zentrales Frontend-Berechtigungsaddon für REDAXO mit Rollenmatrix, Medienpool-Schutz, Login/Profil-Flow, Admin-Imitation und Zugriffsanfragen.
 
+## Warum dieses Addon?
 
-## Inhaltsverzeichnis
-- [Philosophie](#philosophie)
-- [Systemvoraussetzungen](#systemvoraussetzungen)
-- [Installation](#installation)
-- [Kern-Features](#kern-features)
-  - [Die Rollen-Matrix](#1-die-rollen-matrix)
-  - [Kaskadierende Rechte](#2-kaskadierende-rechte)
-  - [Media Manager Schutz](#3-media-manager-schutz)
-  - [Passkeys (WebAuthn)](#4-passkeys-webauthn)
-- [Nutzung im Frontend](#nutzung-im-frontend)
-- [Entwickler](#entwickler-api)
+Viele Projekte scheitern nicht an fehlenden Rechten, sondern an fehlender Uebersicht:
+- Rechte sind verteilt ueber viele Artikel-Metafelder.
+- Regeln sind fuer Redakteure kaum nachvollziehbar.
+- Medien sind haeufig unabsichtlich oeffentlich.
 
----
+KLXM Restricted loest genau dieses Problem mit einer zentralen Matrix und klaren Vererbungsregeln.
 
-## Philosophie
+## Die wichtigsten Vorteile
 
-Wer große Kundenprojekte kennt, kennt das Problem: Der Überblick darüber, *wer* auf *welche* Artikel zugreifen darf, geht in Systemen wie YCOM oft verloren, weil die Rechte in jedem einzelnen Artikel-Metainfo-Feld konfiguriert werden müssen. 
+1. Zentrale Rechteverwaltung statt verstreuter Einzelfelder.
+2. Kaskadierende Regeln fuer Kategorien und Unterseiten.
+3. Schutz von Artikeln und Medien mit derselben Logik.
+4. Sichtbare, reproduzierbare Entscheidungen im Frontend-Flow.
+5. Klarer Redaktionsworkflow fuer Zugriffsanfragen.
 
-**KLXM Restricted löst das N+1 Query-Problem und das UX-Problem:**
-- Es gibt *eine* zentrale Backend-Seite ("Matrix"), in der alle Artikel-, Struktur- und Media-Rechte über einfache Checkboxen (Ajax/Pjax-optimiert) gesteuert werden.
-- Die Lese-Performance im Frontend sinkt nie wieder, egal wie viele Objekte gerendert werden, weil die Matrix mit einem Memory-Cache (`PermissionManager::loadMatrix()`) blitzschnell im RAM verbleibt.
-- Verwaltung von Benutzern und Rollen läuft über das moderne **YForm 5.0**. 
+## Funktionsumfang im Ueberblick
 
----
+### Rechte-Matrix (Struktur + Medienpool)
+- Verwaltung von Rollen auf Kategorie-, Artikel- und Medienkategorie-Ebene.
+- Pseudo-Rollen fuer typische Faelle:
+  - Oeffentlich
+  - Nur angemeldet
+  - Nur Gaeste
+- Direkte Speicherung per AJAX.
 
-## Systemvoraussetzungen
+### Vererbungslogik
+- Rechte auf Kategorie-Ebene werden an Unterkategorien/Artikel vererbt.
+- In Navigationsausgaben werden nicht erlaubte Elemente ueber `ART_IS_PERMITTED` und `CAT_IS_PERMITTED` ausgeblendet.
 
-- **REDAXO >= 5.18.0**
-- **PHP >= 8.4**
-- **YForm >= 5.0** (für das User- und Rollen-Management via `rex_yform_manager`)
-- **Composer** (für die Installation der WebAuthn PSR-7 Server Abhängigkeiten)
+### Medienpool-/Media-Manager-Schutz
+- Zugriff wird in `MEDIA_MANAGER_BEFORE_SEND` geprueft.
+- Nur echte Medienpool-Dateien werden eingeschraenkt.
+- Nicht-restricted Inhalte bleiben verfuegbar.
 
----
+### Login, Profil, Registrierung
+- Eigener Auth-Flow fuer Restricted-User.
+- Theme-faehige Fragmente (`bootstrap`, `uikit3`, `tailwind`).
+- Profilverwaltung inkl. Passwortaenderung.
+
+### Admin-Imitation
+- Admins koennen Frontend als gewaehlten Restricted-User testen.
+- Sichtbarer Imitationshinweis und sicherer Beenden-Flow.
+
+### Zugriffsanfragen
+- Optional pro Kategorie/Artikel aktivierbar (Matrix).
+- Besucher koennen Zugriff anfragen.
+- Backend-Inbox mit Statusfilter und Aktionen (`approve`, `reject`).
+
+## Wichtiger Hinweis zu Zugriffsanfragen
+
+Stand heute bedeutet `approved` in der Inbox:
+- Statuswechsel der Anfrage.
+- Noch keine automatische Gast-Freigabe per Token.
+
+Das ist bewusst als naechster Ausbauschritt geplant (Issue im Projekt vorhanden).
+
+## Voraussetzungen
+
+- REDAXO >= 5.18
+- PHP >= 8.4
+- YForm >= 5.0
+- Composer (fuer Addon-Abhaengigkeiten)
 
 ## Installation
 
-1. Entpacke das AddOn oder klone es in `/redaxo/src/addons/klxm_restricted`.
-2. Lade im Verzeichnis des AddOns über Composer die Abhängigkeiten herunter:
-   ```bash
-   cd redaxo/src/addons/klxm_restricted
-   composer install
-   ```
-3. Gehe im REDAXO Backend auf **AddOns -> Installieren und aktivieren**.
-4. Wähle im Backend-Menü unter `Restricted` den Punkt **Einstellungen** und wähle deinen Login-Artikel sowie das gewünschte CSS-Framework (Bootstrap, UIkit 3 oder Tailwind).
+1. Addon nach `redaxo/src/addons/klxm_restricted` legen.
+2. Abhaengigkeiten installieren:
 
----
-
-## Kern-Features
-
-### 1. Die Rollen-Matrix
-Das Herzstück des AddOns ist die Rechtematrix. Klicke einfach auf die Checkboxen, um Rollen den entsprechenden Bereich zuzuweisen. AJAX speichert ohne Reload. Die Matrix iteriert automatisch durch deinen kompletten Navigationsbaum sowie den Medienpool (`media_category`).
-
-### 2. Kaskadierende Rechte
-Wenn du eine Hauptkategorie schützt, erben *alle* Unterkategorien und deren Artikel automatisch diesen Schutz. Du musst nicht 100 Unterseiten einzeln anklicken. REDAXO's Hooks (`ART_IS_PERMITTED` & `CAT_IS_PERMITTED`) kümmern sich im Hintergrund zudem darum, dass geschützte Inhalte gar nicht erst in den `navigation_array` oder `rex_navigation` auftauchen, wenn der Frontend-User nicht eingeloggt ist. Die Inhalte wandern optisch sofort in den Offline-Status für unbefugte Dritte.
-
-### 3. Media Manager Schutz
-Lädt jemand eine Datei über den `Media Manager` und hat den direkten Link? Kein Problem. Der `MEDIA_MANAGER_BEFORE_SEND` Hook blockiert die Datei-Auslieferung hart mit einem `403 Access Denied`, wenn ein Media-Kategorie-Ordner in der Matrix einem Benutzerkonto untersagt wurde.
-
-### 4. Passkeys (WebAuthn)
-Nie wieder vergessene Passwörter. Das AddOn bringt Out-Of-The-Box Funktionalität für hardwaregestützte Passkeys (TouchID, FaceID, Windows Hello, Yubikey) via PSR-7 WebAuthn mit. Native Authentikation ohne dritte Cloud-Dienste, direkt auf dem REDAXO-Server gespeichert.
-
----
-
-## Nutzung im Frontend
-
-Da die Backend-Ausgaben automatisiert per Fragment bereitstehen, kannst du das Anmeldeformular und den Passkey-Manager direkt in deinem Modul einfügen oder anpassen:
-
-```php
-// Modul-Ausgabe für das Login-Formular
-
-$fragment = new rex_fragment();
-$fragment->setVar('action_url', rex_getUrl(rex_article::getCurrentId()));
-$fragment->setVar('passkey_enabled', true); // Zeigt den WebAuthn Button
-$fragment->setVar('error', $loginError ?? '');
-
-// Render basierend auf in den Settings gewähltem Framework!
-// Zum Beispiel: 'restricted/bootstrap/login.php'
-$theme = rex_addon::get('klxm_restricted')->getConfig('theme_framework', 'bootstrap');
-echo $fragment->parse('restricted/' . $theme . '/login.php');
-
-// Nicht vergessen, die JS Lib auf der Seite mit dem Formular zu laden (für WebAuthn):
-// (Entweder direkt im Modul oder im Head deines Templates einbinden)
-echo '<script src="' . rex_url::addonAssets('klxm_restricted', 'passkey.js') . '"></script>';
+```bash
+cd redaxo/src/addons/klxm_restricted
+composer install
 ```
 
-### Registrierung und Profil
-Für die Registrierung und Profilverwaltung der angemeldeten User (Erstanmeldung, Namensänderung, Passwort ändern, Passkeys verwalten) nutzt das Addon einen `UserController`. 
-Dazu liefert das AddOn passende Formular-Fragmente: `register.php`, `profile.php` und `profile_passkey.php`.
+3. Im Backend installieren/aktivieren.
+4. Unter `Restricted > Einstellungen` mindestens konfigurieren:
+   - Login-Artikel
+   - Redirect nach Login
+   - Theme-Framework
 
-**Beispiel für ein Profil-Modul:**
+## Empfohlene Erstkonfiguration
+
+1. Rollen anlegen (`Restricted > Rollen`).
+2. Matrix fuellen (`Restricted > Rechte-Matrix`).
+3. Login-Artikel setzen (`Restricted > Einstellungen`).
+4. Test als Gast und als angemeldeter User.
+5. Optional: Zugriffsanfragen aktivieren (pro Kategorie/Artikel).
+
+## Frontend-Einbindung
+
+Das Login-Modul aus dem Addon kann direkt auf dem Login-Artikel eingebunden werden.
+
+Alternative (direkt im Template/Modul):
+
 ```php
-use KLXM\Restricted\Auth;
-use KLXM\Restricted\Frontend\UserController;
+<?php
+use KLXM\Restricted\Frontend\LoginController;
 
-$auth = new Auth();
-$userController = new UserController();
-$theme = rex_addon::get('klxm_restricted')->getConfig('theme_framework', 'bootstrap');
-
-if (!$auth->isLoggedIn()) {
-    echo "Bitte einloggen.";
-    return;
-}
-
-$user = $auth->getUser();
-$error = '';
-$success = '';
-
-// POST Handle (Profile Update)
-if (rex_post('klxm_action', 'string') === 'update_profile') {
-    $result = $userController->updateProfile($user, rex_post('email', 'string'), rex_post('firstname', 'string'), rex_post('lastname', 'string'));
-    $result['status'] ? $success = $result['message'] : $error = $result['message'];
-}
-
-// 1. Profil Maske rendern:
-$fragment = new rex_fragment();
-$fragment->setVar('action_url', rex_getUrl(rex_article::getCurrentId()));
-$fragment->setVar('firstname', rex_post('firstname', 'string', $user->firstname));
-$fragment->setVar('lastname', rex_post('lastname', 'string', $user->lastname));
-$fragment->setVar('email', rex_post('email', 'string', $user->email));
-$fragment->setVar('error', $error);
-$fragment->setVar('success', $success);
-echo $fragment->parse('restricted/' . $theme . '/profile.php');
-
-// 2. Passkey Manager rendern:
-$pkFragment = new rex_fragment();
-$pkFragment->setVar('passkeys', $userController->getPasskeys($user));
-echo $pkFragment->parse('restricted/' . $theme . '/profile_passkey.php');
-
-// Optional Passkey JS einbinden, wenn nicht global im Template vorhanden:
-echo '<script src="' . rex_url::addonAssets('klxm_restricted', 'passkey.js') . '"></script>';
+echo LoginController::processRequest();
 ```
 
----
-
-## Entwickler API
-
-Du möchtest Manuell im Modul abfragen, ob dein Benutzer Rechte hat? Nutze die `Auth` und `PermissionManager` Klasse:
+## API fuer Entwickler
 
 ```php
+<?php
 use KLXM\Restricted\Auth;
 use KLXM\Restricted\PermissionManager;
 
 $auth = new Auth();
+$pm = new PermissionManager();
 
-if ($auth->isLoggedIn()) {
-    $user = $auth->getUser(); // Returns KLXM\Restricted\User DataObject
-    echo "Hallo " . $user->firstname;
-    
-    // Hat dieser User Zugriff auf speziellen Artikel?
-    $pm = new PermissionManager();
-    if ($pm->checkArticleAccess($user, 42)) {
-         echo "Du darfst das geheime Video sehen.";
-    }
-} else {
-    echo "Bitte einloggen.";
+$user = $auth->getUser();
+if ($pm->checkArticleAccess($user, 42)) {
+    echo 'Erlaubt';
 }
 ```
 
-### Hooks (Extension Points)
-- `ART_IS_PERMITTED` (Return Boolean)
-- `CAT_IS_PERMITTED` (Return Boolean)
-- `MEDIA_MANAGER_BEFORE_SEND` (403 Exit)
-- `PACKAGES_INCLUDED` (Redirect bei Unauthorized Page Access)
+## Erweiterungspunkte und relevante Hooks
+
+- `PACKAGES_INCLUDED` (Frontend-Zugriffsflow)
+- `ART_IS_PERMITTED`
+- `CAT_IS_PERMITTED`
+- `MEDIA_MANAGER_BEFORE_SEND`
+- `MEDIA_IS_PERMITTED`
+
+## Bekannte Hinweise
+
+1. Ohne gesetzten Login-Artikel kann es zu unerwuenschtem Verhalten im Redirect-Flow kommen.
+2. Bei parallelem Einsatz weiterer Auth-Addons (z. B. YCom Auth) sollten Redirect-Zustaendigkeiten klar getrennt sein.
+3. Nach strukturellen Aenderungen immer Backend-Cache leeren.
+
+## Roadmap (Kurz)
+
+1. Tokenbasierte Gast-Freigabe bei `approved`.
+2. Optionaler Mailversand fuer Anfragen/Freigaben.
+3. Ablauf- und Widerrufslogik fuer Freigaben.
 
 ---
-*Built with ❤️ for REDAXO CMS*
+
+KLXM Restricted fokussiert auf das, was in echten Projekten zaehlt: nachvollziehbare Rechte, sichere Auslieferung und einfache Bedienung fuer Redakteure.
