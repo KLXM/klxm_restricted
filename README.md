@@ -27,6 +27,7 @@ KLXM Restricted loest genau dieses Problem mit einer zentralen Matrix und klaren
 
 | Feature | Was ist daran cool? | Für wen? |
 |---|---|---|
+| 🧩 Einfache Einrichtung mit mitgelieferten Modulen | Login, Registrierung, Profil und User-Widget sind sofort als Module synchronisierbar | Redaktion, Integratoren |
 | 🔐 Rechte-Matrix (Struktur + Medienpool) | Ein Ort fuer alle Regeln statt Metadaten-Chaos in vielen Artikeln | Admins, Redakteure |
 | 🔗 Medien teilen im Mediapool | Share-Links mit Passwort, Ablauf, Limit, ZIP und Copy-Button direkt im Workflow | Redaktion, Projektteams |
 | 🔥 One-Time Pastebin | Sensible Inhalte nur einmal sichtbar, danach serverseitig vernichtet | Admins, DevOps, Support |
@@ -149,6 +150,20 @@ composer install
    - Theme-Framework
   - Session Timeout (Minuten)
   - Maximale Session-Laufzeit (Minuten)
+
+## ⚡ Einfache Einrichtung mit mitgelieferten Modulen
+
+Fuer den schnellen Start bringt das Addon fertige Frontend-Module mit, die per Klick synchronisiert werden koennen.
+
+1. Gehe zu `Restricted > Setup`.
+2. Klicke auf `Module synchronisieren`.
+3. Nutze danach direkt die mitgelieferten Module in Artikeln:
+  - `klxm_restricted_login`
+  - `klxm_restricted_register`
+  - `klxm_restricted_profile`
+  - `klxm_restricted_widget`
+
+Damit bekommst du Login, Registrierung, Profil und Nutzerstatus ohne eigene Basis-Implementierung sofort live.
 
 ## Berechtigungen (Redakteure)
 
