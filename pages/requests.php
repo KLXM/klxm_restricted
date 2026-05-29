@@ -46,8 +46,8 @@ if (!in_array($filter, $allowedFilter, true)) {
 }
 
 $sql = rex_sql::factory();
-$query = 'SELECT r.id, r.article_id, r.user_id, r.email, r.message, r.status, r.createdate, r.updatedate, r.handled_by, u.firstname, u.lastname\n'
-    . 'FROM ' . rex::getTable('klxm_restricted_access_request') . ' r\n'
+$query = 'SELECT r.id, r.article_id, r.user_id, r.email, r.message, r.status, r.createdate, r.updatedate, r.handled_by, u.firstname, u.lastname '
+    . 'FROM ' . rex::getTable('klxm_restricted_access_request') . ' r '
     . 'LEFT JOIN ' . rex::getTable('klxm_restricted_user') . ' u ON u.id = r.user_id';
 $params = [];
 if ($filter !== 'all') {
