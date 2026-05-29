@@ -13,13 +13,34 @@ KLXM Restricted loest genau dieses Problem mit einer zentralen Matrix und klaren
 
 ## Die wichtigsten Vorteile
 
-1. Zentrale Rechteverwaltung statt verstreuter Einzelfelder.
-2. Kaskadierende Regeln fuer Kategorien und Unterseiten.
-3. Schutz von Artikeln und Medien mit derselben Logik.
-4. Sichtbare, reproduzierbare Entscheidungen im Frontend-Flow.
-5. Klarer Redaktionsworkflow fuer Zugriffsanfragen.
-6. Temporaere, passwortgeschuetzte Medienfreigaben mit ZIP-Option.
-7. Einmal abrufbare Geheimtexte (Pastebin) mit Vernichtung nach Abruf.
+1. 🚀 Zentrale Rechteverwaltung statt verstreuter Einzelfelder.
+2. 🧭 Kaskadierende Regeln fuer Kategorien und Unterseiten.
+3. 🛡️ Schutz von Artikeln und Medien mit derselben Logik.
+4. 👀 Sichtbare, reproduzierbare Entscheidungen im Frontend-Flow.
+5. 📬 Klarer Redaktionsworkflow fuer Zugriffsanfragen.
+6. 🔗 Temporaere, passwortgeschuetzte Medienfreigaben mit ZIP-Option.
+7. 🔥 Einmal abrufbare Geheimtexte (Pastebin) mit Vernichtung nach Abruf.
+
+## ⭐ Feature Highlights
+
+### 🌟 Auf einen Blick
+
+| Feature | Was ist daran cool? | Für wen? |
+|---|---|---|
+| 🔐 Rechte-Matrix (Struktur + Medienpool) | Ein Ort fuer alle Regeln statt Metadaten-Chaos in vielen Artikeln | Admins, Redakteure |
+| 🔗 Medien teilen im Mediapool | Share-Links mit Passwort, Ablauf, Limit, ZIP und Copy-Button direkt im Workflow | Redaktion, Projektteams |
+| 🔥 One-Time Pastebin | Sensible Inhalte nur einmal sichtbar, danach serverseitig vernichtet | Admins, DevOps, Support |
+| 🌗 Moderne Share/Pastebin-Seiten | Light/Dark/Auto + DE/EN Umschaltung ohne Framework-Zwang | Externe Empfaenger |
+| 🎨 Branding fuer oeffentliche Seiten | Eigener Titel, Untertitel und Akzentfarbe fuer professionellen Auftritt | Agenturen, Unternehmen |
+| 🧠 DB-Sessionmanagement | Bessere Kontrolle laufender Sessions inkl. Backend-Ansicht und Beenden-Funktion | Admins |
+| 🧰 URL-Normalizer | Funktioniert robust auch mit HTML-escaped Copy/Paste-Links (`&amp;`, `&#038;`) | Alle Nutzer |
+
+### 💥 Warum das im Alltag hilft
+
+- Keine Rechte-Ratespiele mehr: Entscheidungen sind nachvollziehbar und reproduzierbar.
+- Sicheres Teilen ohne Extra-Portal: Mediapool-Link erzeugen, senden, fertig.
+- Geheime Daten bleiben nicht liegen: One-Time-Prinzip reduziert Risiken deutlich.
+- Bessere User Experience fuer Empfaenger: modern, mobil, mehrsprachig, hell/dunkel.
 
 ## Funktionsumfang im Ueberblick
 

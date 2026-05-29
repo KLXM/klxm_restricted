@@ -4,6 +4,13 @@ Alle nennenswerten Aenderungen an diesem Addon werden in dieser Datei dokumentie
 
 ## [Unreleased]
 
+### Release Highlights
+- Medien-Freigabelinks direkt im Mediapool mit Passwort, Ablauf, Limit und ZIP.
+- One-Time Pastebin fuer Geheimtexte inkl. optionaler Medien-Anhaenge.
+- Burn-after-read fuer Pastebin: Daten werden nach Abruf serverseitig vernichtet.
+- Oeffentliche Share/Pastebin-Seiten mit DE/EN + Light/Dark/Auto + Branding.
+- DB-Sessionverwaltung mit Monitoring im Backend.
+
 ### Added
 - Medien-Freigabelinks im Mediapool (`Mediapool > Medien teilen`).
 - Optionen fuer Freigabelinks: Ablaufzeit, Passwort, Download-Limit, ZIP-Download.
