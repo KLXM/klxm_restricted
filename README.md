@@ -11,6 +11,17 @@ Viele Projekte scheitern nicht an fehlenden Rechten, sondern an fehlender Uebers
 
 KLXM Restricted loest genau dieses Problem mit einer zentralen Matrix und klaren Vererbungsregeln.
 
+## Wichtige Abgrenzung zu YCom
+
+KLXM Restricted ist kein YCom-Ersatz und soll das auch nicht sein.
+
+Das Addon wurde auf konkreten Kundenwunsch entwickelt mit Fokus auf:
+- einfache Einrichtung,
+- schnelle Inbetriebnahme mit mitgelieferten Modulen,
+- unkomplizierte Verwaltung von Zugriffsrechten im Projektalltag.
+
+Im Ausblick planen wir zusaetzlich optionale Social-/Fediverse-Login-Anbindungen (z. B. Google und Apple), ohne den Charakter als schlankes Berechtigungs- und Access-Addon zu verlieren.
+
 ## Die wichtigsten Vorteile
 
 1. 🚀 Zentrale Rechteverwaltung statt verstreuter Einzelfelder.
@@ -131,9 +142,22 @@ Das ist bewusst als naechster Ausbauschritt geplant (Issue im Projekt vorhanden)
 - PHP >= 8.4
 - YForm >= 5.0
 - Mediapool
-- Composer (fuer Addon-Abhaengigkeiten)
 
 ## Installation
+
+1. Im REDAXO-Backend den Installer oeffnen.
+2. Nach `KLXM Restricted` suchen und installieren.
+3. Das Addon aktivieren.
+4. Unter `Restricted > Einstellungen` mindestens konfigurieren:
+   - Login-Artikel
+   - Redirect nach Login
+   - Theme-Framework
+  - Session Timeout (Minuten)
+  - Maximale Session-Laufzeit (Minuten)
+
+### Optionale manuelle Installation (Entwicklung)
+
+Nur fuer Entwicklungs-Setups ohne REDAXO-Installer:
 
 1. Addon nach `redaxo/src/addons/klxm_restricted` legen.
 2. Abhaengigkeiten installieren:
@@ -142,14 +166,7 @@ Das ist bewusst als naechster Ausbauschritt geplant (Issue im Projekt vorhanden)
 cd redaxo/src/addons/klxm_restricted
 composer install
 ```
-
 3. Im Backend installieren/aktivieren.
-4. Unter `Restricted > Einstellungen` mindestens konfigurieren:
-   - Login-Artikel
-   - Redirect nach Login
-   - Theme-Framework
-  - Session Timeout (Minuten)
-  - Maximale Session-Laufzeit (Minuten)
 
 ## ⚡ Einfache Einrichtung mit mitgelieferten Modulen
 
