@@ -1,0 +1,134 @@
+{
+    "rex_klxm_restricted_role": {
+        "table": {
+            "table_name": "rex_klxm_restricted_role",
+            "name": "Rollen / Gruppen",
+            "description": "",
+            "status": 1,
+            "list_amount": 50,
+            "list_sortfield": "name",
+            "list_sortorder": "ASC",
+            "prio": 1,
+            "search": 0,
+            "hidden": 0,
+            "export": 0,
+            "import": 0,
+            "mass_deletion": 0,
+            "mass_edit": 0,
+            "schema_overwrite": 1,
+            "history": 0
+        },
+        "fields": [
+            {
+                "type_id": "value",
+                "type_name": "text",
+                "name": "name",
+                "label": "Name der Rolle",
+                "search": 1,
+                "list_hidden": 0
+            },
+            {
+                "type_id": "value",
+                "type_name": "textarea",
+                "name": "description",
+                "label": "Beschreibung",
+                "search": 0,
+                "list_hidden": 1
+            },
+            {
+                "type_id": "validate",
+                "type_name": "empty",
+                "name": "name",
+                "message": "Bitte geben Sie einen Namen f\u00fcr die Rolle an."
+            }
+        ]
+    },
+    "rex_klxm_restricted_user": {
+        "table": {
+            "table_name": "rex_klxm_restricted_user",
+            "name": "Benutzer",
+            "description": "",
+            "status": 1,
+            "list_amount": 50,
+            "list_sortfield": "email",
+            "list_sortorder": "ASC",
+            "prio": 2,
+            "search": 1,
+            "hidden": 0,
+            "export": 1,
+            "import": 1,
+            "mass_deletion": 0,
+            "mass_edit": 0,
+            "schema_overwrite": 1,
+            "history": 0
+        },
+        "fields": [
+            {
+                "type_id": "value",
+                "type_name": "text",
+                "name": "email",
+                "label": "E-Mail (Login)",
+                "search": 1,
+                "list_hidden": 0
+            },
+            {
+                "type_id": "value",
+                "type_name": "password",
+                "name": "password",
+                "label": "Passwort",
+                "search": 0,
+                "list_hidden": 1
+            },
+            {
+                "type_id": "value",
+                "type_name": "text",
+                "name": "firstname",
+                "label": "Vorname",
+                "search": 1,
+                "list_hidden": 0
+            },
+            {
+                "type_id": "value",
+                "type_name": "text",
+                "name": "lastname",
+                "label": "Nachname",
+                "search": 1,
+                "list_hidden": 0
+            },
+            {
+                "type_id": "value",
+                "type_name": "be_manager_relation",
+                "name": "role_id",
+                "label": "Rolle",
+                "table": "rex_klxm_restricted_role",
+                "field": "name",
+                "type": "1",
+                "empty_option": 1,
+                "list_hidden": 0,
+                "search": 1
+            },
+            {
+                "type_id": "value",
+                "type_name": "checkbox",
+                "name": "status",
+                "label": "Aktiv",
+                "default": "1",
+                "list_hidden": 0,
+                "search": 1
+            },
+            {
+                "type_id": "validate",
+                "type_name": "empty",
+                "name": "email",
+                "message": "E-Mail darf nicht leer sein."
+            },
+            {
+                "type_id": "validate",
+                "type_name": "unique",
+                "name": "email",
+                "message": "Diese E-Mail wird bereits verwendet.",
+                "table": "rex_klxm_restricted_user"
+            }
+        ]
+    }
+}

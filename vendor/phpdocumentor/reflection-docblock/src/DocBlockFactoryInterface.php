@@ -1,0 +1,24 @@
+<?php
+
+declare(strict_types=1);
+
+namespace phpDocumentor\Reflection;
+
+use phpDocumentor\Reflection\Types\Context;
+use phpDocumentor\Reflection\DocBlock\Tag;
+
+// phpcs:ignore SlevomatCodingStandard.Classes.SuperfluousInterfaceNaming.SuperfluousSuffix
+interface DocBlockFactoryInterface
+{
+    /**
+     * Factory method for easy instantiation.
+     *
+     * @param array<string, class-string<Tag>> $additionalTags
+     */
+    public static function createInstance(array $additionalTags = []): self;
+
+    /**
+     * @param string|object $docblock
+     */
+    public function create($docblock, ?Context $context = null, ?Location $location = null): DocBlock;
+}

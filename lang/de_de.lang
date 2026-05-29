@@ -1,0 +1,24 @@
+klxm_restricted_title = KLXM Restricted
+klxm_restricted_matrix = Rechte-Matrix
+klxm_restricted_users = Benutzer
+klxm_restricted_roles = Rollen
+klxm_restricted_settings = Einstellungen
+
+# Artikel-Sidebar
+klxm_restricted_sidebar_title = Zugriffsrechte
+klxm_restricted_sidebar_public = Keine Einschränkung (öffentlich)
+klxm_restricted_sidebar_inherited_from = Geerbt von Kategorie:
+klxm_restricted_sidebar_open_matrix = In Rechte-Matrix öffnen
+
+# Pseudo-Rollen
+klxm_restricted_role_public = Öffentlich (alle)
+klxm_restricted_role_logged_in = Eingeloggte Benutzer
+klxm_restricted_role_guest = Nur Gäste (nicht eingeloggt)
+
+# Setup
+klxm_restricted_setup_intro = Synchronisiert die Frontend-Module mit der Datenbank. Bestehende Module werden aktualisiert, fehlende neu angelegt.
+klxm_restricted_setup_action_sync_modules = Module synchronisieren
+klxm_restricted_setup_report = Ergebnis
+klxm_restricted_setup_col_key = Modul-Key
+klxm_restricted_setup_col_message = Name / Meldung
+klxm_restricted_setup_col_status = Status

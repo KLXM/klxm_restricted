@@ -1,0 +1,42 @@
+package: klxm_restricted
+version: '1.0.0'
+author: KLXM
+supportpage: https://github.com/FriendsOfREDAXO/klxm_restricted
+name: KLXM Restricted (Zentrale Rechte- und Benutzerverwaltung)
+
+requires:
+    redaxo: ^5.18
+    php: ^8.4
+    yform: ^5.0
+
+autoload:
+    classes:
+        KLXM\Restricted\: lib/Restricted/
+
+page:
+    title: KLXM Restricted
+    perm: admin
+    icon: rex-icon fa-lock
+    subpages:
+        matrix:
+            title: Rechte-Matrix
+            icon: rex-icon fa-th
+        users:
+            title: Benutzer
+            icon: rex-icon fa-user
+        requests:
+            title: Zugriffsanfragen
+            icon: rex-icon fa-inbox
+        roles:
+            title: Rollen
+            icon: rex-icon fa-users
+        settings:
+            title: Einstellungen
+            icon: rex-icon fa-cogs
+        setup:
+            title: Setup
+            icon: rex-icon fa-wrench
+        help:
+            title: Hilfe
+            subPath: README.md
+            itemClass: 'pull-right'
