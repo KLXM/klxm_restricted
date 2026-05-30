@@ -6,6 +6,8 @@ namespace KLXM\Restricted\Media;
 
 use KLXM\Restricted\Auth;
 use KLXM\Restricted\PermissionManager;
+use rex;
+use rex_backend_login;
 use rex_media;
 
 use function in_array;
@@ -18,6 +20,16 @@ class MediaGuard
      */
     public static function hasAccess(string $filename): bool
     {
+        // Backend users must never be blocked for media access (e.g. focuspoint workflows).
+        if (rex::isBackend() && rex::getUser() !== null) {
+            return true;
+        }
+
+        // Also allow backend-authenticated users in frontend context.
+        if (rex_backend_login::createUser() !== null) {
+            return true;
+        }
+
         $media = rex_media::get($filename);
         if (!$media) {
             return true; // Handle missing media normally (404 later)

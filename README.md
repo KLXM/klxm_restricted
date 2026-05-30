@@ -72,6 +72,7 @@ Im Ausblick planen wir zusätzlich optionale Social-/Fediverse-Login-Anbindungen
 - Zugriff wird in `MEDIA_MANAGER_BEFORE_SEND` geprüft.
 - Nur echte Medienpool-Dateien werden eingeschränkt.
 - Nicht-restricted Inhalte bleiben verfügbar.
+- Im REDAXO-Backend angemeldete Benutzer werden beim Medienzugriff nicht blockiert (wichtig für Backend-Workflows wie z. B. Focuspoint).
 
 ### Login, Profil, Registrierung
 - Eigener Auth-Flow für Restricted-User.
@@ -103,7 +104,7 @@ Im Ausblick planen wir zusätzlich optionale Social-/Fediverse-Login-Anbindungen
 - Eigene Mediapool-Unterseite: `Mediapool > Medien teilen`.
 - Redakteure können eine Medienpool-Kategorie wählen und Dateien freigeben.
 - Optionen je Freigabe:
-  - Ablaufzeit
+  - Ablaufzeit (optional, leer = kein Ablauf)
   - Optionales Passwort
   - Optionales Download-Limit
   - Einzeldatei-Download und optional ZIP-Download

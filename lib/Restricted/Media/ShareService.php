@@ -20,6 +20,8 @@ use ZipArchive;
 
 class ShareService
 {
+    private static ?bool $supportsTokenPlainColumn = null;
+
     /**
      * @param string[] $filenames
      */
@@ -40,13 +42,15 @@ class ShareService
         $sql->setTable(rex::getTable('klxm_restricted_media_share'));
         $sql->setValue('token_hash', $tokenHash);
         $sql->setValue('token_hint', substr($token, 0, 12));
-        $sql->setValue('token_plain', $token);
+        if (self::supportsTokenPlainColumn()) {
+            $sql->setValue('token_plain', $token);
+        }
         $sql->setValue('category_id', $categoryId);
         $sql->setValue('title', $title ?? '');
         $sql->setValue('media_files', (string) json_encode(array_values($filenames), JSON_UNESCAPED_UNICODE));
         $sql->setValue('allow_zip', $allowZip ? 1 : 0);
         $sql->setValue('password_hash', $password !== null && $password !== '' ? password_hash($password, PASSWORD_DEFAULT) : '');
-        $sql->setValue('expires_at', $expiresAt ?? '');
+        $sql->setValue('expires_at', $expiresAt !== null && $expiresAt !== '' ? $expiresAt : null);
         $sql->setValue('max_downloads', $maxDownloads ?? null);
         $sql->setValue('download_count', 0);
         $sql->setValue('status', 1);
@@ -56,6 +60,26 @@ class ShareService
         $sql->insert();
 
         return $token;
+    }
+
+    private static function supportsTokenPlainColumn(): bool
+    {
+        if (self::$supportsTokenPlainColumn !== null) {
+            return self::$supportsTokenPlainColumn;
+        }
+
+        try {
+            $rows = rex_sql::factory()->getArray(
+                'SHOW COLUMNS FROM ' . rex::getTable('klxm_restricted_media_share') . ' LIKE ?',
+                ['token_plain']
+            );
+
+            self::$supportsTokenPlainColumn = $rows !== [];
+        } catch (\Throwable) {
+            self::$supportsTokenPlainColumn = false;
+        }
+
+        return self::$supportsTokenPlainColumn;
     }
 
     /**
@@ -450,7 +474,7 @@ class ShareService
     private static function isExpired(array $share): bool
     {
         $expiresAt = (string) ($share['expires_at'] ?? '');
-        if ($expiresAt === '') {
+        if ($expiresAt === '' || $expiresAt === '0000-00-00 00:00:00') {
             return false;
         }
 
