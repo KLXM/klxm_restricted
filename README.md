@@ -2,7 +2,15 @@
 
 Zentrales Addon für Rechte, Zugriffsschutz und sichere Medienfreigaben in REDAXO.
 
+KLXM Restricted ist eine leichte Alternative zu YCOM für typische Freigabe- und Schutzszenarien mit ein paar praxisnahen Extras, während YCOM die mächtigere Gesamtlösung für umfangreiche Community- und Mitgliederanforderungen bleibt.
+
 Der aktuelle Schwerpunkt liegt auf dem Freigabe-Workflow mit Anfrageformular, Anti-Spam-Schutz, Download-Härtung und auswertbarer Statistik.
+
+## Einordnung im Vergleich zu YCOM
+
+KLXM Restricted ist als leichte Alternative für typische Freigabe- und Schutzszenarien gedacht und bringt dafür ein paar praxisnahe Extras mit (z. B. direkter Mediapool-Freigabe-Workflow, abgesicherte Download-Flows und Share-Auswertung).
+
+YCOM bleibt die mächtigere und umfassendere Lösung, insbesondere wenn es um große Community-, Mitglieds- und Authentifizierungsanforderungen geht.
 
 ## Betriebsmodi
 
