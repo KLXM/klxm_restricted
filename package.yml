@@ -18,43 +18,60 @@ autoload:
 
 page:
     title: KLXM Restricted
-    perm: admin
+    perm: klxm_restricted[share]
     icon: rex-icon fa-lock
     subpages:
         matrix:
             title: Rechte-Matrix
+            perm: admin
             icon: rex-icon fa-th
         users:
             title: Benutzer
+            perm: admin
             icon: rex-icon fa-user
         sessions:
             title: Sessions
+            perm: admin
             icon: rex-icon fa-clock-o
         requests:
             title: Zugriffsanfragen
+            perm: admin
             icon: rex-icon fa-inbox
         roles:
             title: Rollen
+            perm: admin
             icon: rex-icon fa-users
-        settings:
-            title: Einstellungen
-            icon: rex-icon fa-cogs
         pastebin:
             title: Pastebin
+            perm: klxm_restricted[pastebin]
             icon: rex-icon fa-clipboard
+        share_requests:
+            title: Freigabe-Anfragen
+            perm: klxm_restricted[share]
+            icon: rex-icon fa-line-chart
         setup:
             title: Setup
+            perm: admin
             icon: rex-icon fa-wrench
+        settings:
+            title: Einstellungen
+            perm: admin
+            icon: rex-icon fa-cogs
+        editorial:
+            title: Handbuch
+            perm: klxm_restricted[share]
+            subPath: editorial.md
         help:
             title: Hilfe
+            perm: klxm_restricted[share]
             subPath: README.md
             itemClass: 'pull-right'
 
 pages:
-    mediapool/klxm_restricted_share:
-        title: Medien teilen
+    mediapool/klxm_restricted_file_share:
+        title: Dateiablage teilen
         perm: klxm_restricted[share]
-        icon: rex-icon fa-share-alt
+        icon: rex-icon fa-files-o
 
 permissions:
     - klxm_restricted[share]

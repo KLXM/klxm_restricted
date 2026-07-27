@@ -25,7 +25,9 @@ class SetupHelper
             // Create initial Role
             $sql->setTable($roleTable);
             $sql->setValue('name', 'Admin / VIP');
-            $sql->setValue('status', 1);
+            if (self::hasColumn($roleTable, 'status')) {
+                $sql->setValue('status', 1);
+            }
             $sql->insert();
             $roleId = (int)$sql->getLastId();
 
@@ -42,10 +44,23 @@ class SetupHelper
                 $sql->setValue('firstname', 'Admin');
                 $sql->setValue('lastname', 'User');
                 $sql->setValue('role_id', $roleId);
-                $sql->setValue('status', 1);
+                if (self::hasColumn($userTable, 'status')) {
+                    $sql->setValue('status', 1);
+                }
                 $sql->insert();
             }
         }
+    }
+
+    private static function hasColumn(string $tableName, string $columnName): bool
+    {
+        foreach (rex_sql::showColumns($tableName) as $column) {
+            if (($column['name'] ?? '') === $columnName) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private static function hashPassword(string $password): string

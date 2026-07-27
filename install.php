@@ -7,9 +7,11 @@ namespace KLXM\Restricted;
 use rex;
 use rex_addon;
 use rex_file;
+use rex_sql;
 use rex_sql_table;
 use rex_sql_column;
 use rex_sql_index;
+use rex_yform_manager_table;
 use rex_yform_manager_table_api;
 use KLXM\Restricted\Tools\SetupHelper;
 
@@ -62,30 +64,7 @@ rex_sql_table::get(rex::getTable('klxm_restricted_session'))
     ->ensureIndex(new rex_sql_index('idx_klxm_session_user', ['user_id']))
     ->ensure();
 
-// 5. Public media share links for restricted files
-rex_sql_table::get(rex::getTable('klxm_restricted_media_share'))
-    ->ensurePrimaryIdColumn()
-    ->ensureColumn(new rex_sql_column('token_hash', 'varchar(64)'))
-    ->ensureColumn(new rex_sql_column('token_hint', 'varchar(16)', true))
-    ->ensureColumn(new rex_sql_column('token_plain', 'varchar(64)', true))
-    ->ensureColumn(new rex_sql_column('category_id', 'int(10) unsigned'))
-    ->ensureColumn(new rex_sql_column('title', 'varchar(191)', true))
-    ->ensureColumn(new rex_sql_column('media_files', 'text'))
-    ->ensureColumn(new rex_sql_column('allow_zip', 'tinyint(1)', false, '1'))
-    ->ensureColumn(new rex_sql_column('password_hash', 'varchar(255)', true))
-    ->ensureColumn(new rex_sql_column('expires_at', 'datetime', true))
-    ->ensureColumn(new rex_sql_column('max_downloads', 'int(10) unsigned', true))
-    ->ensureColumn(new rex_sql_column('download_count', 'int(10) unsigned', false, '0'))
-    ->ensureColumn(new rex_sql_column('status', 'tinyint(1)', false, '1'))
-    ->ensureColumn(new rex_sql_column('created_by', 'varchar(191)', true))
-    ->ensureColumn(new rex_sql_column('last_download', 'datetime', true))
-    ->ensureColumn(new rex_sql_column('createdate', 'datetime'))
-    ->ensureColumn(new rex_sql_column('updatedate', 'datetime'))
-    ->ensureIndex(new rex_sql_index('idx_klxm_share_token', ['token_hash'], rex_sql_index::UNIQUE))
-    ->ensureIndex(new rex_sql_index('idx_klxm_share_category', ['category_id']))
-    ->ensure();
-
-// 6. One-time pastebin entries with optional media attachments
+// 5. One-time pastebin entries with optional media attachments
 rex_sql_table::get(rex::getTable('klxm_restricted_pastebin'))
     ->ensurePrimaryIdColumn()
     ->ensureColumn(new rex_sql_column('token_hash', 'varchar(64)'))
@@ -105,21 +84,127 @@ rex_sql_table::get(rex::getTable('klxm_restricted_pastebin'))
     ->ensureIndex(new rex_sql_index('idx_klxm_paste_status', ['status']))
     ->ensure();
 
-// 7. Import YForm tables for Users and Roles
+// 6. Page-bound file share boards (uikit3 output module)
+rex_sql_table::get(rex::getTable('klxm_restricted_file_share'))
+    ->ensurePrimaryIdColumn()
+    ->ensureColumn(new rex_sql_column('token_hash', 'varchar(64)'))
+    ->ensureColumn(new rex_sql_column('token_plain', 'varchar(64)', true))
+    ->ensureColumn(new rex_sql_column('token_hint', 'varchar(16)', true))
+    ->ensureColumn(new rex_sql_column('share_mode', 'varchar(16)', false, 'article'))
+    ->ensureColumn(new rex_sql_column('article_id', 'int(10) unsigned'))
+    ->ensureColumn(new rex_sql_column('source_mode', 'varchar(16)', false, 'category'))
+    ->ensureColumn(new rex_sql_column('media_category_id', 'int(10) unsigned', true))
+    ->ensureColumn(new rex_sql_column('grouped_files', 'longtext', true))
+    ->ensureColumn(new rex_sql_column('request_enabled', 'tinyint(1)', false, '1'))
+    ->ensureColumn(new rex_sql_column('request_valid_days', 'int(10) unsigned', false, '3'))
+    ->ensureColumn(new rex_sql_column('request_form_json', 'longtext', true))
+    ->ensureColumn(new rex_sql_column('request_intro_text', 'text', true))
+    ->ensureColumn(new rex_sql_column('title', 'varchar(191)', true))
+    ->ensureColumn(new rex_sql_column('description', 'text', true))
+    ->ensureColumn(new rex_sql_column('allow_zip', 'tinyint(1)', false, '1'))
+    ->ensureColumn(new rex_sql_column('password_hash', 'varchar(255)', true))
+    ->ensureColumn(new rex_sql_column('expires_at', 'datetime', true))
+    ->ensureColumn(new rex_sql_column('max_downloads', 'int(10) unsigned', true))
+    ->ensureColumn(new rex_sql_column('download_count', 'int(10) unsigned', false, '0'))
+    ->ensureColumn(new rex_sql_column('status', 'tinyint(1)', false, '1'))
+    ->ensureColumn(new rex_sql_column('created_by', 'varchar(191)', true))
+    ->ensureColumn(new rex_sql_column('last_download', 'datetime', true))
+    ->ensureColumn(new rex_sql_column('createdate', 'datetime'))
+    ->ensureColumn(new rex_sql_column('updatedate', 'datetime'))
+    ->ensureIndex(new rex_sql_index('idx_klxm_file_share_token', ['token_hash'], rex_sql_index::UNIQUE))
+    ->ensureIndex(new rex_sql_index('idx_klxm_file_share_mode', ['share_mode']))
+    ->ensureIndex(new rex_sql_index('idx_klxm_file_share_article', ['article_id']))
+    ->ensure();
+
+// 7. Request log for share requests (statistics + CSV export)
+rex_sql_table::get(rex::getTable('klxm_restricted_file_share_request'))
+    ->ensurePrimaryIdColumn()
+    ->ensureColumn(new rex_sql_column('share_id', 'int(10) unsigned'))
+    ->ensureColumn(new rex_sql_column('article_id', 'int(10) unsigned'))
+    ->ensureColumn(new rex_sql_column('request_email', 'varchar(191)'))
+    ->ensureColumn(new rex_sql_column('request_payload', 'longtext', true))
+    ->ensureColumn(new rex_sql_column('access_token_hash', 'varchar(64)'))
+    ->ensureColumn(new rex_sql_column('access_token_plain', 'varchar(64)', true))
+    ->ensureColumn(new rex_sql_column('valid_until', 'datetime'))
+    ->ensureColumn(new rex_sql_column('mail_sent', 'tinyint(1)', false, '0'))
+    ->ensureColumn(new rex_sql_column('ip', 'varchar(45)', true))
+    ->ensureColumn(new rex_sql_column('ip_hash', 'varchar(64)', true))
+    ->ensureColumn(new rex_sql_column('useragent', 'varchar(255)', true))
+    ->ensureColumn(new rex_sql_column('createdate', 'datetime'))
+    ->ensureColumn(new rex_sql_column('updatedate', 'datetime'))
+    ->ensureIndex(new rex_sql_index('idx_klxm_file_share_request_share', ['share_id']))
+    ->ensureIndex(new rex_sql_index('idx_klxm_file_share_request_email', ['request_email']))
+    ->ensureIndex(new rex_sql_index('idx_klxm_file_share_request_valid', ['valid_until']))
+    ->ensureIndex(new rex_sql_index('idx_klxm_file_share_request_token', ['access_token_hash'], rex_sql_index::UNIQUE))
+    ->ensure();
+
+// 8. Download events per file for statistics
+rex_sql_table::get(rex::getTable('klxm_restricted_file_share_download'))
+    ->ensurePrimaryIdColumn()
+    ->ensureColumn(new rex_sql_column('share_id', 'int(10) unsigned'))
+    ->ensureColumn(new rex_sql_column('article_id', 'int(10) unsigned'))
+    ->ensureColumn(new rex_sql_column('request_id', 'int(10) unsigned', true))
+    ->ensureColumn(new rex_sql_column('filename', 'varchar(255)'))
+    ->ensureColumn(new rex_sql_column('download_mode', 'varchar(16)', false, 'file'))
+    ->ensureColumn(new rex_sql_column('createdate', 'datetime'))
+    ->ensureIndex(new rex_sql_index('idx_klxm_file_share_download_share', ['share_id']))
+    ->ensureIndex(new rex_sql_index('idx_klxm_file_share_download_file', ['filename']))
+    ->ensureIndex(new rex_sql_index('idx_klxm_file_share_download_created', ['createdate']))
+    ->ensure();
+
+// 9. Async ZIP jobs for file shares
+rex_sql_table::get(rex::getTable('klxm_restricted_file_share_zip_job'))
+    ->ensurePrimaryIdColumn()
+    ->ensureColumn(new rex_sql_column('job_token', 'varchar(64)'))
+    ->ensureColumn(new rex_sql_column('share_id', 'int(10) unsigned'))
+    ->ensureColumn(new rex_sql_column('article_id', 'int(10) unsigned'))
+    ->ensureColumn(new rex_sql_column('request_id', 'int(10) unsigned', true))
+    ->ensureColumn(new rex_sql_column('download_mode', 'varchar(16)', false, 'zip_all'))
+    ->ensureColumn(new rex_sql_column('selected_files', 'longtext'))
+    ->ensureColumn(new rex_sql_column('status', 'varchar(16)', false, 'queued'))
+    ->ensureColumn(new rex_sql_column('zip_path', 'varchar(255)', true))
+    ->ensureColumn(new rex_sql_column('error_message', 'text', true))
+    ->ensureColumn(new rex_sql_column('expires_at', 'datetime'))
+    ->ensureColumn(new rex_sql_column('createdate', 'datetime'))
+    ->ensureColumn(new rex_sql_column('updatedate', 'datetime'))
+    ->ensureIndex(new rex_sql_index('idx_klxm_file_share_zip_job_token', ['job_token'], rex_sql_index::UNIQUE))
+    ->ensureIndex(new rex_sql_index('idx_klxm_file_share_zip_job_share', ['share_id']))
+    ->ensureIndex(new rex_sql_index('idx_klxm_file_share_zip_job_status', ['status']))
+    ->ensure();
+
+if ((string) $addon->getConfig('request_ip_hash_salt', '') === '') {
+    $addon->setConfig('request_ip_hash_salt', bin2hex(random_bytes(16)));
+}
+
+// 10. Import YForm tables for Users and Roles
 $tablesetPath = $addon->getPath('install/tablesets/yform_restricted.json');
 if (file_exists($tablesetPath)) {
     $tableset = rex_file::get($tablesetPath);
     if ($tableset) {
+        // Keep YForm metadata/cache consistent across uninstall/reinstall cycles.
+        rex_yform_manager_table::deleteCache();
+
+        $yformTableNames = [
+            rex::getTable('klxm_restricted_user'),
+            rex::getTable('klxm_restricted_role'),
+        ];
+        $placeholders = implode(',', array_fill(0, count($yformTableNames), '?'));
+        $sql = rex_sql::factory();
+        $sql->setQuery('DELETE FROM ' . rex::getTable('yform_field') . ' WHERE table_name IN (' . $placeholders . ')', $yformTableNames);
+        $sql->setQuery('DELETE FROM ' . rex::getTable('yform_table') . ' WHERE table_name IN (' . $placeholders . ')', $yformTableNames);
+
         rex_yform_manager_table_api::importTablesets($tableset);
+        rex_yform_manager_table::deleteCache();
         SetupHelper::createDefaultUserIfEmpty();
     }
 }
 
-// 8. Ensure additional security columns on user table (added after initial install)
+// 11. Ensure additional security columns on user table (added after initial install)
 rex_sql_table::get(rex::getTable('klxm_restricted_user'))
     ->ensureColumn(new rex_sql_column('last_login', 'datetime', true))
     ->ensureColumn(new rex_sql_column('failed_logins', 'int(10) unsigned', false, '0'))
     ->ensureColumn(new rex_sql_column('login_locked_until', 'datetime', true))
     ->ensureColumn(new rex_sql_column('email_verified', 'tinyint(1)', false, '1'))
     ->ensureColumn(new rex_sql_column('email_verification_token', 'varchar(64)', true))
+    ->ensureIndex(new rex_sql_index('idx_email', ['email'], rex_sql_index::UNIQUE))
     ->ensure();

@@ -9,6 +9,7 @@
         <div class="alert alert-success"><?= htmlspecialchars($this->getVar('success')) ?></div>
     <?php else: ?>
         <form action="<?= $this->getVar('action_url') ?>" method="post">
+            <input type="hidden" name="_csrf_token" value="<?= htmlspecialchars($this->getVar('csrf_token', '')) ?>">
             <input type="hidden" name="klxm_action" value="register">
             <div class="mb-3">
                 <label for="klxm-reg-firstname" class="form-label">Vorname</label>

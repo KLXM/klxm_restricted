@@ -74,9 +74,28 @@ $field = $form->addInputField('text', 'share_brand_subtitle', null, ['class' => 
 $field->setLabel('Downloadseite Branding: Untertitel');
 $field->setNotice('Optionaler kurzer Hinweistext unter dem Titel.');
 
+$field = $form->addInputField('text', 'share_brand_logo', null, ['class' => 'form-control']);
+$field->setLabel('Downloadseite Branding: Logo');
+$field->setNotice('Optional. Entweder Medienpool-Dateiname oder absolute URL (https://...).');
+
+$field = $form->addInputField('text', 'share_brand_logo_mail', null, ['class' => 'form-control']);
+$field->setLabel('E-Mail Branding: Logo (PNG/JPG)');
+$field->setNotice('Optional. Entweder Medienpool-Dateiname oder absolute URL (https://...). Erlaubt sind nur PNG/JPG/JPEG für bessere Mailclient-Kompatibilität.');
+
 $field = $form->addInputField('text', 'share_brand_accent', null, ['class' => 'form-control', 'placeholder' => '#0f6eb8']);
 $field->setLabel('Downloadseite Branding: Akzentfarbe');
 $field->setNotice('Optional, Hex-Farbe z. B. #0f6eb8. Leerlassen nutzt Standardfarben (ohne Lila).');
+
+$field = $form->addInputField('number', 'share_request_valid_days', null, ['min' => '1', 'max' => '60', 'class' => 'form-control']);
+$field->setLabel('Standard-Gültigkeit Anfrage-Freigabelink (Tage)');
+$field->setNotice('Wird beim Anlegen einer Datei-Freigabe als Default für den E-Mail-Link verwendet.');
+if ((string) $field->getValue() === '') {
+    $field->setValue('3');
+}
+
+$field = $form->addTextAreaField('share_request_mail_footer', null, ['class' => 'form-control', 'rows' => '4']);
+$field->setLabel('E-Mail-Abbinder für Datei-Freigaben');
+$field->setNotice('Dieser Text wird an Anfrage-E-Mails angehängt (z. B. Signatur, Firma, Kontakt).');
 
 $fragment = new rex_fragment();
 $fragment->setVar('class', 'edit', false);

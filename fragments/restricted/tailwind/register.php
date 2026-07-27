@@ -13,6 +13,7 @@
         </div>
     <?php else: ?>
         <form action="<?= $this->getVar('action_url') ?>" method="post" class="space-y-4">
+            <input type="hidden" name="_csrf_token" value="<?= htmlspecialchars($this->getVar('csrf_token', '')) ?>">
             <input type="hidden" name="klxm_action" value="register">
             
             <div>

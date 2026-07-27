@@ -39,7 +39,7 @@ class PastebinService
         $sql->setValue('secret_content', $secretContent);
         $sql->setValue('attachment_files', (string) json_encode(array_values($attachments), JSON_UNESCAPED_UNICODE));
         $sql->setValue('password_hash', $accessPassword !== null && $accessPassword !== '' ? password_hash($accessPassword, PASSWORD_DEFAULT) : '');
-        $sql->setValue('expires_at', $expiresAt ?? '');
+        $sql->setValue('expires_at', $expiresAt !== null && $expiresAt !== '' ? $expiresAt : null);
         $sql->setValue('status', 1);
         $sql->setValue('view_count', 0);
         $sql->setValue('created_by', $createdBy);
@@ -68,6 +68,29 @@ class PastebinService
         $sql->setTable(rex::getTable('klxm_restricted_pastebin'));
         $sql->setWhere('id = ?', [$id]);
         $sql->delete();
+    }
+
+    /**
+     * Destroys all expired pastebin entries by clearing their secrets and files.
+     */
+    public static function destroyExpiredPastes(): void
+    {
+        $sql = rex_sql::factory();
+        $sql->setQuery(
+            'UPDATE ' . rex::getTable('klxm_restricted_pastebin') . ' '
+            . 'SET status = 0, destroyedate = ?, updatedate = ?, secret_content = ?, attachment_files = ?, password_hash = ? '
+            . 'WHERE status = 1 AND expires_at IS NOT NULL AND expires_at != ? AND expires_at != ? AND expires_at < ?',
+            [
+                rex_sql::datetime(time()),
+                rex_sql::datetime(time()),
+                '',
+                '[]',
+                '',
+                '',
+                '0000-00-00 00:00:00',
+                rex_sql::datetime(time()),
+            ]
+        );
     }
 
     /**
@@ -177,6 +200,10 @@ class PastebinService
         }
 
         $filename = $attachments[$downloadIdx];
+        if (basename($filename) !== $filename || str_contains($filename, '/') || str_contains($filename, '\\')) {
+            self::sendHtml(self::t('attachment_not_found', $lang), rex_response::HTTP_NOT_FOUND);
+        }
+
         $path = rex_path::media($filename);
         if (!is_file($path)) {
             self::sendHtml(self::t('attachment_missing_file', $lang), rex_response::HTTP_NOT_FOUND);
@@ -333,7 +360,7 @@ class PastebinService
     private static function isExpired(array $entry): bool
     {
         $expiresAt = (string) ($entry['expires_at'] ?? '');
-        if ($expiresAt === '') {
+        if ($expiresAt === '' || $expiresAt === '0000-00-00 00:00:00') {
             return false;
         }
 

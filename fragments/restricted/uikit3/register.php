@@ -9,6 +9,7 @@
         <div class="uk-alert-success" uk-alert><p><?= htmlspecialchars($this->getVar('success')) ?></p></div>
     <?php else: ?>
         <form action="<?= $this->getVar('action_url') ?>" method="post" class="uk-form-stacked">
+            <input type="hidden" name="_csrf_token" value="<?= htmlspecialchars($this->getVar('csrf_token', '')) ?>">
             <input type="hidden" name="klxm_action" value="register">
             
             <div class="uk-margin">

@@ -28,7 +28,7 @@ class LoginController
         $password = rex_request::post('klxm_login_password', 'string', '');
         $redirectParam = rex_request::get('redirect_to', 'int', 0);
         $returnTo = trim(rex_request::get('returnTo', 'string', ''));
-        $isSafeReturnTo = $returnTo !== '' && str_starts_with($returnTo, '/') && !str_contains($returnTo, '://');
+        $isSafeReturnTo = $returnTo !== '' && str_starts_with($returnTo, '/') && !str_starts_with($returnTo, '//') && !str_starts_with($returnTo, '/\\') && !str_contains($returnTo, '://');
         $currentPath = (string) parse_url((string) rex_request::server('REQUEST_URI', 'string', ''), PHP_URL_PATH);
         $returnToMatchesCurrentPage = $isSafeReturnTo && $currentPath !== '' && rtrim($currentPath, '/') === rtrim($returnTo, '/');
 

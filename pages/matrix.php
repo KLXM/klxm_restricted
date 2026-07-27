@@ -11,10 +11,17 @@ use rex_csrf_token;
 use rex_fragment;
 use rex_media_category;
 use rex_sql;
+use rex_url;
+use rex_view;
 
 use function in_array;
 
 $addon = rex_addon::get('klxm_restricted');
+$ycomActive = rex_addon::get('ycom')->isAvailable();
+
+if ($ycomActive) {
+    echo rex_view::info('YCom ist aktiv. Die Struktur-Matrix bleibt ausgeblendet, die Medienpool-Matrix steht für Schutzregeln weiterhin zur Verfügung.');
+}
 
 // Generate CSRF Token for the API Call
 $csrfToken = rex_csrf_token::factory('rex_api_klxm_restricted_matrix_update')->getValue();
@@ -31,15 +38,18 @@ array_unshift($roles, ['id' => PermissionManager::ROLE_PUBLIC, 'name' => '🌍 �
 // Helper to fetch directly assigned roles for fast rendering
 $pm = new PermissionManager();
 
-$content = '<table class="table table-striped table-hover">';
-$content .= '<thead><tr>';
-$content .= '<th>Struktur (Kategorie/Artikel)</th>';
-foreach ($roles as $role) {
-    $content .= '<th class="text-center">' . htmlspecialchars((string) $role['name']) . '</th>';
-}
-$content .= '<th class="text-center">Zugriff anfragen</th>';
-$content .= '</tr></thead>';
-$content .= '<tbody>';
+
+$renderStructureMatrix = !$ycomActive;
+if ($renderStructureMatrix) {
+    $content = '<table class="table table-striped table-hover">';
+    $content .= '<thead><tr>';
+    $content .= '<th>Struktur (Kategorie/Artikel)</th>';
+    foreach ($roles as $role) {
+        $content .= '<th class="text-center">' . htmlspecialchars((string) $role['name']) . '</th>';
+    }
+    $content .= '<th class="text-center">Zugriff anfragen</th>';
+    $content .= '</tr></thead>';
+    $content .= '<tbody>';
 
 // Recursive function to render the category tree
 $renderCategory = static function (rex_category $category, int $depth = 0) use (&$renderCategory, $roles, $pm) {
@@ -144,20 +154,21 @@ $renderCategory = static function (rex_category $category, int $depth = 0) use (
     return $html;
 };
 
-// Start parsing root categories
-$rootCategories = rex_category::getRootCategories(false);
-foreach ($rootCategories as $rootCategory) {
-    $content .= $renderCategory($rootCategory, 0);
+    // Start parsing root categories
+    $rootCategories = rex_category::getRootCategories(false);
+    foreach ($rootCategories as $rootCategory) {
+        $content .= $renderCategory($rootCategory, 0);
+    }
+
+    $content .= '</tbody></table>';
+
+    $fragment = new rex_fragment();
+    $fragment->setVar('class', 'success', false);
+    $fragment->setVar('title', 'Zentrale Rechte-Matrix (Struktur)', false);
+    $fragment->setVar('body', $content, false);
+
+    echo $fragment->parse('core/page/section.php');
 }
-
-$content .= '</tbody></table>';
-
-$fragment = new rex_fragment();
-$fragment->setVar('class', 'success', false);
-$fragment->setVar('title', 'Zentrale Rechte-Matrix (Struktur)', false);
-$fragment->setVar('body', $content, false);
-
-echo $fragment->parse('core/page/section.php');
 
 // --- MEDIA CATEGORIES MATRIX ---
 

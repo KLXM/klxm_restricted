@@ -11,6 +11,7 @@
 
     <h4>Profildaten bearbeiten</h4>
     <form action="<?= $this->getVar('action_url') ?>" method="post" class="uk-form-stacked uk-margin-bottom">
+        <input type="hidden" name="_csrf_token" value="<?= htmlspecialchars($this->getVar('csrf_token', '')) ?>">
         <input type="hidden" name="klxm_action" value="update_profile">
         <div class="uk-margin">
             <label for="klxm-prof-firstname" class="uk-form-label">Vorname</label>
@@ -39,6 +40,7 @@
 
     <h4>Passwort ändern</h4>
     <form action="<?= $this->getVar('action_url') ?>" method="post" class="uk-form-stacked">
+        <input type="hidden" name="_csrf_token" value="<?= htmlspecialchars($this->getVar('csrf_token', '')) ?>">
         <input type="hidden" name="klxm_action" value="update_password">
         <div class="uk-margin">
             <label for="klxm-prof-oldpass" class="uk-form-label">Aktuelles Passwort</label>

@@ -31,6 +31,20 @@
                 return;
             }
 
+            var link = (button.getAttribute('data-link') || '').trim();
+            if (link !== '') {
+                copyToClipboard(link).then(function () {
+                    var originalText = button.textContent;
+                    button.textContent = 'Kopiert';
+                    setTimeout(function () {
+                        button.textContent = originalText;
+                    }, 1200);
+                }).catch(function () {
+                    window.prompt('Freigabelink kopieren:', link);
+                });
+                return;
+            }
+
             var targetId = button.getAttribute('data-target') || '';
             var input = document.getElementById(targetId);
             if (!input) {

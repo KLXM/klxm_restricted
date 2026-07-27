@@ -39,6 +39,7 @@ class Auth
 
         rex_login::startSession();
         AuthSessionStore::clearExpiredSessions();
+        \KLXM\Restricted\Frontend\PastebinService::destroyExpiredPastes();
 
         // Check for impersonation (set by backend admin)
         $impersonate = rex_session(self::IMPERSONATE_KEY, 'array', []);

@@ -18,6 +18,7 @@
     <div class="bg-white p-6 rounded-lg shadow-md">
         <h4 class="text-lg font-medium text-gray-900 mb-4">Profildaten bearbeiten</h4>
         <form action="<?= $this->getVar('action_url') ?>" method="post" class="space-y-4">
+            <input type="hidden" name="_csrf_token" value="<?= htmlspecialchars($this->getVar('csrf_token', '')) ?>">
             <input type="hidden" name="klxm_action" value="update_profile">
             
             <div>
@@ -49,6 +50,7 @@
     <div class="bg-white p-6 rounded-lg shadow-md">
         <h4 class="text-lg font-medium text-gray-900 mb-4">Passwort ändern</h4>
         <form action="<?= $this->getVar('action_url') ?>" method="post" class="space-y-4">
+            <input type="hidden" name="_csrf_token" value="<?= htmlspecialchars($this->getVar('csrf_token', '')) ?>">
             <input type="hidden" name="klxm_action" value="update_password">
             
             <div>
