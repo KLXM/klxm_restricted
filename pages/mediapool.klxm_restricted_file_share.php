@@ -681,20 +681,25 @@ if ($selectedCategoryId <= 0) {
         echo '<div class="alert alert-info">Bearbeitung aktiv für Share #' . (int) $editShareId . '. <a href="' . $cancelUrl . '">Bearbeitung abbrechen</a></div>';
     }
 
-    echo '<div class="form-group" data-share-mode-article="1"' . ($shareMode === 'article' ? '' : ' style="display:none;"') . '>';
-    echo '<label for="article_id">Ausgabeseite (REDAXO-Artikel)</label>';
-    echo \rex_var_link::getWidget(1, 'article_id', $selectedArticleId);
-    echo '<p class="help-block">Diese Seite legt der Redakteur normal an (Text, Hinweise etc.). Das Modul "KLXM Restricted Dateiablage" zeigt die Dateien an.</p>';
-    echo '</div>';
-
     echo '<input type="hidden" name="share_mode" value="' . htmlspecialchars($shareMode) . '">';
 
     echo '<input type="hidden" name="source_mode" value="' . htmlspecialchars($sourceMode) . '">';
     echo '<input type="hidden" name="media_category_id" value="' . (int) $selectedCategoryId . '">';
 
+    echo '<div class="row">';
+    echo '<div class="col-md-6">';
+    echo '<div class="form-group" data-share-mode-article="1"' . ($shareMode === 'article' ? '' : ' style="display:none;"') . '>';
+    echo '<label for="article_id">Ausgabeseite (REDAXO-Artikel)</label>';
+    echo \rex_var_link::getWidget(1, 'article_id', $selectedArticleId);
+    echo '<p class="help-block">Diese Seite legt der Redakteur normal an (Text, Hinweise etc.). Das Modul "KLXM Restricted Dateiablage" zeigt die Dateien an.</p>';
+    echo '</div>';
+    echo '</div>';
+    echo '<div class="col-md-6">';
     echo '<div class="form-group">';
     echo '<label for="share_title">Titel (optional)</label>';
     echo '<input id="share_title" class="form-control" type="text" name="share_title" maxlength="191" value="' . htmlspecialchars((string) $defaultFormData['title']) . '">';
+    echo '</div>';
+    echo '</div>';
     echo '</div>';
 
     echo '<div class="form-group">';
@@ -702,11 +707,15 @@ if ($selectedCategoryId <= 0) {
     echo '<textarea id="share_description" class="form-control" name="share_description" rows="3">' . htmlspecialchars((string) $defaultFormData['description']) . '</textarea>';
     echo '</div>';
 
+    echo '<div class="row">';
+    echo '<div class="col-md-4">';
     echo '<div class="form-group">';
     echo '<label for="expires_at">Ablauf (optional)</label>';
     echo '<input id="expires_at" class="form-control" type="datetime-local" name="expires_at" value="' . htmlspecialchars($expiresInputValue) . '">';
     echo '</div>';
+    echo '</div>';
 
+    echo '<div class="col-md-4">';
     echo '<div class="form-group">';
     echo '<label for="share_password">Passwort (optional)</label>';
     echo '<input id="share_password" class="form-control" type="text" name="share_password">';
@@ -715,10 +724,15 @@ if ($selectedCategoryId <= 0) {
         echo '<p class="help-block">Leer lassen = vorhandenes Passwort bleibt unverändert.</p>';
     }
     echo '</div>';
+    echo '</div>';
 
+    echo '<div class="col-md-4">';
     echo '<div class="form-group">';
     echo '<label for="max_downloads">Maximale Downloads (optional)</label>';
     echo '<input id="max_downloads" class="form-control" type="number" min="0" step="1" name="max_downloads" placeholder="0 = unbegrenzt" value="' . htmlspecialchars((string) $defaultFormData['max_downloads']) . '">';
+    echo '<div class="alert alert-info" style="margin-top:8px; margin-bottom:0; padding:8px 10px;">Hinweis: Dieses Limit gilt für die gesamte Freigabe (Einzeldownloads und ZIP-Downloads zusammen).</div>';
+    echo '</div>';
+    echo '</div>';
     echo '</div>';
 
     echo '<div class="panel panel-default">';

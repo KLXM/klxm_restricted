@@ -107,6 +107,13 @@ if ((string) $field->getValue() === '') {
     $field->setValue('disabled');
 }
 
+$field = $form->addInputField('number', 'share_sticky_offset', null, ['min' => '0', 'max' => '640', 'class' => 'form-control']);
+$field->setLabel('Funktionsleiste der Sharing-Seite: Abstand zum oberen Rand (px)');
+$field->setNotice('Steuert den Sticky-Top-Abstand der Werkzeugleiste auf der öffentlichen Sharing-Seite. Wenn oben ein festes Header-Element sitzt, hier den gewünschten Abstand eintragen.');
+if ((string) $field->getValue() === '') {
+    $field->setValue('96');
+}
+
 $field = $form->addTextAreaField('share_request_mail_footer', null, ['class' => 'form-control', 'rows' => '4']);
 $field->setLabel('E-Mail-Abbinder für Datei-Freigaben');
 $field->setNotice('Dieser Text wird an Anfrage-E-Mails angehängt (z. B. Signatur, Firma, Kontakt).');

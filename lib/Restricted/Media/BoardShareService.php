@@ -811,52 +811,7 @@ class BoardShareService
 
     private static function renderShareBaseStyles(string $accent): string
     {
-        return '<style>'
-            . ':root{--klxm-accent:' . htmlspecialchars($accent) . ';--klxm-text:#12202f;--klxm-muted:#5f7286;--klxm-line:#d8e0ea;--klxm-card:#ffffff;--klxm-bg:#f3f6fb}'
-            . '*,*::before,*::after{box-sizing:border-box}'
-            . '.uk-section{padding:18px 0;font-family:Arial,Helvetica,sans-serif;color:var(--klxm-text)}.uk-container{max-width:1100px;margin:0 auto;padding:0 12px}.uk-card{background:var(--klxm-card);border:1px solid var(--klxm-line);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.06)}'
-            . '.uk-card-body{padding:16px}.uk-card-title{margin:0 0 8px;font-size:1.35rem;line-height:1.3;color:var(--klxm-text)}.uk-text-meta{color:var(--klxm-muted);font-size:.92rem}'
-            . '.uk-margin-top{margin-top:14px}.uk-margin-medium{margin-top:20px}.uk-margin-medium-bottom{margin-bottom:20px}.uk-margin-small-top{margin-top:8px}'
-            . '.uk-flex{display:flex}.uk-flex-wrap{flex-wrap:wrap}.uk-flex-middle{align-items:center}.uk-grid-small{gap:8px}.uk-width-auto\@s{flex:0 0 auto}.uk-width-expand\@s{flex:1 1 280px}'
-            . '.uk-button,.uk-icon-button{display:inline-flex;align-items:center;justify-content:center;padding:9px 12px;border-radius:8px;border:1px solid var(--klxm-line);background:#fff;color:var(--klxm-text);cursor:pointer;text-decoration:none;font-weight:600}'
-            . '.uk-button-secondary,.uk-button-primary{background:var(--klxm-accent);border-color:var(--klxm-accent);color:#fff}.uk-button[disabled]{opacity:.55;cursor:not-allowed}'
-            . '.uk-button-group{display:inline-flex;gap:6px}.uk-inline{position:relative}.uk-width-1-1{width:100%}.uk-inline.uk-width-1-1{display:block}.uk-form-icon{display:none}.uk-input,.uk-select,.uk-textarea{width:100%;padding:10px 11px;border:1px solid var(--klxm-line);border-radius:8px;background:#fff;color:var(--klxm-text)}'
-            . '.klxm-radio-group{display:flex;flex-wrap:wrap;gap:12px}.klxm-radio-option{display:inline-flex;align-items:center;gap:6px;font-size:.92rem;color:var(--klxm-text)}'
-            . '.klxm-rating{display:flex;flex-direction:row-reverse;justify-content:flex-end;gap:6px}.klxm-rating input{position:absolute;opacity:0;pointer-events:none}'
-            . '.klxm-rating label{font-size:1.45rem;line-height:1;cursor:pointer;color:#c8d2de;transition:color .15s ease}'
-            . '.klxm-rating label:hover,.klxm-rating label:hover ~ label,.klxm-rating input:checked ~ label{color:#f5b301}'
-            . '.uk-overflow-auto{overflow:auto}.uk-table{width:100%;border-collapse:collapse;background:#fff}.uk-table th,.uk-table td{border-bottom:1px solid var(--klxm-line);padding:8px 6px;text-align:left;font-size:.92rem;vertical-align:top}'
-            . '.uk-table thead th{font-size:.82rem;text-transform:uppercase;letter-spacing:.03em;color:var(--klxm-muted)}.uk-table-hover tbody tr:hover{background:#f8fbff}.uk-text-right{text-align:right}.uk-text-nowrap{white-space:nowrap}.uk-hidden-visually{position:absolute;left:-9999px}'
-            . '.uk-heading-bullet{margin:0 0 10px;font-size:1.08rem;color:var(--klxm-text)}.uk-heading-bullet span{border-left:4px solid var(--klxm-accent);padding-left:8px}'
-                . '.klxm-share-toolbar{position:sticky;background:var(--klxm-bg);overflow:hidden}.klxm-group-block{margin-bottom:20px}'
-                . '.klxm-toolbar-main{display:flex;flex-wrap:wrap;align-items:center;gap:10px}'
-                . '.klxm-toolbar-zip{flex:0 0 auto}.klxm-toolbar-status{flex:1 1 240px;min-width:0}.klxm-search-wrap{flex:1 1 360px;min-width:0}'
-                . '.klxm-search-wrap .uk-inline{display:block;width:100%}.klxm-live-search{display:block;width:100%;max-width:100%;min-width:0}'
-                . '.klxm-sort-wrap,.klxm-jump-wrap{flex:0 1 280px;min-width:220px;max-width:100%}.klxm-sort-wrap .uk-select,.klxm-jump-wrap .uk-select{width:100%;max-width:100%}'
-            . '.uk-icon-button{min-width:38px;min-height:38px;padding:0}.uk-icon-button[disabled],.uk-icon-button.is-disabled{opacity:.45;cursor:not-allowed}.klxm-download-icon{width:18px;height:18px;display:block;fill:currentColor}'
-            . '.klxm-brand{display:flex;align-items:center;gap:12px;margin-bottom:12px}.klxm-brand-logo{max-height:56px;max-width:220px;object-fit:contain}.klxm-brand h2{margin:0;color:var(--klxm-accent);font-size:1rem;letter-spacing:.04em;text-transform:uppercase}.klxm-brand p{margin:4px 0 0;color:var(--klxm-muted)}'
-            . '.uk-alert-warning,.uk-alert-danger,.uk-alert-primary,.uk-alert-success{padding:10px 12px;border-radius:8px;border:1px solid var(--klxm-line);margin:8px 0}'
-            . '.uk-alert-warning{background:#fff8e6;color:#7a5f00}.uk-alert-danger{background:#fff0f0;color:#8f2f2f}.uk-alert-primary{background:#eef5ff;color:#2a4d7a}.uk-alert-success{background:#ecf9f0;color:#2d6b46}'
-            . '.klxm-files-table{table-layout:fixed;width:100%}.klxm-files-table th,.klxm-files-table td{vertical-align:top;word-wrap:break-word}'
-            . '.klxm-desc-excerpt{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:break-word}'
-            . '.klxm-desc-full{margin-top:6px;word-break:break-word}.klxm-desc-full[hidden]{display:none!important}'
-            . '.klxm-desc-toggle{margin-top:6px;padding:0;min-height:auto;font-size:.82rem;line-height:1.2}'
-            . '.klxm-zip-status-modal{display:none;position:fixed;z-index:10050;inset:0;background:rgba(0,0,0,.42)}.klxm-zip-status-modal .uk-modal-dialog{max-width:520px;margin:10vh auto;background:#fff;border-radius:10px;padding:16px;border:1px solid var(--klxm-line)}'
-                . '.klxm-preview-link{display:inline-flex;width:84px;height:56px;align-items:center;justify-content:center;border:1px solid #e5e5e5;border-radius:4px;background:#fff;overflow:hidden}'
-                . '.klxm-preview-thumb{display:block;max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain}'
-                . '.klxm-filetype-tile{width:84px;height:56px;border:1px solid #e5e5e5;border-radius:4px;background:#f8f8f8;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}'
-                . '.klxm-filetype-icon{width:18px;height:18px;display:block;fill:#5f7286}.klxm-filetype-label{font-size:10px;line-height:1;color:#5f7286;font-weight:700;letter-spacing:.03em}'
-                . '.klxm-preview-overlay{display:none;position:fixed;inset:0;z-index:11000;background:rgba(7,16,28,.86);padding:20px}'
-                . '.klxm-preview-overlay.is-open{display:flex;align-items:center;justify-content:center}'
-                . '.klxm-preview-dialog{position:relative;width:min(1120px,calc(100vw - 40px));max-height:calc(100vh - 40px);background:#fff;border-radius:10px;box-shadow:0 24px 56px rgba(0,0,0,.35);overflow:hidden}'
-                . '.klxm-preview-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px;border-bottom:1px solid var(--klxm-line)}'
-                . '.klxm-preview-title{font-size:.95rem;font-weight:700;color:var(--klxm-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}'
-                . '.klxm-preview-close{border:1px solid var(--klxm-line);background:#fff;border-radius:8px;padding:6px 10px;cursor:pointer;font-weight:700}'
-                . '.klxm-preview-body{background:#0f1724;min-height:280px;max-height:calc(100vh - 110px);display:flex;align-items:center;justify-content:center}'
-                . '.klxm-preview-body img{max-width:100%;max-height:calc(100vh - 140px);display:block}.klxm-preview-body iframe{width:min(1040px,96vw);height:min(78vh,980px);border:0;background:#fff}.klxm-preview-body video{width:min(1040px,96vw);max-height:calc(100vh - 140px);background:#000;display:block}'
-                . '@media (max-width:980px){.klxm-sort-wrap,.klxm-jump-wrap{min-width:180px}}'
-                . '@media (max-width:860px){.uk-card-body{padding:12px}.uk-button,.uk-input,.uk-select,.uk-textarea{font-size:14px}.uk-table th,.uk-table td{font-size:.86rem}.klxm-brand{align-items:flex-start;flex-direction:column}.klxm-toolbar-main{align-items:stretch}.klxm-toolbar-zip,.klxm-toolbar-status,.klxm-search-wrap,.klxm-sort-wrap,.klxm-jump-wrap{flex:1 1 100%;min-width:0;width:100%}.uk-button-group{display:flex;flex-wrap:wrap}.uk-button-group .uk-button{flex:1 1 auto}.klxm-preview-overlay{padding:10px}.klxm-preview-dialog{width:calc(100vw - 20px);max-height:calc(100vh - 20px)}.klxm-preview-body iframe{width:100%;height:74vh}}'
-            . '</style>';
+        return '<style>.klxm-card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:20px}.klxm-file-card{border:1px solid var(--klxm-line);border-radius:16px;background:linear-gradient(180deg,#fff 0%,#fafcff 100%);padding:22px;display:flex;flex-direction:column;gap:16px;min-height:100%;width:100%;box-shadow:0 10px 28px rgba(15,23,36,.06)}.klxm-file-card .klxm-file-preview .klxm-preview-link,.klxm-file-card .klxm-file-preview .klxm-filetype-tile{width:168px;height:112px}.klxm-file-card-title{font-weight:700;font-size:1.08rem;line-height:1.35}.klxm-file-card-name{display:block;margin-top:4px;font-size:1rem}.klxm-file-card-meta{display:flex;flex-wrap:wrap;gap:10px;font-size:.95rem}.klxm-file-card-more{margin-top:-2px}.klxm-file-card-more .uk-button-text{padding:0;min-height:auto;font-weight:700}.klxm-file-card-actions{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}.klxm-display-wrap{display:flex;align-items:center;gap:8px;flex:0 1 250px;min-width:220px;max-width:100%}.klxm-display-wrap .uk-select{width:100%}.klxm-preview-link{display:inline-flex;width:84px;height:56px;align-items:center;justify-content:center;border:1px solid #e5e5e5;border-radius:4px;background:#fff;overflow:hidden}.klxm-filetype-tile{width:84px;height:56px;border:1px solid #e5e5e5;border-radius:4px;background:#f8f8f8;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}.klxm-filetype-icon{width:18px;height:18px;display:block;fill:#5f7286}.klxm-filetype-label{font-size:10px;line-height:1;color:#5f7286;font-weight:700;letter-spacing:.03em}.klxm-toolbar-controls{flex:0 1 360px;min-width:240px}.klxm-toolbar-menu{border:1px solid var(--klxm-line);border-radius:12px;background:#fff;padding:0 12px;box-shadow:0 8px 18px rgba(15,23,36,.04)}.klxm-toolbar-menu>summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;font-weight:700}.klxm-toolbar-menu>summary::-webkit-details-marker{display:none}.klxm-toolbar-menu-panel{display:grid;gap:10px;padding:0 0 12px}.klxm-toolbar-menu-row{display:grid;gap:6px}.klxm-toolbar-menu-label{font-size:.72rem;line-height:1.2;text-transform:uppercase;letter-spacing:.03em;color:var(--klxm-muted);font-weight:700}.klxm-toolbar-menu .uk-select{width:100%}.klxm-card-grid--compact{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}.klxm-card-grid--detail{grid-template-columns:repeat(auto-fit,minmax(340px,1fr))}.klxm-card-grid--tiles{grid-template-columns:repeat(auto-fit,minmax(420px,1fr))}.klxm-file-card--compact{gap:12px}.klxm-file-card--compact .klxm-file-preview .klxm-preview-link,.klxm-file-card--compact .klxm-file-preview .klxm-filetype-tile{width:128px;height:86px}.klxm-file-card--detail .klxm-file-preview .klxm-preview-link,.klxm-file-card--detail .klxm-file-preview .klxm-filetype-tile{width:156px;height:104px}.klxm-file-card--tiles{gap:18px}.klxm-file-card--tiles .klxm-file-preview .klxm-preview-link,.klxm-file-card--tiles .klxm-file-preview .klxm-filetype-tile{width:184px;height:122px}.klxm-preview-overlay{display:none;position:fixed;inset:0;z-index:11000;background:rgba(7,16,28,.86);padding:20px}.klxm-preview-overlay.is-open{display:flex;align-items:center;justify-content:center}.klxm-preview-dialog{position:relative;width:min(1120px,calc(100vw - 40px));max-height:calc(100vh - 40px);background:#fff;border-radius:10px;box-shadow:0 24px 56px rgba(0,0,0,.35);overflow:hidden}.klxm-preview-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px;border-bottom:1px solid var(--klxm-line)}.klxm-preview-title{font-size:.95rem;font-weight:700;color:var(--klxm-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.klxm-preview-close{border:1px solid var(--klxm-line);background:#fff;border-radius:8px;padding:6px 10px;cursor:pointer;font-weight:700}.klxm-preview-body{background:#0f1724;min-height:280px;max-height:calc(100vh - 110px);display:flex;align-items:center;justify-content:center}.klxm-preview-body img{max-width:100%;max-height:calc(100vh - 140px);display:block}.klxm-preview-body iframe{width:min(1040px,96vw);height:min(78vh,980px);border:0;background:#fff}.klxm-preview-body video{width:min(1040px,96vw);max-height:calc(100vh - 140px);background:#000;display:block}@media (max-width:980px){.klxm-sort-wrap,.klxm-jump-wrap{min-width:180px}.klxm-toolbar-controls{flex:1 1 100%;min-width:0}.klxm-toolbar-menu{width:100%}.klxm-card-grid--compact,.klxm-card-grid--detail,.klxm-card-grid--tiles{grid-template-columns:1fr}}@media (max-width:860px){.uk-card-body{padding:12px}.uk-button,.uk-input,.uk-select,.uk-textarea{font-size:14px}.uk-table th,.uk-table td{font-size:.86rem}.klxm-brand{align-items:flex-start;flex-direction:column}.klxm-toolbar-main{align-items:stretch}.klxm-toolbar-zip,.klxm-toolbar-status,.klxm-search-wrap,.klxm-sort-wrap,.klxm-jump-wrap{flex:1 1 100%;min-width:0;width:100%}.uk-button-group{display:flex;flex-wrap:wrap}.uk-button-group .uk-button{flex:1 1 auto}.klxm-preview-overlay{padding:10px}.klxm-preview-dialog{width:calc(100vw - 20px);max-height:calc(100vh - 20px)}.klxm-preview-body iframe{width:100%;height:74vh}}@media (max-width:760px){.klxm-group-block .uk-overflow-auto{overflow:visible}.klxm-mobile-group-actions{display:flex}.klxm-files-table,.klxm-files-table thead,.klxm-files-table tbody,.klxm-files-table tr,.klxm-files-table th,.klxm-files-table td{display:block;width:100%}.klxm-files-table thead{display:none}.klxm-files-table tr{margin:0 0 12px;padding:10px 12px;border:1px solid var(--klxm-line);border-radius:10px;background:#fff}.klxm-files-table td{border-bottom:0;padding:6px 0}.klxm-files-table td[data-label]::before{content:attr(data-label);display:block;margin-bottom:3px;font-size:.72rem;line-height:1.2;text-transform:uppercase;letter-spacing:.03em;color:var(--klxm-muted);font-weight:700}.klxm-files-table td:first-child{padding-top:0}.klxm-files-table td.uk-text-nowrap{text-align:left;white-space:normal}.klxm-files-table td:last-child{padding-bottom:0}.klxm-files-table .uk-icon-button{width:100%}.klxm-files-table .uk-text-right{text-align:left}.klxm-files-table .klxm-file-checkbox{transform:scale(1.05)}.klxm-file-main{gap:8px}.klxm-file-main .klxm-preview-link,.klxm-file-main .klxm-filetype-tile{width:54px;height:38px}.klxm-file-main .klxm-filetype-icon{width:14px;height:14px}.klxm-file-main .klxm-filetype-label{font-size:8px}.klxm-file-card .klxm-file-preview .klxm-preview-link,.klxm-file-card .klxm-file-preview .klxm-filetype-tile{width:112px;height:76px}.klxm-card-details-dialog{width:100vw}.klxm-card-details-body{padding:12px}.klxm-display-wrap{flex:1 1 100%;min-width:0;width:100%}.klxm-card-grid{grid-template-columns:1fr}.klxm-file-card{padding:16px}}</style>';
     }
 
             private static function renderDownloadIconSvg(): string
@@ -945,6 +900,13 @@ class BoardShareService
         if (!in_array($sortDirection, ['manual', 'asc', 'desc'], true)) {
             $sortDirection = 'manual';
         }
+        $displayMode = strtolower(trim(rex_request::get('klxm_display', 'string', 'list')));
+        if (in_array($displayMode, ['compact', 'detail'], true)) {
+            $displayMode = 'list';
+        }
+        if (!in_array($displayMode, ['list', 'tiles'], true)) {
+            $displayMode = 'list';
+        }
         $filesByGroup = self::sortFilesByCategoryAndTitle($filesByGroup, $sortDirection);
         $limitReachedDisplay = (string) rex_addon::get('klxm_restricted')->getConfig('share_limit_reached_display', 'disabled');
         if (!in_array($limitReachedDisplay, ['hide', 'disabled'], true)) {
@@ -1004,11 +966,79 @@ class BoardShareService
         }
 
         $zipModalId = 'klxm-zip-status-modal-' . (int) $share['id'];
+        $jumpDropdownId = 'klxm-jump-dropdown-' . (int) $share['id'];
         $statusCreateUrl = self::buildCurrentShareUrl($token, ['klxm_board_share_download' => 'zip_async_create']);
+        $shareBaseUrl = self::buildShareUrl($share, $token, []);
         $hasJumpMenu = count($filesByGroup) > 2;
+        $sortLabel = 'Manuell';
+        if ($sortDirection === 'asc') {
+            $sortLabel = 'A-Z';
+        } elseif ($sortDirection === 'desc') {
+            $sortLabel = 'Z-A';
+        }
+        $sortAriaLabel = 'Sortierung: ' . $sortLabel;
 
         $html = self::renderShareBaseStyles($branding['accent']);
-        $html .= '<section class="uk-section uk-section-small" data-klxm-share-id="' . (int) $share['id'] . '">';
+        $html .= '<style>'
+            . '.klxm-file-card{overflow:hidden}'
+            . '.klxm-file-preview{width:100%;aspect-ratio:16/9;background:#f3f6fb;display:flex;align-items:center;justify-content:center;overflow:hidden}'
+            . '.klxm-file-preview .klxm-preview-link,.klxm-file-preview .klxm-filetype-tile{width:100%!important;height:100%!important;max-width:none!important;max-height:none!important;border:0;border-radius:0}'
+            . '.klxm-file-preview .klxm-preview-thumb{width:100%;height:100%;object-fit:contain;display:block}'
+            . '.klxm-file-card-title{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;text-overflow:ellipsis;min-height:2.7em;overflow-wrap:anywhere;word-break:break-word}'
+            . '.klxm-file-card-name{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}'
+            . '.klxm-file-card .uk-card-body{display:flex;flex-direction:column;gap:10px}'
+            . '.klxm-file-card-actions{margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:nowrap}'
+            . '.klxm-file-card-actions .uk-form-label{display:inline-flex;align-items:center;gap:8px;margin:0;flex:1 1 auto;min-width:0}'
+            . '.klxm-file-card-actions .uk-form-label input{margin:0}'
+            . '.klxm-file-card-action-links{display:inline-flex;align-items:center;gap:10px;flex:0 0 auto}'
+            . '.klxm-file-card-actions .klxm-details-trigger{white-space:nowrap;padding:0;min-height:auto}'
+            . '.klxm-list-table-wrap{border:1px solid #d9e2ec;border-radius:12px;overflow:hidden;background:#fff}'
+            . '.klxm-list-table-wrap .uk-overflow-auto{margin:0}'
+            . '.klxm-file-table{margin:0;table-layout:fixed;width:100%}'
+            . '.klxm-file-table th{font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;color:#4f5f73;white-space:nowrap}'
+            . '.klxm-file-table td{vertical-align:middle}'
+            . '.klxm-file-table .klxm-col-select{width:84px}'
+            . '.klxm-file-table .klxm-col-preview{width:84px}'
+            . '.klxm-file-table .klxm-col-type{width:110px}'
+            . '.klxm-file-table .klxm-col-size{width:110px}'
+            . '.klxm-file-table .klxm-col-updated{width:150px}'
+            . '.klxm-file-table .klxm-col-actions{width:170px}'
+            . '.klxm-file-table .klxm-col-preview,.klxm-file-table td.klxm-col-preview{overflow:hidden}'
+            . '.klxm-file-table .klxm-row-title{font-weight:700;line-height:1.3;overflow-wrap:anywhere;word-break:break-word}'
+            . '.klxm-file-table .klxm-row-name{display:block;color:#4f5f73;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}'
+            . '.klxm-file-table .klxm-row-preview .klxm-preview-link{display:inline-flex;align-items:center;justify-content:center;width:78px;height:auto;max-height:56px;border:0;background:transparent;padding:0}'
+            . '.klxm-file-table .klxm-row-preview .klxm-preview-thumb{display:block;width:78px!important;height:auto!important;max-height:56px;object-fit:contain}'
+            . '.klxm-file-table .klxm-row-preview .klxm-filetype-tile{width:72px;height:48px}'
+            . '.klxm-file-table .klxm-row-actions{display:inline-flex;align-items:center;gap:10px;justify-content:center;width:100%}'
+            . '.klxm-file-table .klxm-row-actions .uk-icon-button{flex:0 0 auto}'
+            . '.klxm-file-table .klxm-row-actions .klxm-details-trigger{white-space:nowrap;padding:0;min-height:auto}'
+            . '.klxm-file-table .klxm-title-trigger{padding:0;min-height:auto;display:block;text-align:left;width:100%}'
+            . '.klxm-file-table .klxm-title-trigger:hover .klxm-row-title{text-decoration:underline}'
+            . '.klxm-file-table .klxm-row-select{display:inline-flex;align-items:center;justify-content:center;gap:8px;margin:0;min-height:28px}'
+            . '.klxm-toolbar-status{flex:0 0 120px;min-width:100px}'
+            . '.klxm-search-wrap{flex:1 1 560px;min-width:360px}'
+            . '.klxm-toolbar-controls{flex:0 0 auto;margin-left:auto}'
+            . '.klxm-toolbar-quick{display:inline-flex;align-items:center;gap:8px;flex-wrap:nowrap}'
+            . '.klxm-toolbar-quick .uk-button{min-height:34px;padding:0 12px}'
+            . '.klxm-btn-icon{display:inline-flex;align-items:center;gap:6px}'
+            . '.klxm-btn-icon svg{width:14px;height:14px;display:block}'
+            . '.klxm-mobile-group-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap}'
+            . '.klxm-mobile-group-actions label{display:inline-flex;align-items:center;gap:8px;margin:0}'
+            . '.klxm-mobile-group-note{display:inline-block;margin-left:4px}'
+            . '.klxm-jump-dropdown{min-width:230px}'
+            . '.klxm-jump-link{display:block;width:100%;text-align:left;padding:6px 0;border:0;background:transparent;cursor:pointer}'
+            . '.klxm-file-details-modal{display:grid;gap:8px}'
+            . '.klxm-file-details-row{display:grid;grid-template-columns:minmax(120px,160px) 1fr;gap:10px;align-items:start}'
+            . '.klxm-file-details-label{font-weight:700;color:#4f5f73}'
+            . '[id^="klxm-file-details-"] .uk-modal-dialog{width:min(1120px,calc(100vw - 40px));max-width:1120px;overflow-x:hidden}'
+            . '[id^="klxm-file-details-"] .uk-modal-title{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;text-overflow:ellipsis;line-height:1.2;white-space:normal!important;max-width:100%;padding-right:56px;overflow-wrap:anywhere;word-break:break-word}'
+            . '[id^="klxm-file-details-"] .klxm-file-details-value{min-width:0;overflow-wrap:anywhere;word-break:break-word}'
+            . '@media (max-width:1040px){.klxm-file-table .klxm-col-updated{display:none}.klxm-file-table td.klxm-col-updated{display:none}}'
+            . '@media (max-width:860px){.klxm-file-table .klxm-col-type,.klxm-file-table .klxm-col-size{display:none}.klxm-file-table td.klxm-col-type,.klxm-file-table td.klxm-col-size{display:none}}'
+            . '@media (max-width:920px){.klxm-toolbar-status{flex:1 1 100%;min-width:0}.klxm-search-wrap{flex:1 1 100%;min-width:0}.klxm-toolbar-controls{flex:1 1 100%;margin-left:0}.klxm-toolbar-quick{width:100%}}'
+            . '@media (max-width:700px){.klxm-list-table-wrap{border:0;background:transparent}.klxm-file-table thead{display:none}.klxm-file-table,.klxm-file-table tbody,.klxm-file-table tr,.klxm-file-table td{display:block;width:100%}.klxm-file-table tr{background:#fff;border:1px solid #d9e2ec;border-radius:12px;padding:10px;margin:0 0 10px}.klxm-file-table td{border:0!important;padding:6px 0}.klxm-file-table td[data-label]::before{content:attr(data-label);display:block;font-size:.72rem;font-weight:700;letter-spacing:.03em;color:#4f5f73;text-transform:uppercase;margin-bottom:4px}.klxm-file-table .klxm-row-preview .klxm-preview-link{width:auto;max-width:100%;max-height:104px}.klxm-file-table .klxm-row-preview .klxm-preview-thumb{width:auto!important;max-width:100%;max-height:104px}.klxm-file-table .klxm-row-preview .klxm-filetype-tile{width:88px;height:60px}.klxm-file-table .klxm-col-actions .klxm-row-actions{justify-content:flex-start}.klxm-file-table .klxm-col-select .klxm-row-select{justify-content:flex-start}.klxm-mobile-group-actions{gap:8px}.klxm-mobile-group-note{margin-left:0}.klxm-toolbar-quick{flex-wrap:wrap}.klxm-file-card-actions{flex-wrap:wrap;row-gap:8px}.klxm-file-card-action-links{margin-left:auto}.klxm-file-details-row{grid-template-columns:1fr}}'
+            . '</style>';
+        $html .= '<section class="uk-section uk-section-small" data-klxm-share-id="' . (int) $share['id'] . '" uk-lightbox="animation: slide">';
         $html .= '<div class="uk-container">';
         $html .= '<div class="uk-card uk-card-default uk-card-body">';
         $html .= self::renderShareBrandingHeader($branding);
@@ -1024,14 +1054,14 @@ class BoardShareService
             return $html;
         }
 
-        $html .= '<div class="uk-card uk-card-default uk-card-body uk-margin-top uk-margin-medium-bottom klxm-share-toolbar" style="position:sticky;top:' . $stickyOffset . 'px;z-index:95;">';
+        $html .= '<div class="uk-card uk-card-default uk-card-body uk-margin-top uk-margin-medium-bottom klxm-share-toolbar" style="position:sticky;top:' . $stickyOffset . 'px;z-index:95;" aria-label="Werkzeugleiste der Dateifreigabe">';
         $html .= '<div class="uk-flex uk-flex-wrap uk-flex-middle uk-grid-small klxm-toolbar-main" uk-grid>';
 
         if ($allowZip) {
             $html .= '<div class="uk-width-auto@s klxm-toolbar-zip">';
             $html .= '<div class="uk-button-group">';
-            $html .= '<button type="button" class="uk-button uk-button-default klxm-zip-all-btn">Alle als ZIP</button>';
-            $html .= '<button type="button" class="uk-button uk-button-secondary klxm-zip-selected-btn" disabled>Ausgewählte als ZIP</button>';
+            $html .= '<button type="button" class="uk-button uk-button-default klxm-zip-all-btn" aria-label="Alle Dateien als ZIP herunterladen">Alle als ZIP</button>';
+            $html .= '<button type="button" class="uk-button uk-button-secondary klxm-zip-selected-btn" disabled aria-label="Ausgewählte Dateien als ZIP herunterladen">Ausgewählte als ZIP</button>';
             $html .= '</div></div>';
             $html .= '<div class="uk-width-expand@s klxm-toolbar-status"><span class="uk-text-meta klxm-zip-status"></span></div>';
         }
@@ -1039,26 +1069,26 @@ class BoardShareService
         $html .= '<div class="uk-width-expand@s klxm-search-wrap">';
         $html .= '<div class="uk-inline uk-width-1-1">';
         $html .= '<span class="uk-form-icon" uk-icon="icon: search"></span>';
-        $html .= '<input class="uk-input klxm-live-search" type="text" placeholder="Dateien filtern (Name, Dateiname, Beschreibung)">';
+        $html .= '<input class="uk-input klxm-live-search" type="text" placeholder="Dateien filtern" aria-label="Dateien filtern nach Name, Dateiname oder Beschreibung">';
         $html .= '</div></div>';
 
-        $html .= '<div class="uk-width-auto@s klxm-sort-wrap">';
-        $html .= '<select class="uk-select klxm-sort-select" title="Sortierung">';
-        $html .= '<option value="manual"' . ($sortDirection === 'manual' ? ' selected' : '') . '>Sortierung: Manuelle Reihenfolge</option>';
-        $html .= '<option value="asc"' . ($sortDirection === 'asc' ? ' selected' : '') . '>Sortierung: Kategorie + Titel A-Z</option>';
-        $html .= '<option value="desc"' . ($sortDirection === 'desc' ? ' selected' : '') . '>Sortierung: Kategorie + Titel Z-A</option>';
-        $html .= '</select></div>';
-
+        $html .= '<div class="uk-width-auto@s klxm-toolbar-controls">';
+        $html .= '<div class="klxm-toolbar-quick">';
+        $html .= '<button type="button" class="uk-button uk-button-default uk-button-small klxm-view-toggle" aria-label="Ansicht umschalten"><span class="klxm-btn-icon">' . self::renderToolbarIconSvg($displayMode === 'tiles' ? 'list' : 'tiles') . '<span>' . ($displayMode === 'tiles' ? 'Liste' : 'Kacheln') . '</span></span></button>';
+        $html .= '<button type="button" class="uk-button uk-button-default uk-button-small klxm-sort-toggle" aria-label="Sortierung umschalten"><span class="klxm-btn-icon">' . self::renderToolbarIconSvg('sort') . '<span>' . htmlspecialchars($sortLabel) . '</span></span></button>';
         if ($hasJumpMenu) {
-            $html .= '<div class="uk-width-auto@s klxm-jump-wrap">';
-            $html .= '<select class="uk-select klxm-jump-menu">';
-            $html .= '<option value="">Sprungmenü</option>';
+            $html .= '<div class="uk-inline">';
+            $html .= '<button type="button" class="uk-button uk-button-default uk-button-small klxm-jump-toggle" aria-label="Sprungmenü öffnen"><span class="klxm-btn-icon">' . self::renderToolbarIconSvg('jump') . '<span>Liste</span></span></button>';
+            $html .= '<div id="' . htmlspecialchars($jumpDropdownId) . '" class="uk-card uk-card-default uk-card-body uk-box-shadow-small klxm-jump-dropdown" uk-dropdown="mode: click; pos: bottom-right; offset: 8">';
+            $html .= '<ul class="uk-nav uk-nav-default">';
             foreach ($filesByGroup as $groupIndex => $group) {
                 $anchorId = 'klxm-group-anchor-' . (int) $share['id'] . '-' . $groupIndex;
-                $html .= '<option value="#' . htmlspecialchars($anchorId) . '">' . htmlspecialchars($group['name']) . '</option>';
+                $html .= '<li><button type="button" class="klxm-jump-link" data-target="#' . htmlspecialchars($anchorId) . '">' . htmlspecialchars($group['name']) . '</button></li>';
             }
-            $html .= '</select></div>';
+            $html .= '</ul></div></div>';
         }
+        $html .= '</div>';
+        $html .= '</div>';
 
         $html .= '</div></div>';
 
@@ -1076,16 +1106,6 @@ class BoardShareService
             $html .= '</div></div></div>';
         }
 
-        $previewModalId = 'klxm-preview-modal-' . (int) $share['id'];
-        $html .= '<div id="' . htmlspecialchars($previewModalId) . '" class="klxm-preview-overlay" aria-hidden="true">';
-        $html .= '<div class="klxm-preview-dialog" role="dialog" aria-modal="true" aria-label="Dateivorschau">';
-        $html .= '<div class="klxm-preview-head">';
-        $html .= '<div class="klxm-preview-title"></div>';
-        $html .= '<button type="button" class="klxm-preview-close" aria-label="Vorschau schließen">Schließen</button>';
-        $html .= '</div>';
-        $html .= '<div class="klxm-preview-body"></div>';
-        $html .= '</div></div>';
-
         foreach ($filesByGroup as $groupIndex => $group) {
             $groupId = 'klxm-file-group-' . (int) $share['id'] . '-' . $groupIndex;
             $groupAnchorId = 'klxm-group-anchor-' . (int) $share['id'] . '-' . $groupIndex;
@@ -1095,76 +1115,52 @@ class BoardShareService
             $html .= '<h3 class="uk-heading-bullet"><span>' . htmlspecialchars($group['name']) . '</span></h3>';
             $html .= '<form method="post" class="klxm-zip-selected-form" data-share-token="' . htmlspecialchars($token) . '">';
             $html .= '<input type="hidden" name="_csrf_token" value="' . htmlspecialchars($downloadCsrf) . '">';
-            $html .= '<div class="uk-overflow-auto">';
-            $html .= '<table class="uk-table uk-table-divider uk-table-small uk-table-hover klxm-files-table">';
-            $html .= '<colgroup>';
-            $html .= '<col style="width:40px">';
-            $html .= '<col style="width:110px">';
-            $html .= '<col style="width:28%">';
-            $html .= '<col style="width:32%">';
-            $html .= '<col style="width:130px">';
-            $html .= '<col style="width:110px">';
-            $html .= '<col style="width:78px">';
-            $html .= '</colgroup>';
-            $html .= '<thead><tr>';
-            $html .= '<th style="width:40px;"><input class="klxm-select-group" type="checkbox" data-target="' . htmlspecialchars($groupId) . '"></th>';
-            $html .= '<th style="width:110px;">Vorschau</th>';
-            $html .= '<th>Datei</th><th>Beschreibung</th><th>Aktualisiert</th><th class="uk-text-right">Groesse</th><th></th>';
-            $html .= '</tr></thead><tbody id="' . htmlspecialchars($groupId) . '">';
+            $html .= '<div class="klxm-mobile-group-actions"><label><input class="uk-checkbox klxm-select-group" type="checkbox" data-target="' . htmlspecialchars($groupId) . '" aria-label="Alle Dateien aus dieser Kategorie auswählen"> <span>Alle aus der Kategorie wählen</span></label><span class="klxm-mobile-group-note">Schnellauswahl für diese Gruppe</span></div>';
+            if ($displayMode === 'list') {
+                $html .= '<div id="' . htmlspecialchars($groupId) . '" class="klxm-list-table-wrap">';
+                $html .= '<div class="uk-overflow-auto">';
+                $html .= '<table class="uk-table uk-table-small uk-table-divider klxm-file-table">';
+                $html .= '<thead><tr>';
+                $html .= '<th class="klxm-col-select">Auswahl</th>';
+                $html .= '<th class="klxm-col-preview">Vorschau</th>';
+                $html .= '<th>Titel / Datei</th>';
+                $html .= '<th class="klxm-col-type">Typ</th>';
+                $html .= '<th class="klxm-col-size">Größe</th>';
+                $html .= '<th class="klxm-col-updated">Aktualisiert</th>';
+                $html .= '<th class="klxm-col-actions">Aktionen</th>';
+                $html .= '</tr></thead><tbody>';
 
-            foreach ($group['files'] as $fileIndex => $file) {
-                $displayName = trim($file['title']) !== '' ? $file['title'] : $file['filename'];
-                $filename = (string) ($file['filename'] ?? '');
-                $singleAlreadyDownloaded = isset($singleDownloadedFiles[$filename]);
-                $fileLimitMax = (int) ($perFileLimits[$filename] ?? 0);
-                $fileLimitCurrent = (int) ($perFileCounts[$filename] ?? 0);
-                $fileLimitReached = $fileLimitMax > 0 && $fileLimitCurrent >= $fileLimitMax;
-                $singleActionUrl = self::buildShareUrl($share, $token, [
-                    'klxm_board_share_download' => 'file',
-                    'file' => $file['filename'],
-                ]);
-                $previewHtml = self::renderFilePreview($share, $token, $file, $displayName);
-                $descriptionHtml = self::renderDescriptionCell((string) $file['description'], (int) $share['id'], (int) $groupIndex, (int) $fileIndex);
-                $searchText = strtolower($displayName . ' ' . $file['filename'] . ' ' . $file['description']);
-                $html .= '<tr data-search="' . htmlspecialchars($searchText) . '">';
-                $html .= '<td><input class="klxm-file-checkbox" type="checkbox" name="selected_files[]" value="' . htmlspecialchars($file['filename']) . '"' . ($fileLimitReached ? ' disabled' : '') . '></td>';
-                $html .= '<td>' . $previewHtml . '</td>';
-                $html .= '<td><strong>' . htmlspecialchars($displayName) . '</strong><br><span class="uk-text-meta">' . htmlspecialchars($file['filename']) . '</span></td>';
-                $html .= '<td>' . $descriptionHtml;
-                if ($fileLimitMax > 0) {
-                    $html .= '<div class="uk-text-meta uk-margin-small-top">Kontingent: ' . $fileLimitCurrent . '/' . $fileLimitMax . '</div>';
+                foreach ($group['files'] as $fileIndex => $file) {
+                    $displayName = trim($file['title']) !== '' ? $file['title'] : $file['filename'];
+                    $filename = (string) ($file['filename'] ?? '');
+                    $singleAlreadyDownloaded = isset($singleDownloadedFiles[$filename]);
+                    $fileLimitMax = (int) ($perFileLimits[$filename] ?? 0);
+                    $fileLimitCurrent = (int) ($perFileCounts[$filename] ?? 0);
+                    $fileLimitReached = $fileLimitMax > 0 && $fileLimitCurrent >= $fileLimitMax;
+                    $fileTypeLabel = self::formatCompactFileTypeLabel($filename);
+                    $previewHtml = self::renderFilePreview($share, $token, $file, $displayName);
+                    $descriptionHtml = self::renderDescriptionCell((string) $file['description'], (int) $share['id'], (int) $groupIndex, (int) $fileIndex);
+                    $html .= self::renderListRow($share, $token, $file, $displayName, $previewHtml, $descriptionHtml, $fileTypeLabel, $singleAlreadyDownloaded, $fileLimitReached, $fileLimitCurrent, $fileLimitMax);
                 }
-                $html .= '</td>';
-                $html .= '<td>' . htmlspecialchars(self::formatDate($file['updatedate'])) . '</td>';
-                $html .= '<td class="uk-text-right">' . htmlspecialchars(self::formatBytes($file['filesize'])) . '</td>';
-                $html .= '<td class="uk-text-nowrap">';
-                $html .= '<input type="hidden" name="klxm_board_share_download" value="file">';
-                if ($singleAlreadyDownloaded || $fileLimitReached) {
-                    $disabledReason = $singleAlreadyDownloaded
-                        ? 'Datei wurde bereits als Einzeldownload geladen.'
-                        : 'Kontingent für diese Datei ist erreicht.';
-                    $html .= '<button type="button" class="uk-icon-button" disabled title="' . htmlspecialchars($disabledReason) . '" uk-tooltip="' . htmlspecialchars($disabledReason) . '">'
-                        . self::renderDownloadIconSvg()
-                        . '<span class="uk-hidden-visually">Download nicht verfügbar</span>'
-                        . '</button>';
-                } else {
-                    $html .= '<button type="submit" class="uk-icon-button klxm-single-download-btn" '
-                        . 'formaction="' . htmlspecialchars($singleActionUrl) . '" '
-                        . 'formmethod="post" '
-                        . 'name="file" '
-                        . 'value="' . htmlspecialchars($file['filename']) . '" '
-                        . 'data-disabled-reason="Datei wurde bereits als Einzeldownload geladen." '
-                        . 'title="Datei herunterladen" '
-                        . 'aria-label="Datei herunterladen: ' . htmlspecialchars($displayName) . '">'
-                        . self::renderDownloadIconSvg()
-                        . '<span class="uk-hidden-visually">Datei herunterladen</span>'
-                        . '</button>';
+
+                $html .= '</tbody></table>';
+                $html .= '</div></div>';
+            } else {
+                $html .= '<div id="' . htmlspecialchars($groupId) . '" class="klxm-card-grid klxm-card-grid--' . htmlspecialchars($displayMode) . '">';
+                foreach ($group['files'] as $fileIndex => $file) {
+                    $displayName = trim($file['title']) !== '' ? $file['title'] : $file['filename'];
+                    $filename = (string) ($file['filename'] ?? '');
+                    $singleAlreadyDownloaded = isset($singleDownloadedFiles[$filename]);
+                    $fileLimitMax = (int) ($perFileLimits[$filename] ?? 0);
+                    $fileLimitCurrent = (int) ($perFileCounts[$filename] ?? 0);
+                    $fileLimitReached = $fileLimitMax > 0 && $fileLimitCurrent >= $fileLimitMax;
+                    $fileTypeLabel = self::formatCompactFileTypeLabel($filename);
+                    $previewHtml = self::renderFilePreview($share, $token, $file, $displayName);
+                    $descriptionHtml = self::renderDescriptionCell((string) $file['description'], (int) $share['id'], (int) $groupIndex, (int) $fileIndex);
+                    $html .= self::renderTileCard($share, $token, $file, $displayName, $previewHtml, $descriptionHtml, $fileTypeLabel, $singleAlreadyDownloaded, $fileLimitReached, $fileLimitCurrent, $fileLimitMax, $displayMode);
                 }
-                $html .= '</td>';
-                $html .= '</tr>';
+                $html .= '</div>';
             }
-
-            $html .= '</tbody></table></div>';
             $html .= '</form></div>';
         }
 
@@ -1174,12 +1170,14 @@ class BoardShareService
             . 'if(!root||root.getAttribute("data-klxm-share-init")==="1"){return;}'
             . 'root.setAttribute("data-klxm-share-init","1");'
             . 'var createUrl=' . json_encode($statusCreateUrl) . ';'
+            . 'var shareBaseUrl=' . json_encode($shareBaseUrl) . ';'
             . 'var modal=document.getElementById(' . json_encode($zipModalId) . ');'
-            . 'var previewModal=document.getElementById(' . json_encode($previewModalId) . ');'
+            . 'var lastPreviewTrigger=null;'
+            . 'var previewModal=null;'
             . 'function decodeUrl(u){return String(u||"").replace(/&amp;/g,"&");}'
             . 'function showModal(){if(!modal){return;}if(window.UIkit&&typeof window.UIkit.modal==="function"){window.UIkit.modal(modal).show();return;}modal.style.display="block";}'
             . 'function hideModal(){if(!modal){return;}if(window.UIkit&&typeof window.UIkit.modal==="function"){window.UIkit.modal(modal).hide();return;}modal.style.display="none";}'
-            . 'function closePreview(){if(!previewModal){return;}previewModal.classList.remove("is-open");previewModal.setAttribute("aria-hidden","true");var body=previewModal.querySelector(".klxm-preview-body");if(body){body.innerHTML="";}}'
+            . 'function closePreview(){if(!previewModal){return;}if(document.activeElement&&previewModal.contains(document.activeElement)&&typeof document.activeElement.blur==="function"){document.activeElement.blur();}previewModal.classList.remove("is-open");previewModal.setAttribute("aria-hidden","true");var body=previewModal.querySelector(".klxm-preview-body");if(body){body.innerHTML="";}if(lastPreviewTrigger&&typeof lastPreviewTrigger.focus==="function"){lastPreviewTrigger.focus();}lastPreviewTrigger=null;}'
             . 'function openPreview(url,title,type){if(!previewModal){return;}var head=previewModal.querySelector(".klxm-preview-title");var body=previewModal.querySelector(".klxm-preview-body");if(head){head.textContent=title||"Vorschau";}if(body){if(type==="pdf"){body.innerHTML="<iframe src=\""+url.replace(/\"/g,"&quot;")+"\" loading=\"lazy\" title=\"Dateivorschau\"></iframe>";}else if(type==="video"){body.innerHTML="<video controls preload=\"metadata\" playsinline src=\""+url.replace(/\"/g,"&quot;")+"\"></video>";}else{body.innerHTML="<img src=\""+url.replace(/\"/g,"&quot;")+"\" alt=\""+(title||"Vorschau").replace(/\"/g,"&quot;")+"\">";}}previewModal.classList.add("is-open");previewModal.setAttribute("aria-hidden","false");}'
             . 'function setModalState(msg,isError,isReady){if(!modal){return;}var msgNode=modal.querySelector(".klxm-zip-modal-message");var errNode=modal.querySelector(".klxm-zip-modal-error");var spinNode=modal.querySelector(".klxm-zip-modal-spinner");if(msgNode){msgNode.textContent=msg;}if(spinNode){spinNode.hidden=!!isError||!!isReady;}if(errNode){if(isError){errNode.hidden=false;errNode.textContent=msg;}else{errNode.hidden=true;errNode.textContent="";}}}'
             . 'function setStatus(msg){root.querySelectorAll(".klxm-zip-status").forEach(function(el){el.textContent=msg;});if(msg!==""){showModal();var low=msg.toLowerCase();var isReady=low.indexOf("bereit")!==-1;var isError=low.indexOf("fehler")!==-1||low.indexOf("konnte nicht")!==-1||low.indexOf("fehlgeschlagen")!==-1;setModalState(msg,isError,isReady);if(isReady){window.setTimeout(hideModal,2000);}}}'
@@ -1187,13 +1185,88 @@ class BoardShareService
             . 'function refreshSelectedButton(){var btn=root.querySelector(".klxm-zip-selected-btn");if(!btn){return;}btn.disabled=collectSelected().length===0;}'
             . 'function poll(job){var u=new URL(decodeUrl(createUrl),window.location.origin);u.searchParams.set("klxm_board_share_download","zip_async_status");u.searchParams.set("zip_job",job);fetch(u.toString(),{credentials:"same-origin"}).then(function(r){return r.json();}).then(function(data){if(!data||!data.ok){setStatus((data&&data.message)?data.message:"ZIP-Statusfehler");return;}if(data.status==="queued"||data.status==="processing"){setStatus("ZIP wird erstellt ...");window.setTimeout(function(){poll(job);},1200);return;}if(data.status==="ready"){setStatus("ZIP bereit, Download startet ...");window.location.href=decodeUrl(data.download_url||"");window.setTimeout(function(){setStatus("");},2800);return;}setStatus(data.message||"ZIP fehlgeschlagen");}).catch(function(){setStatus("ZIP-Statusfehler");});}'
             . 'function create(kind,selected){setModalState("ZIP wird vorbereitet ...",false,false);showModal();var formData=new FormData();formData.set("zip_kind",kind);selected.forEach(function(name){formData.append("selected_files[]",name);});fetch(decodeUrl(createUrl),{method:"POST",body:formData,credentials:"same-origin"}).then(function(r){return r.json();}).then(function(data){if(!data||!data.ok){setStatus((data&&data.message)?data.message:"ZIP konnte nicht gestartet werden");return;}setStatus("ZIP wird erstellt ...");poll(data.job);}).catch(function(){setStatus("ZIP konnte nicht gestartet werden");});}'
-            . 'function applySearch(needle){var query=(needle||"").toLowerCase().trim();root.querySelectorAll("tbody tr[data-search]").forEach(function(row){var hay=(row.getAttribute("data-search")||"").toLowerCase();row.style.display=(query===""||hay.indexOf(query)!==-1)?"":"none";});root.querySelectorAll(".klxm-group-block").forEach(function(block){var visibleRows=block.querySelectorAll("tbody tr[data-search]:not([style*=\"display: none\"])").length;block.style.display=visibleRows>0?"":"none";});}'
-            . 'root.addEventListener("change",function(e){var t=e.target;if(t.classList.contains("klxm-select-group")){var id=t.getAttribute("data-target")||"";var wrap=document.getElementById(id);if(wrap){wrap.querySelectorAll(".klxm-file-checkbox").forEach(function(cb){cb.checked=t.checked;});}refreshSelectedButton();return;}if(t.classList.contains("klxm-file-checkbox")){refreshSelectedButton();return;}if(t.classList.contains("klxm-jump-menu")){var target=t.value||"";if(target!==""){var el=document.querySelector(target);if(el){el.scrollIntoView({behavior:"smooth",block:"start"});}}return;}if(t.classList.contains("klxm-sort-select")){var value=(t.value||"manual").toLowerCase();if(value!=="asc"&&value!=="desc"&&value!=="manual"){value="manual";}var u=new URL(window.location.href);if(value==="manual"){u.searchParams.delete("klxm_sort");}else{u.searchParams.set("klxm_sort",value);}window.location.href=u.toString();return;}});'
+            . 'function applySearch(needle){var query=(needle||"").toLowerCase().trim();root.querySelectorAll("[data-search]").forEach(function(item){var hay=(item.getAttribute("data-search")||"").toLowerCase();item.style.display=(query===""||hay.indexOf(query)!==-1)?"":"none";});root.querySelectorAll(".klxm-group-block").forEach(function(block){var visibleItems=block.querySelectorAll("[data-search]:not([style*=\"display: none\"])").length;block.style.display=visibleItems>0?"":"none";});}'
+            . 'root.addEventListener("change",function(e){var t=e.target;if(!(t instanceof Element)){return;}if(t.classList.contains("klxm-select-group")){var id=t.getAttribute("data-target")||"";var wrap=document.getElementById(id);if(wrap){wrap.querySelectorAll(".klxm-file-checkbox").forEach(function(cb){cb.checked=t.checked;});}root.querySelectorAll(".klxm-select-group").forEach(function(cb){if(cb!==t&&cb.getAttribute("data-target")===id){cb.checked=t.checked;}});refreshSelectedButton();return;}if(t.classList.contains("klxm-file-checkbox")){refreshSelectedButton();return;}});'
             . 'root.addEventListener("input",function(e){var t=e.target;if(t.classList.contains("klxm-live-search")){applySearch(t.value||"");}});'
-            . 'root.addEventListener("click",function(e){var singleBtn=e.target.closest(".klxm-single-download-btn");if(singleBtn){if(singleBtn.disabled){e.preventDefault();return;}window.setTimeout(function(){singleBtn.disabled=true;singleBtn.classList.add("is-disabled");var reason=singleBtn.getAttribute("data-disabled-reason")||"Datei wurde bereits als Einzeldownload geladen.";singleBtn.setAttribute("title",reason);singleBtn.setAttribute("uk-tooltip",reason);if(window.UIkit&&typeof window.UIkit.tooltip==="function"){window.UIkit.tooltip(singleBtn);}},0);return;}var descToggle=e.target.closest(".klxm-desc-toggle");if(descToggle){e.preventDefault();var targetId=descToggle.getAttribute("data-target")||"";var full=document.getElementById(targetId);if(full){var show=full.hasAttribute("hidden");if(show){full.removeAttribute("hidden");descToggle.textContent="Weniger";descToggle.setAttribute("aria-expanded","true");}else{full.setAttribute("hidden","");descToggle.textContent="Mehr";descToggle.setAttribute("aria-expanded","false");}}return;}var preview=e.target.closest(".klxm-preview-trigger");if(preview){e.preventDefault();openPreview(decodeUrl(preview.getAttribute("data-preview-url")||""),preview.getAttribute("data-preview-title")||"",preview.getAttribute("data-preview-type")||"image");return;}var allBtn=e.target.closest(".klxm-zip-all-btn");if(allBtn){e.preventDefault();create("all",[]);return;}var selectedBtn=e.target.closest(".klxm-zip-selected-btn");if(selectedBtn){e.preventDefault();var selected=collectSelected();if(selected.length===0){setStatus("Bitte zuerst Dateien auswählen.");return;}create("selected",selected);}});'
+            . 'root.addEventListener("click",function(e){var singleBtn=e.target.closest(".klxm-single-download-btn");if(singleBtn){if(singleBtn.disabled){e.preventDefault();return;}window.setTimeout(function(){singleBtn.disabled=true;singleBtn.classList.add("is-disabled");var reason=singleBtn.getAttribute("data-disabled-reason")||"Datei wurde bereits als Einzeldownload geladen.";singleBtn.setAttribute("title",reason);singleBtn.setAttribute("uk-tooltip",reason);if(window.UIkit&&typeof window.UIkit.tooltip==="function"){window.UIkit.tooltip(singleBtn);}},0);return;}var preview=e.target.closest(".klxm-preview-trigger");if(preview){e.preventDefault();lastPreviewTrigger=preview;openPreview(decodeUrl(preview.getAttribute("data-preview-url")||""),preview.getAttribute("data-preview-title")||"",preview.getAttribute("data-preview-type")||"image");return;}var jumpLink=e.target.closest(".klxm-jump-link");if(jumpLink){e.preventDefault();var target=jumpLink.getAttribute("data-target")||"";if(target!==""){var el=document.querySelector(target);if(el){if(window.UIkit&&typeof window.UIkit.dropdown==="function"){var dropEl=jumpLink.closest("[uk-dropdown]");if(dropEl){window.UIkit.dropdown(dropEl).hide(false);}}el.scrollIntoView({behavior:"smooth",block:"start"});}}return;}var viewToggle=e.target.closest(".klxm-view-toggle");if(viewToggle){e.preventDefault();var vu=new URL(decodeUrl(shareBaseUrl),window.location.origin);var current=(vu.searchParams.get("klxm_display")||"tiles").toLowerCase();var next=current==="tiles"?"list":"tiles";vu.searchParams.set("klxm_display",next);window.location.href=vu.toString();return;}var sortToggle=e.target.closest(".klxm-sort-toggle");if(sortToggle){e.preventDefault();var su=new URL(decodeUrl(shareBaseUrl),window.location.origin);var currentSort=(su.searchParams.get("klxm_sort")||"manual").toLowerCase();var nextSort="manual";if(currentSort==="manual"){nextSort="asc";}else if(currentSort==="asc"){nextSort="desc";}if(nextSort==="manual"){su.searchParams.delete("klxm_sort");}else{su.searchParams.set("klxm_sort",nextSort);}window.location.href=su.toString();return;}var allBtn=e.target.closest(".klxm-zip-all-btn");if(allBtn){e.preventDefault();create("all",[]);return;}var selectedBtn=e.target.closest(".klxm-zip-selected-btn");if(selectedBtn){e.preventDefault();var selected=collectSelected();if(selected.length===0){setStatus("Bitte zuerst Dateien auswählen.");return;}create("selected",selected);}});'
             . 'if(previewModal){previewModal.addEventListener("click",function(e){if(e.target===previewModal||e.target.closest(".klxm-preview-close")){closePreview();}});document.addEventListener("keydown",function(e){if(e.key==="Escape"&&previewModal.classList.contains("is-open")){closePreview();}});}'
             . 'refreshSelectedButton();'
             . '})();</script>';
+
+        return $html;
+    }
+
+    /**
+     * @param array<string, mixed> $share
+     */
+    private static function renderListRow(
+        array $share,
+        string $token,
+        array $file,
+        string $displayName,
+        string $previewHtml,
+        string $descriptionHtml,
+        string $fileTypeLabel,
+        bool $singleAlreadyDownloaded,
+        bool $fileLimitReached,
+        int $fileLimitCurrent,
+        int $fileLimitMax
+    ): string {
+        $filename = (string) ($file['filename'] ?? '');
+        $singleActionUrl = self::buildShareUrl($share, $token, [
+            'klxm_board_share_download' => 'file',
+            'file' => $filename,
+        ]);
+
+        $detailsId = 'klxm-file-details-' . md5($filename . '|' . $displayName . '|' . (string) ($file['updatedate'] ?? ''));
+
+        $html = '<tr data-search="' . htmlspecialchars(strtolower($displayName . ' ' . $filename . ' ' . (string) ($file['description'] ?? ''))) . '">';
+        $html .= '<td class="klxm-col-select" data-label="Auswahl"><label class="klxm-row-select" title="' . htmlspecialchars($displayName) . '"><input class="uk-checkbox klxm-file-checkbox" type="checkbox" name="selected_files[]" value="' . htmlspecialchars($filename) . '" aria-label="Datei ' . htmlspecialchars($displayName) . ' auswählen"' . ($fileLimitReached ? ' disabled' : '') . '> <span class="uk-hidden">Wählen: ' . htmlspecialchars($displayName) . '</span></label></td>';
+        $html .= '<td class="klxm-col-preview klxm-row-preview" data-label="Vorschau">' . $previewHtml . '</td>';
+        $html .= '<td data-label="Datei"><button type="button" class="uk-button uk-button-text klxm-title-trigger" uk-toggle="target: #' . htmlspecialchars($detailsId) . '" aria-label="Details öffnen: ' . htmlspecialchars($displayName) . '"><span class="klxm-row-title">' . htmlspecialchars($displayName) . '</span><span class="klxm-row-name">' . htmlspecialchars($filename) . '</span></button></td>';
+        $html .= '<td class="klxm-col-type" data-label="Typ">' . htmlspecialchars($fileTypeLabel) . '</td>';
+        $html .= '<td class="klxm-col-size" data-label="Größe">' . htmlspecialchars(self::formatBytes((int) ($file['filesize'] ?? 0))) . '</td>';
+        $html .= '<td class="klxm-col-updated" data-label="Aktualisiert">' . htmlspecialchars(self::formatDateOnly((string) ($file['updatedate'] ?? ''))) . '</td>';
+        $html .= '<td class="klxm-col-actions" data-label="Aktionen"><div class="klxm-row-actions">';
+        if ($singleAlreadyDownloaded || $fileLimitReached) {
+            $disabledReason = $singleAlreadyDownloaded
+                ? 'Datei wurde bereits als Einzeldownload geladen.'
+                : 'Kontingent für diese Datei ist erreicht.';
+            $html .= '<button type="button" class="uk-icon-button" disabled title="' . htmlspecialchars($disabledReason) . '" aria-label="' . htmlspecialchars($disabledReason) . '">'
+                . self::renderDownloadIconSvg()
+                . '<span class="uk-hidden-visually">Download nicht verfügbar</span>'
+                . '</button>';
+        } else {
+            $html .= '<button type="submit" class="uk-icon-button klxm-single-download-btn" '
+                . 'formaction="' . htmlspecialchars($singleActionUrl) . '" '
+                . 'formmethod="post" '
+                . 'name="file" '
+                . 'value="' . htmlspecialchars($filename) . '" '
+                . 'data-disabled-reason="Datei wurde bereits als Einzeldownload geladen." '
+                . 'title="Datei herunterladen" '
+                . 'aria-label="Datei herunterladen: ' . htmlspecialchars($displayName) . '">'
+                . self::renderDownloadIconSvg()
+                . '<span class="uk-hidden-visually">Datei herunterladen</span>'
+                . '</button>';
+        }
+        $html .= '</div>';
+        $html .= '<div id="' . htmlspecialchars($detailsId) . '" uk-modal>';
+        $html .= '<div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">';
+        $html .= '<button type="button" class="uk-modal-close-default" uk-close aria-label="Details schließen"></button>';
+        $html .= '<h3 class="uk-modal-title">' . htmlspecialchars($displayName) . '</h3>';
+        $html .= '<div class="klxm-file-details-modal">';
+        $html .= '<div class="klxm-file-details-row"><span class="klxm-file-details-label">Dateiname</span><span class="klxm-file-details-value">' . htmlspecialchars($filename) . '</span></div>';
+        $html .= '<div class="klxm-file-details-row"><span class="klxm-file-details-label">Größe</span><span class="klxm-file-details-value">' . htmlspecialchars(self::formatBytes((int) ($file['filesize'] ?? 0))) . '</span></div>';
+        $html .= '<div class="klxm-file-details-row"><span class="klxm-file-details-label">Typ</span><span class="klxm-file-details-value">' . htmlspecialchars($fileTypeLabel) . '</span></div>';
+        $html .= '<div class="klxm-file-details-row"><span class="klxm-file-details-label">Aktualisiert</span><span class="klxm-file-details-value">' . htmlspecialchars(self::formatDate((string) ($file['updatedate'] ?? ''))) . '</span></div>';
+        if ($fileLimitMax > 0) {
+            $html .= '<div class="klxm-file-details-row"><span class="klxm-file-details-label">Kontingent</span><span class="klxm-file-details-value">' . $fileLimitCurrent . '/' . $fileLimitMax . '</span></div>';
+        }
+        $html .= '<div class="klxm-file-details-row"><span class="klxm-file-details-label">Beschreibung</span><span class="klxm-file-details-value">' . $descriptionHtml . '</span></div>';
+        $html .= '</div>';
+        $html .= '</div></div>';
+        $html .= '</td>';
+        $html .= '</tr>';
 
         return $html;
     }
@@ -1204,20 +1277,127 @@ class BoardShareService
         if ($text === '') {
             return '<span class="uk-text-meta">-</span>';
         }
+        return nl2br(htmlspecialchars($text));
+    }
 
-        $maxLength = 140;
-        $needsToggle = mb_strlen($text) > $maxLength;
-        $escapedText = htmlspecialchars($text);
+    /**
+     * @param array<string, mixed> $share
+     * @param array<string, int> $perFileLimits
+     * @param array<string, int> $perFileCounts
+     */
+    private static function renderTileCard(
+        array $share,
+        string $token,
+        array $file,
+        string $displayName,
+        string $previewHtml,
+        string $descriptionHtml,
+        string $fileTypeLabel,
+        bool $singleAlreadyDownloaded,
+        bool $fileLimitReached,
+        int $fileLimitCurrent,
+        int $fileLimitMax,
+        string $displayMode
+    ): string {
+        $filename = (string) ($file['filename'] ?? '');
+        $singleActionUrl = self::buildShareUrl($share, $token, [
+            'klxm_board_share_download' => 'file',
+            'file' => $filename,
+        ]);
 
-        if (!$needsToggle) {
-            return $escapedText;
+        $detailsId = 'klxm-file-details-' . md5($filename . '|' . $displayName . '|' . (string) ($file['updatedate'] ?? ''));
+
+        $html = '<article class="uk-card uk-card-default uk-card-hover uk-card-small klxm-file-card klxm-file-card--' . htmlspecialchars($displayMode) . '" data-search="' . htmlspecialchars(strtolower($displayName . ' ' . $filename . ' ' . (string) ($file['description'] ?? ''))) . '">';
+        $html .= '<div class="uk-card-media-top klxm-file-preview">' . $previewHtml . '</div>';
+        $html .= '<div class="uk-card-body">';
+        $html .= '<div class="klxm-file-card-title">' . htmlspecialchars($displayName) . '</div>';
+        $html .= '<span class="klxm-file-card-name">' . htmlspecialchars($filename) . '</span>';
+        $html .= '<div class="klxm-file-card-meta">';
+        $html .= '<span>' . htmlspecialchars(self::formatBytes((int) ($file['filesize'] ?? 0))) . '</span>';
+        $html .= '<span>·</span>';
+        $html .= '<span>' . htmlspecialchars($fileTypeLabel) . '</span>';
+        $html .= '</div>';
+        $html .= '<div class="klxm-file-card-actions">';
+        $html .= '<label class="uk-form-label" title="' . htmlspecialchars($displayName) . '"><input class="uk-checkbox klxm-file-checkbox" type="checkbox" name="selected_files[]" value="' . htmlspecialchars($filename) . '" aria-label="Datei ' . htmlspecialchars($displayName) . ' auswählen"' . ($fileLimitReached ? ' disabled' : '') . '> <span class="uk-hidden">Wählen: ' . htmlspecialchars($displayName) . '</span></label>';
+        $html .= '<div class="klxm-file-card-action-links">';
+        $html .= '<button type="button" class="uk-button uk-button-text klxm-details-trigger" uk-toggle="target: #' . htmlspecialchars($detailsId) . '">Mehr Details</button>';
+        if ($singleAlreadyDownloaded || $fileLimitReached) {
+            $disabledReason = $singleAlreadyDownloaded
+                ? 'Datei wurde bereits als Einzeldownload geladen.'
+                : 'Kontingent für diese Datei ist erreicht.';
+            $html .= '<button type="button" class="uk-icon-button" disabled title="' . htmlspecialchars($disabledReason) . '" aria-label="' . htmlspecialchars($disabledReason) . '">'
+                . self::renderDownloadIconSvg()
+                . '<span class="uk-hidden-visually">Download nicht verfügbar</span>'
+                . '</button>';
+        } else {
+            $html .= '<button type="submit" class="uk-icon-button klxm-single-download-btn" '
+                . 'formaction="' . htmlspecialchars($singleActionUrl) . '" '
+                . 'formmethod="post" '
+                . 'name="file" '
+                . 'value="' . htmlspecialchars($filename) . '" '
+                . 'data-disabled-reason="Datei wurde bereits als Einzeldownload geladen." '
+                . 'title="Datei herunterladen" '
+                . 'aria-label="Datei herunterladen: ' . htmlspecialchars($displayName) . '">'
+                . self::renderDownloadIconSvg()
+                . '<span class="uk-hidden-visually">Datei herunterladen</span>'
+                . '</button>';
+        }
+            $html .= '</div>';
+        $html .= '</div>';
+        $html .= '</div>';
+        $html .= '</article>';
+        $html .= '<div id="' . htmlspecialchars($detailsId) . '" uk-modal>';
+        $html .= '<div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">';
+        $html .= '<button type="button" class="uk-modal-close-default" uk-close aria-label="Details schließen"></button>';
+        $html .= '<h3 class="uk-modal-title">' . htmlspecialchars($displayName) . '</h3>';
+        $html .= '<div class="klxm-file-details-modal">';
+        $html .= '<div class="klxm-file-details-row"><span class="klxm-file-details-label">Dateiname</span><span class="klxm-file-details-value">' . htmlspecialchars($filename) . '</span></div>';
+        $html .= '<div class="klxm-file-details-row"><span class="klxm-file-details-label">Größe</span><span class="klxm-file-details-value">' . htmlspecialchars(self::formatBytes((int) ($file['filesize'] ?? 0))) . '</span></div>';
+        $html .= '<div class="klxm-file-details-row"><span class="klxm-file-details-label">Typ</span><span class="klxm-file-details-value">' . htmlspecialchars($fileTypeLabel) . '</span></div>';
+        $html .= '<div class="klxm-file-details-row"><span class="klxm-file-details-label">Aktualisiert</span><span class="klxm-file-details-value">' . htmlspecialchars(self::formatDate((string) ($file['updatedate'] ?? ''))) . '</span></div>';
+        if ($fileLimitMax > 0) {
+            $html .= '<div class="klxm-file-details-row"><span class="klxm-file-details-label">Kontingent</span><span class="klxm-file-details-value">' . $fileLimitCurrent . '/' . $fileLimitMax . '</span></div>';
+        }
+        $html .= '<div class="klxm-file-details-row"><span class="klxm-file-details-label">Beschreibung</span><span class="klxm-file-details-value">' . $descriptionHtml . '</span></div>';
+        $html .= '</div>';
+        $html .= '</div></div>';
+
+        return $html;
+    }
+
+    private static function formatCompactFileTypeLabel(string $filename): string
+    {
+        $extension = strtolower(rex_file::extension($filename));
+        if ($extension === '') {
+            return 'Datei';
         }
 
-        $fullId = 'klxm-desc-full-' . $shareId . '-' . $groupIndex . '-' . $fileIndex;
+        if (self::isImageExtension($extension)) {
+            return 'Bild';
+        }
+        if ($extension === 'pdf') {
+            return 'PDF';
+        }
+        if (self::isVideoExtension($extension)) {
+            return 'Video';
+        }
+        if (in_array($extension, ['mp3', 'wav', 'ogg', 'm4a', 'flac'], true)) {
+            return 'Audio';
+        }
+        if (in_array($extension, ['zip', 'gz', 'rar', '7z', 'tar'], true)) {
+            return 'Archiv';
+        }
+        if (in_array($extension, ['xls', 'xlsx', 'csv', 'ods'], true)) {
+            return 'Tabelle';
+        }
+        if (in_array($extension, ['doc', 'docx', 'odt', 'rtf', 'txt', 'md'], true)) {
+            return 'Dokument';
+        }
+        if (in_array($extension, ['json', 'xml', 'yml', 'yaml', 'js', 'ts', 'css', 'scss', 'php', 'html'], true)) {
+            return 'Code';
+        }
 
-        return '<div class="klxm-desc-excerpt">' . $escapedText . '</div>'
-            . '<button type="button" class="uk-button uk-button-text klxm-desc-toggle" data-target="' . htmlspecialchars($fullId) . '" aria-expanded="false">Mehr</button>'
-            . '<div id="' . htmlspecialchars($fullId) . '" class="klxm-desc-full" hidden>' . $escapedText . '</div>';
+        return strtoupper($extension);
     }
 
     private static function renderLockedMessage(string $token): string
@@ -2814,12 +2994,37 @@ class BoardShareService
      */
     public static function buildShareUrl(array $share, string $token, array $params = []): string
     {
+        if (!isset($params['klxm_display'])) {
+            $currentDisplay = strtolower(trim(rex_request::get('klxm_display', 'string', '')));
+            if (in_array($currentDisplay, ['compact', 'detail'], true)) {
+                $currentDisplay = 'list';
+            }
+            if (in_array($currentDisplay, ['list', 'tiles'], true)) {
+                $params['klxm_display'] = $currentDisplay;
+            }
+        }
+
+        if (!isset($params['klxm_sort'])) {
+            $currentSort = strtolower(trim(rex_request::get('klxm_sort', 'string', '')));
+            if (in_array($currentSort, ['manual', 'asc', 'desc'], true)) {
+                if ($currentSort !== 'manual') {
+                    $params['klxm_sort'] = $currentSort;
+                }
+            }
+        }
+
         $query = array_merge(['klxm_board_share' => $token], $params);
         $mode = (string) ($share['share_mode'] ?? 'article');
         $articleId = (int) ($share['article_id'] ?? 0);
 
         if ($mode === 'direct' || $articleId <= 0) {
             $path = self::normalizeFrontendPath(rex_url::frontendController([], false));
+            if (!rex::isBackend()) {
+                $requestPath = (string) parse_url((string) rex_request::server('REQUEST_URI', 'string', ''), PHP_URL_PATH);
+                if ($requestPath !== '') {
+                    $path = $requestPath;
+                }
+            }
             return $path . '?' . http_build_query($query);
         }
 
@@ -2946,7 +3151,7 @@ class BoardShareService
 
         if (self::isImageExtension($extension)) {
             $thumb = '<img class="klxm-preview-thumb" src="' . htmlspecialchars($previewUrl) . '" alt="' . htmlspecialchars($displayName) . '" loading="lazy" decoding="async">';
-            return '<a href="#" class="klxm-preview-trigger klxm-preview-link" data-preview-type="image" data-preview-url="' . htmlspecialchars($previewUrl) . '" data-preview-title="' . htmlspecialchars($caption) . '">' . $thumb . '</a>';
+            return '<a href="' . htmlspecialchars($previewUrl) . '" class="klxm-preview-link" data-type="image" data-caption="' . htmlspecialchars($caption) . '" aria-label="Vorschau öffnen: ' . htmlspecialchars($caption) . '">' . $thumb . '</a>';
         }
 
         if ($extension === 'pdf') {
@@ -2963,7 +3168,7 @@ class BoardShareService
                     'variant' => 'large',
                 ]);
                 $thumb = '<img class="klxm-preview-thumb" src="' . htmlspecialchars($thumbPreviewUrl) . '" alt="' . htmlspecialchars($displayName) . '" loading="lazy" decoding="async">';
-                return '<a href="#" class="klxm-preview-trigger klxm-preview-link" data-preview-type="image" data-preview-url="' . htmlspecialchars($largePreviewUrl) . '" data-preview-title="' . htmlspecialchars($caption) . '">' . $thumb . '</a>';
+                return '<a href="' . htmlspecialchars($largePreviewUrl) . '" class="klxm-preview-link" data-type="image" data-caption="' . htmlspecialchars($caption) . '" aria-label="Vorschau öffnen: ' . htmlspecialchars($caption) . '">' . $thumb . '</a>';
             }
 
             return '<div class="klxm-filetype-tile">'
@@ -2973,7 +3178,7 @@ class BoardShareService
         }
 
             if (self::isVideoExtension($extension)) {
-                return '<a href="#" class="klxm-preview-trigger" data-preview-type="video" data-preview-url="' . htmlspecialchars($previewUrl) . '" data-preview-title="' . htmlspecialchars($caption) . '">'
+                return '<a href="' . htmlspecialchars($previewUrl) . '" class="klxm-preview-link" data-type="video" data-caption="' . htmlspecialchars($caption) . '" aria-label="Vorschau öffnen: ' . htmlspecialchars($caption) . '">'
                 . '<div class="klxm-filetype-tile">'
                 . self::renderFileTypeIconSvg()
                 . '<span class="klxm-filetype-label">' . htmlspecialchars(strtoupper($extension)) . '</span>'
@@ -2991,6 +3196,23 @@ class BoardShareService
     private static function renderFileTypeIconSvg(): string
     {
         return '<svg class="klxm-filetype-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 2a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8.2a2 2 0 0 0-.58-1.4L14.2 2.58A2 2 0 0 0 12.8 2H7Zm6 1.9 4.1 4.1H14a1 1 0 0 1-1-1V3.9ZM9 13a1 1 0 1 0 0 2h6a1 1 0 1 0 0-2H9Zm0 4a1 1 0 1 0 0 2h4a1 1 0 1 0 0-2H9Z"/></svg>';
+    }
+
+    private static function renderToolbarIconSvg(string $type): string
+    {
+        if ($type === 'tiles') {
+            return '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 3h8v8H3V3Zm10 0h8v8h-8V3ZM3 13h8v8H3v-8Zm10 0h8v8h-8v-8Z"/></svg>';
+        }
+
+        if ($type === 'sort') {
+            return '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7 4h2v12h3l-4 4-4-4h3V4Zm7 2h7v2h-7V6Zm0 5h5v2h-5v-2Zm0 5h3v2h-3v-2Z"/></svg>';
+        }
+
+        if ($type === 'jump') {
+            return '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 6h2v2H4V6Zm4 0h12v2H8V6ZM4 11h2v2H4v-2Zm4 0h12v2H8v-2ZM4 16h2v2H4v-2Zm4 0h12v2H8v-2Z"/></svg>';
+        }
+
+        return '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 6h16v2H4V6Zm0 5h16v2H4v-2Zm0 5h16v2H4v-2Z"/></svg>';
     }
 
     private static function isImageExtension(string $extension): bool
@@ -3182,6 +3404,20 @@ class BoardShareService
         }
 
         return date('d.m.Y H:i', $timestamp);
+    }
+
+    private static function formatDateOnly(string $date): string
+    {
+        if ($date === '' || $date === '0000-00-00 00:00:00') {
+            return '-';
+        }
+
+        $timestamp = strtotime($date);
+        if ($timestamp === false) {
+            return $date;
+        }
+
+        return date('d.m.Y', $timestamp);
     }
 
     private static function sendText(string $text, string $statusCode): never

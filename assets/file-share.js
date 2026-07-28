@@ -101,6 +101,11 @@
     }
 
     function bindRequestBuilder() {
+        if (window.__klxmRequestBuilderBound) {
+            return;
+        }
+        window.__klxmRequestBuilderBound = true;
+
         document.addEventListener('click', function (event) {
             var addButton = event.target.closest('#klxm-request-add-row');
             if (addButton) {
@@ -137,30 +142,42 @@
         });
     }
 
-    function bindFileLimitBuilder() {
-        var container = document.getElementById('klxm-file-limit-rows');
-        if (!container) {
-            return;
+    function getFileLimitNextIndex(container) {
+        var current = Number(container.getAttribute('data-next-index') || 0);
+        if (isFinite(current) && current >= 0) {
+            return current;
         }
 
-        var template = document.getElementById('klxm-file-limit-template');
-        var initialCount = container.querySelectorAll('.klxm-file-limit-row').length;
-        container.setAttribute('data-next-index', String(initialCount));
+        var maxIndex = -1;
+        container.querySelectorAll('.klxm-file-limit-row').forEach(function (row) {
+            var raw = row.getAttribute('data-row-index') || '';
+            var idx = Number(raw);
+            if (isFinite(idx) && idx > maxIndex) {
+                maxIndex = idx;
+            }
+        });
+
+        return maxIndex + 1;
+    }
+
+    function bindFileLimitBuilder() {
+        if (window.__klxmFileLimitBound) {
+            return;
+        }
+        window.__klxmFileLimitBound = true;
 
         document.addEventListener('click', function (event) {
             var addButton = event.target.closest('#klxm-file-limit-add');
             if (addButton) {
-                if (!template) {
+                var liveContainer = document.getElementById('klxm-file-limit-rows');
+                var liveTemplate = document.getElementById('klxm-file-limit-template');
+                if (!liveContainer || !liveTemplate) {
                     return;
                 }
 
-                var nextIndex = Number(container.getAttribute('data-next-index') || container.querySelectorAll('.klxm-file-limit-row').length || 0);
-                if (!isFinite(nextIndex) || nextIndex < 0) {
-                    nextIndex = container.querySelectorAll('.klxm-file-limit-row').length;
-                }
-
-                var html = template.innerHTML.replace(/__INDEX__/g, String(nextIndex));
-                container.setAttribute('data-next-index', String(nextIndex + 1));
+                var nextIndex = getFileLimitNextIndex(liveContainer);
+                var html = liveTemplate.innerHTML.replace(/__INDEX__/g, String(nextIndex));
+                liveContainer.setAttribute('data-next-index', String(nextIndex + 1));
 
                 var wrapper = document.createElement('div');
                 wrapper.innerHTML = html;
@@ -169,7 +186,7 @@
                     return;
                 }
 
-                container.appendChild(row);
+                liveContainer.appendChild(row);
                 return;
             }
 
@@ -179,11 +196,12 @@
             }
 
             var rowRef = removeButton.closest('.klxm-file-limit-row');
-            if (!rowRef) {
+            var liveContainerForRemove = document.getElementById('klxm-file-limit-rows');
+            if (!rowRef || !liveContainerForRemove) {
                 return;
             }
 
-            if (container.querySelectorAll('.klxm-file-limit-row').length <= 1) {
+            if (liveContainerForRemove.querySelectorAll('.klxm-file-limit-row').length <= 1) {
                 rowRef.querySelectorAll('input, select, textarea').forEach(function (field) {
                     if (field.type === 'checkbox') {
                         field.checked = false;
@@ -311,6 +329,11 @@
     }
 
     function bindStatsDetailLinks() {
+        if (window.__klxmStatsDetailLinksBound) {
+            return;
+        }
+        window.__klxmStatsDetailLinksBound = true;
+
         document.addEventListener('click', function (event) {
             var link = event.target.closest('.klxm-stats-detail-link[data-open-parent="1"]');
             if (!link) {
@@ -364,5 +387,9 @@
         document.addEventListener('DOMContentLoaded', init);
     } else {
         init();
+    }
+
+    if (window.jQuery) {
+        window.jQuery(document).on('rex:ready', init);
     }
 })();
