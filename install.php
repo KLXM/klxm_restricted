@@ -105,6 +105,7 @@ rex_sql_table::get(rex::getTable('klxm_restricted_file_share'))
     ->ensureColumn(new rex_sql_column('password_hash', 'varchar(255)', true))
     ->ensureColumn(new rex_sql_column('expires_at', 'datetime', true))
     ->ensureColumn(new rex_sql_column('max_downloads', 'int(10) unsigned', true))
+    ->ensureColumn(new rex_sql_column('file_download_limits_json', 'longtext', true))
     ->ensureColumn(new rex_sql_column('download_count', 'int(10) unsigned', false, '0'))
     ->ensureColumn(new rex_sql_column('status', 'tinyint(1)', false, '1'))
     ->ensureColumn(new rex_sql_column('created_by', 'varchar(191)', true))
@@ -178,6 +179,10 @@ if ((string) $addon->getConfig('request_ip_hash_salt', '') === '') {
 
 if ((string) $addon->getConfig('backend_menu_title', '') === '') {
     $addon->setConfig('backend_menu_title', 'KLXM Restricted');
+}
+
+if ((string) $addon->getConfig('share_limit_reached_display', '') === '') {
+    $addon->setConfig('share_limit_reached_display', 'disabled');
 }
 
 // 10. Import YForm tables for Users and Roles

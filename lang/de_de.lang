@@ -13,7 +13,7 @@ klxm_restricted_sidebar_open_matrix = In Rechte-Matrix öffnen
 # Pseudo-Rollen
 klxm_restricted_role_public = Öffentlich (alle)
 klxm_restricted_role_logged_in = Eingeloggte Benutzer
-klxm_restricted_role_guest = Nur Gäste (nicht eingeloggt)
+klxm_restricted_role_guest = Nur nicht eingeloggte Besucher
 
 # Setup
 klxm_restricted_setup_intro = Synchronisiert die Frontend-Module mit der Datenbank. Bestehende Module werden aktualisiert, fehlende neu angelegt.

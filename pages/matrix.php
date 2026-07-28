@@ -31,9 +31,15 @@ $sql = rex_sql::factory();
 $roles = $sql->getArray('SELECT id, name FROM ' . rex::getTable('klxm_restricted_role') . ' ORDER BY name ASC');
 
 // Add pseudo roles for easy configuration
-array_unshift($roles, ['id' => PermissionManager::ROLE_GUEST, 'name' => '🚷 Nur Gäste']);
+array_unshift($roles, ['id' => PermissionManager::ROLE_GUEST, 'name' => '🚷 Nur nicht eingeloggte Besucher']);
 array_unshift($roles, ['id' => PermissionManager::ROLE_LOGGED_IN, 'name' => '🔑 Alle Angemeldeten']);
 array_unshift($roles, ['id' => PermissionManager::ROLE_PUBLIC, 'name' => '🌍 Öffentlich (Jeder)']);
+
+$roleTooltips = [
+    PermissionManager::ROLE_PUBLIC => 'Alle dürfen zugreifen (eingeloggt und nicht eingeloggt).',
+    PermissionManager::ROLE_LOGGED_IN => 'Nur eingeloggte Benutzer dürfen zugreifen.',
+    PermissionManager::ROLE_GUEST => 'Nur nicht eingeloggte Besucher dürfen zugreifen. Eingeloggte sind ausgeschlossen.',
+];
 
 // Helper to fetch directly assigned roles for fast rendering
 $pm = new PermissionManager();
@@ -45,7 +51,14 @@ if ($renderStructureMatrix) {
     $content .= '<thead><tr>';
     $content .= '<th>Struktur (Kategorie/Artikel)</th>';
     foreach ($roles as $role) {
-        $content .= '<th class="text-center">' . htmlspecialchars((string) $role['name']) . '</th>';
+        $roleId = (int) ($role['id'] ?? 0);
+        $roleName = (string) ($role['name'] ?? '');
+        $tooltip = $roleTooltips[$roleId] ?? '';
+        if ($tooltip !== '') {
+            $content .= '<th class="text-center"><span title="' . htmlspecialchars($tooltip) . '">' . htmlspecialchars($roleName) . '</span></th>';
+        } else {
+            $content .= '<th class="text-center">' . htmlspecialchars($roleName) . '</th>';
+        }
     }
     $content .= '<th class="text-center">Zugriff anfragen</th>';
     $content .= '</tr></thead>';
@@ -176,7 +189,14 @@ $mediaContent = '<table class="table table-striped table-hover">';
 $mediaContent .= '<thead><tr>';
 $mediaContent .= '<th>Medienpool-Kategorien</th>';
 foreach ($roles as $role) {
-    $mediaContent .= '<th class="text-center">' . htmlspecialchars((string) $role['name']) . '</th>';
+    $roleId = (int) ($role['id'] ?? 0);
+    $roleName = (string) ($role['name'] ?? '');
+    $tooltip = $roleTooltips[$roleId] ?? '';
+    if ($tooltip !== '') {
+        $mediaContent .= '<th class="text-center"><span title="' . htmlspecialchars($tooltip) . '">' . htmlspecialchars($roleName) . '</span></th>';
+    } else {
+        $mediaContent .= '<th class="text-center">' . htmlspecialchars($roleName) . '</th>';
+    }
 }
 $mediaContent .= '</tr></thead>';
 $mediaContent .= '<tbody>';

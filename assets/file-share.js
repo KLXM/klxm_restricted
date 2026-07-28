@@ -84,6 +84,8 @@
             + '    <option value="textarea">Freitext</option>'
             + '    <option value="checkbox">Checkbox</option>'
             + '    <option value="select">Select</option>'
+            + '    <option value="radio">Radio</option>'
+            + '    <option value="rating">Rating (Sterne)</option>'
             + '  </select>'
             + '</div>'
             + '<div class="col-sm-3"><input class="form-control" type="text" name="request_field_options[]" placeholder="Optionen fuer Select"></div>'
@@ -132,6 +134,75 @@
             }
 
             row.remove();
+        });
+    }
+
+    function bindFileLimitBuilder() {
+        var container = document.getElementById('klxm-file-limit-rows');
+        if (!container) {
+            return;
+        }
+
+        var template = document.getElementById('klxm-file-limit-template');
+        var initialCount = container.querySelectorAll('.klxm-file-limit-row').length;
+        container.setAttribute('data-next-index', String(initialCount));
+
+        document.addEventListener('click', function (event) {
+            var addButton = event.target.closest('#klxm-file-limit-add');
+            if (addButton) {
+                if (!template) {
+                    return;
+                }
+
+                var nextIndex = Number(container.getAttribute('data-next-index') || container.querySelectorAll('.klxm-file-limit-row').length || 0);
+                if (!isFinite(nextIndex) || nextIndex < 0) {
+                    nextIndex = container.querySelectorAll('.klxm-file-limit-row').length;
+                }
+
+                var html = template.innerHTML.replace(/__INDEX__/g, String(nextIndex));
+                container.setAttribute('data-next-index', String(nextIndex + 1));
+
+                var wrapper = document.createElement('div');
+                wrapper.innerHTML = html;
+                var row = wrapper.firstElementChild;
+                if (!row) {
+                    return;
+                }
+
+                container.appendChild(row);
+                return;
+            }
+
+            var removeButton = event.target.closest('.klxm-file-limit-remove');
+            if (!removeButton) {
+                return;
+            }
+
+            var rowRef = removeButton.closest('.klxm-file-limit-row');
+            if (!rowRef) {
+                return;
+            }
+
+            if (container.querySelectorAll('.klxm-file-limit-row').length <= 1) {
+                rowRef.querySelectorAll('input, select, textarea').forEach(function (field) {
+                    if (field.type === 'checkbox') {
+                        field.checked = false;
+                    } else {
+                        field.value = '';
+                    }
+                });
+                rowRef.querySelectorAll('input[id^="REX_MEDIALIST_"]').forEach(function (hiddenField) {
+                    hiddenField.value = '';
+                });
+                rowRef.querySelectorAll('select[id^="REX_MEDIALIST_SELECT_"]').forEach(function (listSelect) {
+                    while (listSelect.options.length > 0) {
+                        listSelect.remove(0);
+                    }
+                });
+                return;
+            }
+
+            rowRef.remove();
         });
     }
 
@@ -283,6 +354,7 @@
         }
 
         bindRequestBuilder();
+        bindFileLimitBuilder();
         bindCategorizedRepeater();
         bindStatsDetailLinks();
         initSelectpickers(document);

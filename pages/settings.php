@@ -97,6 +97,16 @@ if ((string) $field->getValue() === '') {
     $field->setValue('3');
 }
 
+$field = $form->addSelectField('share_limit_reached_display');
+$field->setLabel('Datei-Kontingent erreicht: Darstellung im Frontend');
+$field->setNotice('Legt fest, ob Dateien mit erreichtem Kontingent ausgeblendet oder deaktiviert angezeigt werden.');
+$select = $field->getSelect();
+$select->addOption('Ausgeblendet', 'hide');
+$select->addOption('Deaktiviert anzeigen', 'disabled');
+if ((string) $field->getValue() === '') {
+    $field->setValue('disabled');
+}
+
 $field = $form->addTextAreaField('share_request_mail_footer', null, ['class' => 'form-control', 'rows' => '4']);
 $field->setLabel('E-Mail-Abbinder für Datei-Freigaben');
 $field->setNotice('Dieser Text wird an Anfrage-E-Mails angehängt (z. B. Signatur, Firma, Kontakt).');

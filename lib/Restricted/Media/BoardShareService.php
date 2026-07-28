@@ -62,6 +62,7 @@ class BoardShareService
         ?string $password,
         ?string $expiresAt,
         ?int $maxDownloads,
+        array $fileDownloadLimits,
         string $createdBy
     ): string {
         $token = bin2hex(random_bytes(24));
@@ -87,6 +88,7 @@ class BoardShareService
         $sql->setValue('password_hash', $password !== null && $password !== '' ? password_hash($password, PASSWORD_DEFAULT) : '');
         $sql->setValue('expires_at', $expiresAt !== null && $expiresAt !== '' ? $expiresAt : null);
         $sql->setValue('max_downloads', $maxDownloads ?? null);
+        $sql->setValue('file_download_limits_json', self::encodeFileDownloadLimits($fileDownloadLimits));
         $sql->setValue('download_count', 0);
         $sql->setValue('status', 1);
         $sql->setValue('created_by', $createdBy);
@@ -152,7 +154,8 @@ class BoardShareService
         ?string $password,
         bool $clearPassword,
         ?string $expiresAt,
-        ?int $maxDownloads
+        ?int $maxDownloads,
+        array $fileDownloadLimits
     ): void {
         $existing = self::getShareById($shareId);
         if ($existing === null) {
@@ -176,6 +179,7 @@ class BoardShareService
         $sql->setValue('allow_zip', $allowZip ? 1 : 0);
         $sql->setValue('expires_at', $expiresAt !== null && $expiresAt !== '' ? $expiresAt : null);
         $sql->setValue('max_downloads', $maxDownloads ?? null);
+        $sql->setValue('file_download_limits_json', self::encodeFileDownloadLimits($fileDownloadLimits));
 
         if ($clearPassword) {
             $sql->setValue('password_hash', '');
@@ -273,7 +277,7 @@ class BoardShareService
             if ($filename === '') {
                 self::sendText('Dateiname fehlt.', rex_response::HTTP_BAD_REQUEST);
             }
-            self::downloadSingleFile($share, $filename, $requestId);
+            self::downloadSingleFile($share, $filename, $token, $requestId);
         }
 
         if ($downloadMode === 'preview') {
@@ -297,10 +301,10 @@ class BoardShareService
                         $selected[] = $item;
                     }
                 }
-                $allowed = self::collectAllowedFilenames($share);
+                $allowed = self::collectDownloadableFilenames($share);
                 $selected = array_values(array_filter(array_values(array_unique($selected)), static fn (string $filename): bool => in_array($filename, $allowed, true)));
             } else {
-                $selected = self::collectAllowedFilenames($share);
+                $selected = self::collectDownloadableFilenames($share);
             }
 
             if ($selected === []) {
@@ -341,7 +345,7 @@ class BoardShareService
         }
 
         if ($downloadMode === 'zip_all') {
-            self::downloadZip($share, self::collectAllowedFilenames($share), 'zip_all', $requestId);
+            self::downloadZip($share, self::collectDownloadableFilenames($share), 'zip_all', $requestId);
         }
 
         if ($downloadMode === 'zip_selected') {
@@ -353,7 +357,7 @@ class BoardShareService
                 }
             }
 
-            $allowed = self::collectAllowedFilenames($share);
+            $allowed = self::collectDownloadableFilenames($share);
             $selected = array_values(array_unique($selected));
             $selected = array_values(array_filter($selected, static fn (string $filename): bool => in_array($filename, $allowed, true)));
 
@@ -403,7 +407,9 @@ class BoardShareService
             }
 
             $token = trim((string) ($share['token_plain'] ?? ''));
-            return $automaticShareWarning . self::renderShareList($share, $token, $filesByGroup);
+            return $automaticShareWarning
+                . self::consumeShareUiMessageHtml((int) ($share['id'] ?? 0))
+                . self::renderShareList($share, $token, $filesByGroup);
         }
 
         $token = trim(rex_request::get('klxm_board_share', 'string', ''));
@@ -453,7 +459,8 @@ class BoardShareService
             return '<div class="uk-alert-primary" uk-alert>Aktuell sind keine Dateien verfügbar.</div>';
         }
 
-        return self::renderShareList($shareFromToken, $token, $filesByGroup);
+        return self::consumeShareUiMessageHtml((int) ($shareFromToken['id'] ?? 0))
+            . self::renderShareList($shareFromToken, $token, $filesByGroup);
     }
 
     /**
@@ -814,6 +821,10 @@ class BoardShareService
             . '.uk-button,.uk-icon-button{display:inline-flex;align-items:center;justify-content:center;padding:9px 12px;border-radius:8px;border:1px solid var(--klxm-line);background:#fff;color:var(--klxm-text);cursor:pointer;text-decoration:none;font-weight:600}'
             . '.uk-button-secondary,.uk-button-primary{background:var(--klxm-accent);border-color:var(--klxm-accent);color:#fff}.uk-button[disabled]{opacity:.55;cursor:not-allowed}'
             . '.uk-button-group{display:inline-flex;gap:6px}.uk-inline{position:relative}.uk-width-1-1{width:100%}.uk-inline.uk-width-1-1{display:block}.uk-form-icon{display:none}.uk-input,.uk-select,.uk-textarea{width:100%;padding:10px 11px;border:1px solid var(--klxm-line);border-radius:8px;background:#fff;color:var(--klxm-text)}'
+            . '.klxm-radio-group{display:flex;flex-wrap:wrap;gap:12px}.klxm-radio-option{display:inline-flex;align-items:center;gap:6px;font-size:.92rem;color:var(--klxm-text)}'
+            . '.klxm-rating{display:flex;flex-direction:row-reverse;justify-content:flex-end;gap:6px}.klxm-rating input{position:absolute;opacity:0;pointer-events:none}'
+            . '.klxm-rating label{font-size:1.45rem;line-height:1;cursor:pointer;color:#c8d2de;transition:color .15s ease}'
+            . '.klxm-rating label:hover,.klxm-rating label:hover ~ label,.klxm-rating input:checked ~ label{color:#f5b301}'
             . '.uk-overflow-auto{overflow:auto}.uk-table{width:100%;border-collapse:collapse;background:#fff}.uk-table th,.uk-table td{border-bottom:1px solid var(--klxm-line);padding:8px 6px;text-align:left;font-size:.92rem;vertical-align:top}'
             . '.uk-table thead th{font-size:.82rem;text-transform:uppercase;letter-spacing:.03em;color:var(--klxm-muted)}.uk-table-hover tbody tr:hover{background:#f8fbff}.uk-text-right{text-align:right}.uk-text-nowrap{white-space:nowrap}.uk-hidden-visually{position:absolute;left:-9999px}'
             . '.uk-heading-bullet{margin:0 0 10px;font-size:1.08rem;color:var(--klxm-text)}.uk-heading-bullet span{border-left:4px solid var(--klxm-accent);padding-left:8px}'
@@ -822,7 +833,7 @@ class BoardShareService
                 . '.klxm-toolbar-zip{flex:0 0 auto}.klxm-toolbar-status{flex:1 1 240px;min-width:0}.klxm-search-wrap{flex:1 1 360px;min-width:0}'
                 . '.klxm-search-wrap .uk-inline{display:block;width:100%}.klxm-live-search{display:block;width:100%;max-width:100%;min-width:0}'
                 . '.klxm-sort-wrap,.klxm-jump-wrap{flex:0 1 280px;min-width:220px;max-width:100%}.klxm-sort-wrap .uk-select,.klxm-jump-wrap .uk-select{width:100%;max-width:100%}'
-            . '.uk-icon-button{min-width:38px;min-height:38px;padding:0}.klxm-download-icon{width:18px;height:18px;display:block;fill:currentColor}'
+            . '.uk-icon-button{min-width:38px;min-height:38px;padding:0}.uk-icon-button[disabled],.uk-icon-button.is-disabled{opacity:.45;cursor:not-allowed}.klxm-download-icon{width:18px;height:18px;display:block;fill:currentColor}'
             . '.klxm-brand{display:flex;align-items:center;gap:12px;margin-bottom:12px}.klxm-brand-logo{max-height:56px;max-width:220px;object-fit:contain}.klxm-brand h2{margin:0;color:var(--klxm-accent);font-size:1rem;letter-spacing:.04em;text-transform:uppercase}.klxm-brand p{margin:4px 0 0;color:var(--klxm-muted)}'
             . '.uk-alert-warning,.uk-alert-danger,.uk-alert-primary,.uk-alert-success{padding:10px 12px;border-radius:8px;border:1px solid var(--klxm-line);margin:8px 0}'
             . '.uk-alert-warning{background:#fff8e6;color:#7a5f00}.uk-alert-danger{background:#fff0f0;color:#8f2f2f}.uk-alert-primary{background:#eef5ff;color:#2a4d7a}.uk-alert-success{background:#ecf9f0;color:#2d6b46}'
@@ -935,6 +946,47 @@ class BoardShareService
             $sortDirection = 'manual';
         }
         $filesByGroup = self::sortFilesByCategoryAndTitle($filesByGroup, $sortDirection);
+        $limitReachedDisplay = (string) rex_addon::get('klxm_restricted')->getConfig('share_limit_reached_display', 'disabled');
+        if (!in_array($limitReachedDisplay, ['hide', 'disabled'], true)) {
+            $limitReachedDisplay = 'disabled';
+        }
+        $perFileLimits = self::decodeFileDownloadLimits($share);
+        $perFileCounts = self::getPerFileDownloadCountMap((int) ($share['id'] ?? 0));
+
+        if ($limitReachedDisplay === 'hide') {
+            $filteredGroups = [];
+            foreach ($filesByGroup as $group) {
+                if (!isset($group['files']) || !is_array($group['files'])) {
+                    continue;
+                }
+
+                $filteredFiles = [];
+                foreach ($group['files'] as $file) {
+                    if (!is_array($file)) {
+                        continue;
+                    }
+
+                    $filename = (string) ($file['filename'] ?? '');
+                    if ($filename === '') {
+                        continue;
+                    }
+
+                    $fileLimitMax = (int) ($perFileLimits[$filename] ?? 0);
+                    $fileLimitCurrent = (int) ($perFileCounts[$filename] ?? 0);
+                    if ($fileLimitMax > 0 && $fileLimitCurrent >= $fileLimitMax) {
+                        continue;
+                    }
+
+                    $filteredFiles[] = $file;
+                }
+
+                if ($filteredFiles !== []) {
+                    $group['files'] = $filteredFiles;
+                    $filteredGroups[] = $group;
+                }
+            }
+            $filesByGroup = $filteredGroups;
+        }
 
         $headline = trim((string) ($share['title'] ?? ''));
         if ($headline === '') {
@@ -965,6 +1017,12 @@ class BoardShareService
             $html .= '<p class="uk-text-meta">' . nl2br(htmlspecialchars($description)) . '</p>';
         }
         $html .= '</div>';
+
+        if ($filesByGroup === []) {
+            $html .= '<div class="uk-card uk-card-default uk-card-body uk-margin-top"><div class="uk-alert-primary" uk-alert>Aktuell sind keine Dateien verfügbar.</div></div>';
+            $html .= '</div></section>';
+            return $html;
+        }
 
         $html .= '<div class="uk-card uk-card-default uk-card-body uk-margin-top uk-margin-medium-bottom klxm-share-toolbar" style="position:sticky;top:' . $stickyOffset . 'px;z-index:95;">';
         $html .= '<div class="uk-flex uk-flex-wrap uk-flex-middle uk-grid-small klxm-toolbar-main" uk-grid>';
@@ -1032,6 +1090,7 @@ class BoardShareService
             $groupId = 'klxm-file-group-' . (int) $share['id'] . '-' . $groupIndex;
             $groupAnchorId = 'klxm-group-anchor-' . (int) $share['id'] . '-' . $groupIndex;
             $downloadCsrf = rex_csrf_token::factory('klxm_restricted_file_share_download')->getValue();
+            $singleDownloadedFiles = self::getSingleDownloadedFiles((int) ($share['id'] ?? 0));
             $html .= '<div class="uk-margin-medium klxm-group-block" id="' . htmlspecialchars($groupAnchorId) . '">';
             $html .= '<h3 class="uk-heading-bullet"><span>' . htmlspecialchars($group['name']) . '</span></h3>';
             $html .= '<form method="post" class="klxm-zip-selected-form" data-share-token="' . htmlspecialchars($token) . '">';
@@ -1055,6 +1114,11 @@ class BoardShareService
 
             foreach ($group['files'] as $fileIndex => $file) {
                 $displayName = trim($file['title']) !== '' ? $file['title'] : $file['filename'];
+                $filename = (string) ($file['filename'] ?? '');
+                $singleAlreadyDownloaded = isset($singleDownloadedFiles[$filename]);
+                $fileLimitMax = (int) ($perFileLimits[$filename] ?? 0);
+                $fileLimitCurrent = (int) ($perFileCounts[$filename] ?? 0);
+                $fileLimitReached = $fileLimitMax > 0 && $fileLimitCurrent >= $fileLimitMax;
                 $singleActionUrl = self::buildShareUrl($share, $token, [
                     'klxm_board_share_download' => 'file',
                     'file' => $file['filename'],
@@ -1063,24 +1127,39 @@ class BoardShareService
                 $descriptionHtml = self::renderDescriptionCell((string) $file['description'], (int) $share['id'], (int) $groupIndex, (int) $fileIndex);
                 $searchText = strtolower($displayName . ' ' . $file['filename'] . ' ' . $file['description']);
                 $html .= '<tr data-search="' . htmlspecialchars($searchText) . '">';
-                $html .= '<td><input class="klxm-file-checkbox" type="checkbox" name="selected_files[]" value="' . htmlspecialchars($file['filename']) . '"></td>';
+                $html .= '<td><input class="klxm-file-checkbox" type="checkbox" name="selected_files[]" value="' . htmlspecialchars($file['filename']) . '"' . ($fileLimitReached ? ' disabled' : '') . '></td>';
                 $html .= '<td>' . $previewHtml . '</td>';
                 $html .= '<td><strong>' . htmlspecialchars($displayName) . '</strong><br><span class="uk-text-meta">' . htmlspecialchars($file['filename']) . '</span></td>';
-                $html .= '<td>' . $descriptionHtml . '</td>';
+                $html .= '<td>' . $descriptionHtml;
+                if ($fileLimitMax > 0) {
+                    $html .= '<div class="uk-text-meta uk-margin-small-top">Kontingent: ' . $fileLimitCurrent . '/' . $fileLimitMax . '</div>';
+                }
+                $html .= '</td>';
                 $html .= '<td>' . htmlspecialchars(self::formatDate($file['updatedate'])) . '</td>';
                 $html .= '<td class="uk-text-right">' . htmlspecialchars(self::formatBytes($file['filesize'])) . '</td>';
                 $html .= '<td class="uk-text-nowrap">';
                 $html .= '<input type="hidden" name="klxm_board_share_download" value="file">';
-                $html .= '<button type="submit" class="uk-icon-button" '
-                    . 'formaction="' . htmlspecialchars($singleActionUrl) . '" '
-                    . 'formmethod="post" '
-                    . 'name="file" '
-                    . 'value="' . htmlspecialchars($file['filename']) . '" '
-                    . 'title="Datei herunterladen" '
-                    . 'aria-label="Datei herunterladen: ' . htmlspecialchars($displayName) . '">'
-                    . self::renderDownloadIconSvg()
-                    . '<span class="uk-hidden-visually">Datei herunterladen</span>'
-                    . '</button>';
+                if ($singleAlreadyDownloaded || $fileLimitReached) {
+                    $disabledReason = $singleAlreadyDownloaded
+                        ? 'Datei wurde bereits als Einzeldownload geladen.'
+                        : 'Kontingent für diese Datei ist erreicht.';
+                    $html .= '<button type="button" class="uk-icon-button" disabled title="' . htmlspecialchars($disabledReason) . '" uk-tooltip="' . htmlspecialchars($disabledReason) . '">'
+                        . self::renderDownloadIconSvg()
+                        . '<span class="uk-hidden-visually">Download nicht verfügbar</span>'
+                        . '</button>';
+                } else {
+                    $html .= '<button type="submit" class="uk-icon-button klxm-single-download-btn" '
+                        . 'formaction="' . htmlspecialchars($singleActionUrl) . '" '
+                        . 'formmethod="post" '
+                        . 'name="file" '
+                        . 'value="' . htmlspecialchars($file['filename']) . '" '
+                        . 'data-disabled-reason="Datei wurde bereits als Einzeldownload geladen." '
+                        . 'title="Datei herunterladen" '
+                        . 'aria-label="Datei herunterladen: ' . htmlspecialchars($displayName) . '">'
+                        . self::renderDownloadIconSvg()
+                        . '<span class="uk-hidden-visually">Datei herunterladen</span>'
+                        . '</button>';
+                }
                 $html .= '</td>';
                 $html .= '</tr>';
             }
@@ -1111,7 +1190,7 @@ class BoardShareService
             . 'function applySearch(needle){var query=(needle||"").toLowerCase().trim();root.querySelectorAll("tbody tr[data-search]").forEach(function(row){var hay=(row.getAttribute("data-search")||"").toLowerCase();row.style.display=(query===""||hay.indexOf(query)!==-1)?"":"none";});root.querySelectorAll(".klxm-group-block").forEach(function(block){var visibleRows=block.querySelectorAll("tbody tr[data-search]:not([style*=\"display: none\"])").length;block.style.display=visibleRows>0?"":"none";});}'
             . 'root.addEventListener("change",function(e){var t=e.target;if(t.classList.contains("klxm-select-group")){var id=t.getAttribute("data-target")||"";var wrap=document.getElementById(id);if(wrap){wrap.querySelectorAll(".klxm-file-checkbox").forEach(function(cb){cb.checked=t.checked;});}refreshSelectedButton();return;}if(t.classList.contains("klxm-file-checkbox")){refreshSelectedButton();return;}if(t.classList.contains("klxm-jump-menu")){var target=t.value||"";if(target!==""){var el=document.querySelector(target);if(el){el.scrollIntoView({behavior:"smooth",block:"start"});}}return;}if(t.classList.contains("klxm-sort-select")){var value=(t.value||"manual").toLowerCase();if(value!=="asc"&&value!=="desc"&&value!=="manual"){value="manual";}var u=new URL(window.location.href);if(value==="manual"){u.searchParams.delete("klxm_sort");}else{u.searchParams.set("klxm_sort",value);}window.location.href=u.toString();return;}});'
             . 'root.addEventListener("input",function(e){var t=e.target;if(t.classList.contains("klxm-live-search")){applySearch(t.value||"");}});'
-            . 'root.addEventListener("click",function(e){var descToggle=e.target.closest(".klxm-desc-toggle");if(descToggle){e.preventDefault();var targetId=descToggle.getAttribute("data-target")||"";var full=document.getElementById(targetId);if(full){var show=full.hasAttribute("hidden");if(show){full.removeAttribute("hidden");descToggle.textContent="Weniger";descToggle.setAttribute("aria-expanded","true");}else{full.setAttribute("hidden","");descToggle.textContent="Mehr";descToggle.setAttribute("aria-expanded","false");}}return;}var preview=e.target.closest(".klxm-preview-trigger");if(preview){e.preventDefault();openPreview(decodeUrl(preview.getAttribute("data-preview-url")||""),preview.getAttribute("data-preview-title")||"",preview.getAttribute("data-preview-type")||"image");return;}var allBtn=e.target.closest(".klxm-zip-all-btn");if(allBtn){e.preventDefault();create("all",[]);return;}var selectedBtn=e.target.closest(".klxm-zip-selected-btn");if(selectedBtn){e.preventDefault();var selected=collectSelected();if(selected.length===0){setStatus("Bitte zuerst Dateien auswählen.");return;}create("selected",selected);}});'
+            . 'root.addEventListener("click",function(e){var singleBtn=e.target.closest(".klxm-single-download-btn");if(singleBtn){if(singleBtn.disabled){e.preventDefault();return;}window.setTimeout(function(){singleBtn.disabled=true;singleBtn.classList.add("is-disabled");var reason=singleBtn.getAttribute("data-disabled-reason")||"Datei wurde bereits als Einzeldownload geladen.";singleBtn.setAttribute("title",reason);singleBtn.setAttribute("uk-tooltip",reason);if(window.UIkit&&typeof window.UIkit.tooltip==="function"){window.UIkit.tooltip(singleBtn);}},0);return;}var descToggle=e.target.closest(".klxm-desc-toggle");if(descToggle){e.preventDefault();var targetId=descToggle.getAttribute("data-target")||"";var full=document.getElementById(targetId);if(full){var show=full.hasAttribute("hidden");if(show){full.removeAttribute("hidden");descToggle.textContent="Weniger";descToggle.setAttribute("aria-expanded","true");}else{full.setAttribute("hidden","");descToggle.textContent="Mehr";descToggle.setAttribute("aria-expanded","false");}}return;}var preview=e.target.closest(".klxm-preview-trigger");if(preview){e.preventDefault();openPreview(decodeUrl(preview.getAttribute("data-preview-url")||""),preview.getAttribute("data-preview-title")||"",preview.getAttribute("data-preview-type")||"image");return;}var allBtn=e.target.closest(".klxm-zip-all-btn");if(allBtn){e.preventDefault();create("all",[]);return;}var selectedBtn=e.target.closest(".klxm-zip-selected-btn");if(selectedBtn){e.preventDefault();var selected=collectSelected();if(selected.length===0){setStatus("Bitte zuerst Dateien auswählen.");return;}create("selected",selected);}});'
             . 'if(previewModal){previewModal.addEventListener("click",function(e){if(e.target===previewModal||e.target.closest(".klxm-preview-close")){closePreview();}});document.addEventListener("keydown",function(e){if(e.key==="Escape"&&previewModal.classList.contains("is-open")){closePreview();}});}'
             . 'refreshSelectedButton();'
             . '})();</script>';
@@ -1262,6 +1341,10 @@ class BoardShareService
 
             if ($field['required'] && $type !== 'checkbox' && $value === '') {
                 return ['success' => '', 'error' => 'Bitte Feld "' . $field['label'] . '" ausfüllen.'];
+            }
+
+            if (in_array($type, ['select', 'radio', 'rating'], true) && $value !== '' && $field['options'] !== [] && !in_array($value, $field['options'], true)) {
+                return ['success' => '', 'error' => 'Ungültige Auswahl im Feld "' . $field['label'] . '".'];
             }
 
             $payload[$fieldKey] = $value;
@@ -1468,13 +1551,35 @@ class BoardShareService
             $requiredMark = $field['required'] ? ' *' : '';
 
             $html .= '<div class="uk-margin">';
-            $html .= '<label class="uk-form-label" for="' . htmlspecialchars($fieldId) . '">' . htmlspecialchars($field['label']) . $requiredMark . '</label>';
+            if ($field['type'] !== 'checkbox' && $field['type'] !== 'rating') {
+                $html .= '<label class="uk-form-label" for="' . htmlspecialchars($fieldId) . '">' . htmlspecialchars($field['label']) . $requiredMark . '</label>';
+            }
             $html .= '<div class="uk-form-controls">';
 
             if ($field['type'] === 'textarea') {
                 $html .= '<textarea class="uk-textarea" id="' . htmlspecialchars($fieldId) . '" name="' . htmlspecialchars($field['key']) . '"' . $requiredAttr . '></textarea>';
             } elseif ($field['type'] === 'checkbox') {
-                $html .= '<label><input class="uk-checkbox" type="checkbox" id="' . htmlspecialchars($fieldId) . '" name="' . htmlspecialchars($field['key']) . '" value="1"> ' . htmlspecialchars($field['label']) . '</label>';
+                $html .= '<label><input class="uk-checkbox" type="checkbox" id="' . htmlspecialchars($fieldId) . '" name="' . htmlspecialchars($field['key']) . '" value="1"' . $requiredAttr . '> ' . htmlspecialchars($field['label']) . $requiredMark . '</label>';
+            } elseif ($field['type'] === 'radio') {
+                $html .= '<div class="klxm-radio-group" role="radiogroup" aria-label="' . htmlspecialchars($field['label']) . '">';
+                foreach ($field['options'] as $optionIndex => $option) {
+                    $optionId = $fieldId . '_opt_' . $optionIndex;
+                    $requiredOptionAttr = ($field['required'] && $optionIndex === 0) ? ' required' : '';
+                    $html .= '<label class="klxm-radio-option" for="' . htmlspecialchars($optionId) . '">';
+                    $html .= '<input class="uk-radio" type="radio" id="' . htmlspecialchars($optionId) . '" name="' . htmlspecialchars($field['key']) . '" value="' . htmlspecialchars($option) . '"' . $requiredOptionAttr . '>';
+                    $html .= htmlspecialchars($option) . '</label>';
+                }
+                $html .= '</div>';
+            } elseif ($field['type'] === 'rating') {
+                $html .= '<label class="uk-form-label" for="' . htmlspecialchars($fieldId) . '_star_1">' . htmlspecialchars($field['label']) . $requiredMark . '</label>';
+                $html .= '<div class="klxm-rating" role="radiogroup" aria-label="' . htmlspecialchars($field['label']) . '">';
+                foreach (array_reverse($field['options']) as $optionIndex => $option) {
+                    $optionId = $fieldId . '_star_' . ($optionIndex + 1);
+                    $requiredOptionAttr = ($field['required'] && $optionIndex === (count($field['options']) - 1)) ? ' required' : '';
+                    $html .= '<input type="radio" id="' . htmlspecialchars($optionId) . '" name="' . htmlspecialchars($field['key']) . '" value="' . htmlspecialchars($option) . '"' . $requiredOptionAttr . '>';
+                    $html .= '<label for="' . htmlspecialchars($optionId) . '" title="' . htmlspecialchars($option) . ' Sterne" aria-label="' . htmlspecialchars($option) . ' Sterne">★</label>';
+                }
+                $html .= '</div>';
             } elseif ($field['type'] === 'select') {
                 $html .= '<select class="uk-select" id="' . htmlspecialchars($fieldId) . '" name="' . htmlspecialchars($field['key']) . '"' . $requiredAttr . '>';
                 $html .= '<option value="">Bitte wählen</option>';
@@ -1644,7 +1749,7 @@ class BoardShareService
             return [];
         }
 
-        $allowedTypes = ['text', 'textarea', 'checkbox', 'select'];
+        $allowedTypes = ['text', 'textarea', 'checkbox', 'select', 'radio', 'rating'];
         $fields = [];
         foreach ($decoded as $field) {
             if (!is_array($field)) {
@@ -1660,13 +1765,33 @@ class BoardShareService
             }
 
             $options = [];
-            if ($type === 'select') {
+            if (in_array($type, ['select', 'radio', 'rating'], true)) {
                 $rawOptions = (string) ($field['options'] ?? '');
                 foreach (explode('|', $rawOptions) as $opt) {
                     $opt = trim($opt);
                     if ($opt !== '') {
                         $options[] = $opt;
                     }
+                }
+
+                if ($type === 'rating') {
+                    if ($options === []) {
+                        $options = ['1', '2', '3', '4', '5'];
+                    }
+
+                    $normalized = [];
+                    foreach ($options as $option) {
+                        if (ctype_digit($option) && (int) $option > 0) {
+                            $normalized[] = (string) (int) $option;
+                        }
+                    }
+                    $normalized = array_values(array_unique($normalized));
+                    sort($normalized, SORT_NUMERIC);
+                    $options = $normalized !== [] ? $normalized : ['1', '2', '3', '4', '5'];
+                }
+
+                if ($type === 'radio' && $options === []) {
+                    $options = ['Ja', 'Nein'];
                 }
             }
 
@@ -1763,24 +1888,30 @@ class BoardShareService
     /**
      * @param array<string, mixed> $share
      */
-    private static function downloadSingleFile(array $share, string $filename, ?int $requestId = null): never
+    private static function downloadSingleFile(array $share, string $filename, string $token, ?int $requestId = null): never
     {
         if ($filename === '' || basename($filename) !== $filename || str_contains($filename, '/') || str_contains($filename, '\\')) {
             self::sendText('Ungültiger Dateiname.', rex_response::HTTP_BAD_REQUEST);
         }
 
-        $allowed = self::collectAllowedFilenames($share);
+        $allowed = self::collectDownloadableFilenames($share);
         if (!in_array($filename, $allowed, true)) {
-            self::sendText('Datei ist nicht Teil der Freigabe.', rex_response::HTTP_FORBIDDEN);
+            self::redirectToShareWithMessage($share, $token, 'Diese Datei ist nicht mehr zum Download verfügbar (nicht freigegeben oder Kontingent erreicht).', 'warning');
+        }
+
+        $shareId = (int) ($share['id'] ?? 0);
+        if (self::hasSingleFileDownloadBeenUsed($shareId, $filename)) {
+            self::redirectToShareWithMessage($share, $token, 'Diese Datei wurde bereits als Einzeldownload geladen.', 'warning');
         }
 
         $path = rex_path::media($filename);
         if (!is_file($path)) {
-            self::sendText('Datei nicht gefunden.', rex_response::HTTP_NOT_FOUND);
+            self::redirectToShareWithMessage($share, $token, 'Die Datei wurde nicht gefunden.', 'warning');
         }
 
         self::increaseDownloadCount((int) $share['id']);
         self::recordFileDownloadEvents((int) $share['id'], (int) ($share['article_id'] ?? 0), [$filename], 'file', $requestId);
+        self::markSingleFileDownloaded($shareId, $filename);
         rex_response::sendFile($path, 'application/octet-stream', 'attachment', $filename);
         exit;
     }
@@ -2039,6 +2170,117 @@ class BoardShareService
         return array_values(array_unique($files));
     }
 
+    /**
+     * @param array<string, mixed> $share
+     * @return string[]
+     */
+    private static function collectDownloadableFilenames(array $share): array
+    {
+        $allowed = self::collectAllowedFilenames($share);
+        $limits = self::decodeFileDownloadLimits($share);
+        if ($limits === []) {
+            return $allowed;
+        }
+
+        $counts = self::getPerFileDownloadCountMap((int) ($share['id'] ?? 0));
+        $result = [];
+        foreach ($allowed as $filename) {
+            $max = (int) ($limits[$filename] ?? 0);
+            if ($max > 0 && (int) ($counts[$filename] ?? 0) >= $max) {
+                continue;
+            }
+            $result[] = $filename;
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param array<string, mixed> $share
+     * @return array<string, int>
+     */
+    private static function decodeFileDownloadLimits(array $share): array
+    {
+        $raw = trim((string) ($share['file_download_limits_json'] ?? ''));
+        if ($raw === '') {
+            return [];
+        }
+
+        $decoded = json_decode($raw, true);
+        if (!is_array($decoded)) {
+            return [];
+        }
+
+        $limits = [];
+        foreach ($decoded as $filename => $max) {
+            if (!is_string($filename) || $filename === '') {
+                continue;
+            }
+            if (basename($filename) !== $filename || str_contains($filename, '/') || str_contains($filename, '\\')) {
+                continue;
+            }
+            $maxValue = (int) $max;
+            if ($maxValue > 0) {
+                $limits[$filename] = $maxValue;
+            }
+        }
+
+        return $limits;
+    }
+
+    /**
+     * @param array<string, int> $limits
+     */
+    private static function encodeFileDownloadLimits(array $limits): string
+    {
+        $clean = [];
+        foreach ($limits as $filename => $max) {
+            if (!is_string($filename) || $filename === '') {
+                continue;
+            }
+            if (basename($filename) !== $filename || str_contains($filename, '/') || str_contains($filename, '\\')) {
+                continue;
+            }
+            $maxValue = (int) $max;
+            if ($maxValue > 0) {
+                $clean[$filename] = $maxValue;
+            }
+        }
+
+        if ($clean === []) {
+            return '[]';
+        }
+
+        ksort($clean);
+        return (string) json_encode($clean, JSON_UNESCAPED_UNICODE);
+    }
+
+    /**
+     * @return array<string, int>
+     */
+    private static function getPerFileDownloadCountMap(int $shareId): array
+    {
+        if ($shareId <= 0) {
+            return [];
+        }
+
+        $rows = rex_sql::factory()->getArray(
+            'SELECT filename, COUNT(*) AS cnt FROM ' . rex::getTable('klxm_restricted_file_share_download') . ' WHERE share_id = ? GROUP BY filename',
+            [$shareId]
+        );
+
+        $result = [];
+        foreach ($rows as $row) {
+            $filename = (string) ($row['filename'] ?? '');
+            if ($filename === '') {
+                continue;
+            }
+            $result[$filename] = (int) ($row['cnt'] ?? 0);
+        }
+
+        return $result;
+    }
+
     private static function increaseDownloadCount(int $shareId): void
     {
         rex_sql::factory()->setQuery(
@@ -2050,6 +2292,137 @@ class BoardShareService
                 $shareId,
             ]
         );
+    }
+
+    /**
+     * @return array<string, true>
+     */
+    private static function getSingleDownloadedFiles(int $shareId): array
+    {
+        if ($shareId <= 0) {
+            return [];
+        }
+
+        rex_login::startSession();
+        $raw = (string) rex_session(self::getSingleDownloadSessionKey($shareId), 'string', '');
+        if ($raw === '') {
+            return [];
+        }
+
+        $decoded = json_decode($raw, true);
+        if (!is_array($decoded)) {
+            return [];
+        }
+
+        $result = [];
+        foreach ($decoded as $filename) {
+            if (!is_string($filename) || $filename === '') {
+                continue;
+            }
+            if (basename($filename) !== $filename || str_contains($filename, '/') || str_contains($filename, '\\')) {
+                continue;
+            }
+            $result[$filename] = true;
+        }
+
+        return $result;
+    }
+
+    private static function hasSingleFileDownloadBeenUsed(int $shareId, string $filename): bool
+    {
+        if ($shareId <= 0 || $filename === '') {
+            return false;
+        }
+
+        return isset(self::getSingleDownloadedFiles($shareId)[$filename]);
+    }
+
+    private static function markSingleFileDownloaded(int $shareId, string $filename): void
+    {
+        if ($shareId <= 0 || $filename === '') {
+            return;
+        }
+
+        $files = self::getSingleDownloadedFiles($shareId);
+        $files[$filename] = true;
+        rex_set_session(self::getSingleDownloadSessionKey($shareId), (string) json_encode(array_keys($files), JSON_UNESCAPED_UNICODE));
+    }
+
+    private static function getSingleDownloadSessionKey(int $shareId): string
+    {
+        return 'klxm_restricted_file_share_single_downloaded_' . $shareId;
+    }
+
+    private static function getShareUiMessageSessionKey(int $shareId): string
+    {
+        return 'klxm_restricted_file_share_ui_message_' . $shareId;
+    }
+
+    private static function pushShareUiMessage(int $shareId, string $message, string $type = 'warning'): void
+    {
+        if ($shareId <= 0 || trim($message) === '') {
+            return;
+        }
+
+        $allowedTypes = ['success', 'warning', 'danger', 'primary'];
+        if (!in_array($type, $allowedTypes, true)) {
+            $type = 'warning';
+        }
+
+        rex_login::startSession();
+        rex_set_session(
+            self::getShareUiMessageSessionKey($shareId),
+            (string) json_encode([
+                'message' => $message,
+                'type' => $type,
+            ], JSON_UNESCAPED_UNICODE)
+        );
+    }
+
+    private static function consumeShareUiMessageHtml(int $shareId): string
+    {
+        if ($shareId <= 0) {
+            return '';
+        }
+
+        rex_login::startSession();
+        $key = self::getShareUiMessageSessionKey($shareId);
+        $raw = (string) rex_session($key, 'string', '');
+        if ($raw === '') {
+            return '';
+        }
+
+        rex_unset_session($key);
+        $decoded = json_decode($raw, true);
+        if (!is_array($decoded)) {
+            return '';
+        }
+
+        $message = trim((string) ($decoded['message'] ?? ''));
+        if ($message === '') {
+            return '';
+        }
+
+        $type = (string) ($decoded['type'] ?? 'warning');
+        $allowedTypes = ['success', 'warning', 'danger', 'primary'];
+        if (!in_array($type, $allowedTypes, true)) {
+            $type = 'warning';
+        }
+
+        return '<div class="uk-alert-' . $type . ' uk-margin-top" uk-alert>' . htmlspecialchars($message) . '</div>';
+    }
+
+    /**
+     * @param array<string, mixed> $share
+     */
+    private static function redirectToShareWithMessage(array $share, string $token, string $message, string $type = 'warning'): never
+    {
+        $shareId = (int) ($share['id'] ?? 0);
+        self::pushShareUiMessage($shareId, $message, $type);
+
+        rex_response::cleanOutputBuffers();
+        rex_response::sendRedirect(self::buildCurrentShareUrl($token, []), 303);
+        exit;
     }
 
     /**
@@ -2813,10 +3186,36 @@ class BoardShareService
 
     private static function sendText(string $text, string $statusCode): never
     {
+        $status = (int) $statusCode;
+        $alertClass = 'uk-alert-primary';
+        $title = 'Hinweis';
+
+        if ($status >= 500) {
+            $alertClass = 'uk-alert-danger';
+            $title = 'Fehler';
+        } elseif ($status === 403) {
+            $alertClass = 'uk-alert-danger';
+            $title = 'Kein Zugriff';
+        } elseif ($status === 404) {
+            $alertClass = 'uk-alert-warning';
+            $title = 'Nicht gefunden';
+        } elseif ($status >= 400) {
+            $alertClass = 'uk-alert-warning';
+            $title = 'Hinweis';
+        }
+
+        $branding = self::getShareBranding();
+        $html = self::renderShareBaseStyles($branding['accent']);
+        $html .= '<section class="uk-section uk-section-small"><div class="uk-container"><div class="uk-card uk-card-default uk-card-body">';
+        $html .= self::renderShareBrandingHeader($branding);
+        $html .= '<h3>' . htmlspecialchars($title) . '</h3>';
+        $html .= '<div class="' . $alertClass . '" uk-alert>' . htmlspecialchars($text) . '</div>';
+        $html .= '</div></div></section>';
+
         rex_response::cleanOutputBuffers();
         rex_response::setStatus($statusCode);
         rex_response::sendCacheControl('no-store, no-cache, must-revalidate');
-        rex_response::sendContent('<!doctype html><meta charset="utf-8"><p>' . htmlspecialchars($text) . '</p>', 'text/html; charset=utf-8');
+        rex_response::sendContent('<!doctype html><meta charset="utf-8">' . $html, 'text/html; charset=utf-8');
         exit;
     }
 

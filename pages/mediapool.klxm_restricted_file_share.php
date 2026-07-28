@@ -181,6 +181,7 @@ $defaultFormData = [
     'description' => '',
     'expires_at' => '',
     'max_downloads' => '0',
+    'file_download_limit_rows' => [],
     'allow_zip' => true,
     'request_enabled' => true,
     'request_valid_days' => (string) $defaultRequestValidDays,
@@ -196,6 +197,26 @@ if (is_array($editShare)) {
     $defaultFormData['description'] = (string) ($editShare['description'] ?? '');
     $defaultFormData['expires_at'] = (string) ($editShare['expires_at'] ?? '');
     $defaultFormData['max_downloads'] = (string) ((int) ($editShare['max_downloads'] ?? 0));
+    $defaultFormData['file_download_limit_rows'] = [];
+    $rawFileLimits = trim((string) ($editShare['file_download_limits_json'] ?? ''));
+    if ($rawFileLimits !== '') {
+        $decodedFileLimits = json_decode($rawFileLimits, true);
+        if (is_array($decodedFileLimits)) {
+            foreach ($decodedFileLimits as $filename => $maxDownloadsPerFile) {
+                if (!is_string($filename) || $filename === '') {
+                    continue;
+                }
+                $maxPerFile = (int) $maxDownloadsPerFile;
+                if ($maxPerFile <= 0) {
+                    continue;
+                }
+                $defaultFormData['file_download_limit_rows'][] = [
+                    'medialist' => $filename,
+                    'max' => (string) $maxPerFile,
+                ];
+            }
+        }
+    }
     $defaultFormData['allow_zip'] = (int) ($editShare['allow_zip'] ?? 0) === 1;
     $defaultFormData['request_enabled'] = (int) ($editShare['request_enabled'] ?? 0) === 1;
     $defaultFormData['request_valid_days'] = (string) max(1, (int) ($editShare['request_valid_days'] ?? $defaultRequestValidDays));
@@ -265,6 +286,8 @@ if (rex_request('create_file_share', 'int', 0) === 1) {
         $expiresRaw = trim(rex_request('expires_at', 'string', ''));
         $allowZip = rex_request('allow_zip', 'int', 0) === 1;
         $maxDownloads = rex_request('max_downloads', 'int', 0);
+        $fileLimitMedialists = rex_request('file_limit_medialist', 'array', []);
+        $fileLimitValues = rex_request('file_limit_value', 'array', []);
         $requestIntroText = trim(rex_request('request_intro_text', 'string', ''));
         $requestEnabled = rex_request('request_enabled', 'int', 0) === 1;
         $requestValidDays = rex_request('request_valid_days', 'int', $defaultRequestValidDays);
@@ -279,9 +302,33 @@ if (rex_request('create_file_share', 'int', 0) === 1) {
         $categorizedGroupManualFiles = rex_request('categorized_group_manual_files', 'array', []);
         $categorizedGroupManualMedialists = rex_request('categorized_group_manual_medialist', 'array', []);
 
+        $fileDownloadLimits = [];
+        $fileLimitRowCount = max(count($fileLimitMedialists), count($fileLimitValues));
+        for ($i = 0; $i < $fileLimitRowCount; $i++) {
+            $medialistRaw = isset($fileLimitMedialists[$i]) && is_string($fileLimitMedialists[$i]) ? trim($fileLimitMedialists[$i]) : '';
+            $maxRaw = isset($fileLimitValues[$i]) && is_string($fileLimitValues[$i]) ? trim($fileLimitValues[$i]) : '';
+
+            if ($medialistRaw === '' || $maxRaw === '' || !ctype_digit($maxRaw)) {
+                continue;
+            }
+
+            $maxValue = (int) $maxRaw;
+            if ($maxValue <= 0) {
+                continue;
+            }
+
+            $selectedFiles = array_filter(array_map('trim', explode(',', $medialistRaw)), static fn (string $value): bool => $value !== '');
+            foreach ($selectedFiles as $selectedFile) {
+                if (basename($selectedFile) !== $selectedFile || str_contains($selectedFile, '/') || str_contains($selectedFile, '\\')) {
+                    continue;
+                }
+                $fileDownloadLimits[$selectedFile] = $maxValue;
+            }
+        }
+
         $requestFields = [];
         $rowCount = max(count($requestFieldKeys), count($requestFieldLabels), count($requestFieldTypes));
-        $allowedTypes = ['text', 'textarea', 'checkbox', 'select'];
+        $allowedTypes = ['text', 'textarea', 'checkbox', 'select', 'radio', 'rating'];
         for ($i = 0; $i < $rowCount; $i++) {
             $key = isset($requestFieldKeys[$i]) && is_string($requestFieldKeys[$i]) ? trim($requestFieldKeys[$i]) : '';
             $label = isset($requestFieldLabels[$i]) && is_string($requestFieldLabels[$i]) ? trim($requestFieldLabels[$i]) : '';
@@ -439,7 +486,8 @@ if (rex_request('create_file_share', 'int', 0) === 1) {
                         $password !== '' ? $password : null,
                         $clearPassword,
                         $expiresAt,
-                        $maxDownloads > 0 ? $maxDownloads : null
+                        $maxDownloads > 0 ? $maxDownloads : null,
+                        $fileDownloadLimits
                     );
 
                     $updatedShare = BoardShareService::getShareById($editShareIdPost);
@@ -455,6 +503,7 @@ if (rex_request('create_file_share', 'int', 0) === 1) {
                     $defaultFormData['description'] = '';
                     $defaultFormData['expires_at'] = '';
                     $defaultFormData['max_downloads'] = '0';
+                    $defaultFormData['file_download_limit_rows'] = [];
                     $defaultFormData['allow_zip'] = true;
                     $defaultFormData['request_enabled'] = true;
                     $defaultFormData['request_valid_days'] = (string) $defaultRequestValidDays;
@@ -482,6 +531,7 @@ if (rex_request('create_file_share', 'int', 0) === 1) {
                         $password !== '' ? $password : null,
                         $expiresAt,
                         $maxDownloads > 0 ? $maxDownloads : null,
+                        $fileDownloadLimits,
                         $user->getLogin()
                     );
 
@@ -671,6 +721,52 @@ if ($selectedCategoryId <= 0) {
     echo '<input id="max_downloads" class="form-control" type="number" min="0" step="1" name="max_downloads" placeholder="0 = unbegrenzt" value="' . htmlspecialchars((string) $defaultFormData['max_downloads']) . '">';
     echo '</div>';
 
+    echo '<div class="panel panel-default">';
+    echo '<div class="panel-heading"><strong>Datei-Kontingente pro Datei (optional)</strong></div>';
+    echo '<div class="panel-body">';
+    echo '<p class="help-block">Zeilenweise via Mediapool-Picker wählen und Anzahl setzen. Ist das Kontingent erreicht, wird die Datei im Frontend nicht mehr zum Download angeboten.</p>';
+
+    $limitRows = is_array($defaultFormData['file_download_limit_rows']) ? $defaultFormData['file_download_limit_rows'] : [];
+
+    echo '<div id="klxm-file-limit-rows">';
+
+    foreach ($limitRows as $rowIndex => $limitRow) {
+        $medialistValue = is_array($limitRow) ? (string) ($limitRow['medialist'] ?? '') : '';
+        $maxValue = is_array($limitRow) ? (string) ($limitRow['max'] ?? '') : '';
+        $widgetId = (string) (97000 + (int) $rowIndex);
+
+        echo '<div class="row klxm-file-limit-row" data-row-index="' . (int) $rowIndex . '" style="margin-bottom:8px;">';
+        echo '<div class="col-sm-9">' . \rex_var_medialist::getWidget(
+            $widgetId,
+            'file_limit_medialist[' . $rowIndex . ']',
+            $medialistValue,
+            ['category' => $selectedCategoryId]
+        ) . '</div>';
+        echo '<div class="col-sm-2"><input class="form-control" type="number" min="1" step="1" name="file_limit_value[' . $rowIndex . ']" placeholder="Max" value="' . htmlspecialchars($maxValue) . '"></div>';
+        echo '<div class="col-sm-1"><button type="button" class="btn btn-default form-control klxm-file-limit-remove">-</button></div>';
+        echo '</div>';
+    }
+
+    echo '</div>';
+    echo '<button type="button" class="btn btn-default" id="klxm-file-limit-add">Zeile hinzufügen</button>';
+
+    echo '<template id="klxm-file-limit-template">';
+    echo '<div class="row klxm-file-limit-row" data-row-index="__INDEX__" style="margin-bottom:8px;">';
+    echo '<div class="col-sm-9">' . \rex_var_medialist::getWidget(
+        '97000__INDEX__',
+        'file_limit_medialist[__INDEX__]',
+        '',
+        ['category' => $selectedCategoryId]
+    ) . '</div>';
+    echo '<div class="col-sm-2"><input class="form-control" type="number" min="1" step="1" name="file_limit_value[__INDEX__]" placeholder="Max"></div>';
+    echo '<div class="col-sm-1"><button type="button" class="btn btn-default form-control klxm-file-limit-remove">-</button></div>';
+    echo '</div>';
+    echo '</template>';
+
+    echo '<p class="help-block">Hinweis: Wenn im Picker mehrere Dateien gewählt sind, gilt der Max-Wert für alle ausgewählten Dateien dieser Zeile.</p>';
+    echo '</div>';
+    echo '</div>';
+
     echo '<div class="checkbox">';
     echo '<label><input type="checkbox" name="allow_zip" value="1"' . ((bool) $defaultFormData['allow_zip'] ? ' checked' : '') . '> ZIP-Downloads erlauben (einzeln/ausgewaehlt/alle)</label>';
     echo '</div>';
@@ -699,7 +795,7 @@ if ($selectedCategoryId <= 0) {
     echo '<div class="panel panel-default">';
     echo '<div class="panel-heading"><strong>Formularfelder (zusetzlich zu E-Mail)</strong></div>';
     echo '<div class="panel-body">';
-    echo '<p class="help-block">Typen: Text, Freitext, Checkbox, Select. Bei Select Optionen mit | trennen, z. B. Einkauf|Bauleitung|Geschaeftsfuehrung.</p>';
+    echo '<p class="help-block">Typen: Text, Freitext, Checkbox, Select, Radio, Rating. Bei Select/Radio Optionen mit | trennen, z. B. Einkauf|Bauleitung|Geschaeftsfuehrung. Rating nutzt standardmäßig 1|2|3|4|5 Sterne.</p>';
     echo '<div id="klxm-request-fields">';
 
     $requestFieldRows = is_array($defaultFormData['request_fields']) ? $defaultFormData['request_fields'] : [];
@@ -727,6 +823,8 @@ if ($selectedCategoryId <= 0) {
         echo '<option value="textarea"' . ($rowType === 'textarea' ? ' selected' : '') . '>Freitext</option>';
         echo '<option value="checkbox"' . ($rowType === 'checkbox' ? ' selected' : '') . '>Checkbox</option>';
         echo '<option value="select"' . ($rowType === 'select' ? ' selected' : '') . '>Select</option>';
+        echo '<option value="radio"' . ($rowType === 'radio' ? ' selected' : '') . '>Radio</option>';
+        echo '<option value="rating"' . ($rowType === 'rating' ? ' selected' : '') . '>Rating (Sterne)</option>';
         echo '</select>';
         echo '</div>';
         echo '<div class="col-sm-3"><input class="form-control" type="text" name="request_field_options[]" placeholder="Optionen fuer Select" value="' . $rowOptions . '"></div>';

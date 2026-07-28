@@ -46,7 +46,7 @@ page:
             perm: klxm_restricted[pastebin]
             icon: rex-icon fa-clipboard
         share_requests:
-            title: Freigabe-Anfragen
+            title: Medienstatistik
             perm: klxm_restricted[share]
             icon: rex-icon fa-line-chart
         setup:
