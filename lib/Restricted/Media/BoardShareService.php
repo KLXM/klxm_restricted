@@ -1025,7 +1025,8 @@ class BoardShareService
             . '.klxm-file-table .klxm-row-actions .uk-icon-button{flex:0 0 auto}'
             . '.klxm-file-table .klxm-row-actions .klxm-details-trigger{white-space:nowrap;padding:0;min-height:auto}'
             . '.klxm-file-table .klxm-title-trigger{padding:0;min-height:auto;display:block;text-align:left;width:100%}'
-            . '.klxm-file-table .klxm-title-trigger:hover .klxm-row-title{text-decoration:underline}'
+            . '.klxm-file-table .klxm-title-trigger.is-clickable{cursor:pointer}'
+            . '.klxm-file-table .klxm-title-trigger.is-clickable:hover .klxm-row-title{text-decoration:underline}'
             . '.klxm-file-table .klxm-row-select{display:inline-flex;align-items:center;justify-content:center;gap:8px;margin:0;min-height:28px}'
             . '.klxm-toolbar-status{flex:0 0 120px;min-width:100px}'
             . '.klxm-search-wrap{flex:1 1 560px;min-width:360px}'
@@ -1243,7 +1244,7 @@ class BoardShareService
         }
         $infoIndicator = $hasDescription ? '<span class="klxm-info-indicator" aria-hidden="true" title="Beschreibung vorhanden">i</span><span class="uk-hidden">Beschreibung vorhanden</span>' : '';
         if ($hasDescription) {
-            $html .= '<td data-label="Datei"><button type="button" class="uk-button uk-button-text klxm-title-trigger" uk-toggle="target: #' . htmlspecialchars($detailsId) . '" aria-label="Details öffnen: ' . htmlspecialchars($displayName) . '"><span class="klxm-row-title">' . htmlspecialchars($displayName) . '</span><span class="klxm-row-name"><span class="klxm-row-name-text">' . htmlspecialchars($filename) . '</span>' . $infoIndicator . '</span>' . $quotaInfo . '</button></td>';
+            $html .= '<td data-label="Datei"><button type="button" class="uk-button uk-button-text klxm-title-trigger is-clickable" uk-toggle="target: #' . htmlspecialchars($detailsId) . '" aria-label="Details öffnen: ' . htmlspecialchars($displayName) . '"><span class="klxm-row-title">' . htmlspecialchars($displayName) . '</span><span class="klxm-row-name"><span class="klxm-row-name-text">' . htmlspecialchars($filename) . '</span>' . $infoIndicator . '</span>' . $quotaInfo . '</button></td>';
         } else {
             $html .= '<td data-label="Datei"><div class="klxm-title-trigger"><span class="klxm-row-title">' . htmlspecialchars($displayName) . '</span><span class="klxm-row-name"><span class="klxm-row-name-text">' . htmlspecialchars($filename) . '</span></span>' . $quotaInfo . '</div></td>';
         }
