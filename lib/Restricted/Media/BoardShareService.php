@@ -986,8 +986,7 @@ class BoardShareService
             . '.klxm-file-card-title{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;text-overflow:ellipsis;min-height:2.7em;overflow-wrap:anywhere;word-break:break-word}'
             . '.klxm-file-card-name{display:flex;align-items:center;gap:6px;max-width:100%}'
             . '.klxm-file-card-name-text{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;flex:1 1 auto}'
-            . '.klxm-file-card-name .klxm-info-indicator{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;margin-left:6px;border-radius:50%;background:#e8f1fd;color:#1e87f0;vertical-align:middle}'
-            . '.klxm-file-card-name .klxm-info-indicator svg{width:10px;height:10px}'
+            . '.klxm-file-card-name .klxm-info-indicator{display:inline-flex;align-items:center;justify-content:center;margin-left:6px;color:#1e87f0;vertical-align:middle}'
             . '.klxm-file-card-quota{display:block;margin-top:4px;font-size:.86rem;color:#4f5f73}'
             . '.klxm-file-card-quota--reached{color:#b42318;font-weight:700}'
             . '.klxm-file-card .uk-card-body{display:flex;flex-direction:column;gap:10px}'
@@ -1011,8 +1010,7 @@ class BoardShareService
             . '.klxm-file-table .klxm-row-title{font-weight:700;line-height:1.3;overflow-wrap:anywhere;word-break:break-word}'
             . '.klxm-file-table .klxm-row-name{display:flex;align-items:center;gap:6px;color:#4f5f73;max-width:100%}'
             . '.klxm-file-table .klxm-row-name-text{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;flex:1 1 auto}'
-            . '.klxm-file-table .klxm-row-name .klxm-info-indicator{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;margin-left:6px;border-radius:50%;background:#e8f1fd;color:#1e87f0;vertical-align:middle}'
-            . '.klxm-file-table .klxm-row-name .klxm-info-indicator svg{width:10px;height:10px}'
+            . '.klxm-file-table .klxm-row-name .klxm-info-indicator{display:inline-flex;align-items:center;justify-content:center;margin-left:6px;color:#1e87f0;vertical-align:middle}'
             . '.klxm-file-table .klxm-row-quota{display:block;margin-top:4px;font-size:.82rem;color:#4f5f73}'
             . '.klxm-file-table .klxm-row-quota--reached{color:#b42318;font-weight:700}'
             . '.klxm-file-table .klxm-row-preview .klxm-preview-link{display:inline-flex;align-items:center;justify-content:center;width:78px;height:auto;max-height:56px;border:0;background:transparent;padding:0}'
@@ -1239,7 +1237,7 @@ class BoardShareService
             $quotaClass = $fileLimitReached ? ' klxm-row-quota--reached' : '';
             $quotaInfo = '<span class="klxm-row-quota' . $quotaClass . '">Kontingent: ' . $fileLimitCurrent . '/' . $fileLimitMax . '</span>';
         }
-        $infoIndicator = $hasDescription ? '<span class="klxm-info-indicator" uk-icon="icon: info; ratio: 0.58" aria-hidden="true" title="Beschreibung vorhanden"></span><span class="uk-hidden">Beschreibung vorhanden</span>' : '';
+        $infoIndicator = $hasDescription ? '<span class="klxm-info-indicator uk-text-primary" uk-icon="icon: info; ratio: 0.7" aria-hidden="true" title="Beschreibung vorhanden"></span><span class="uk-hidden">Beschreibung vorhanden</span>' : '';
         if ($hasDescription) {
             $html .= '<td data-label="Datei"><button type="button" class="uk-button uk-button-text klxm-title-trigger is-clickable" uk-toggle="target: #' . htmlspecialchars($detailsId) . '" aria-label="Details öffnen: ' . htmlspecialchars($displayName) . '"><span class="klxm-row-title">' . htmlspecialchars($displayName) . '</span><span class="klxm-row-name"><span class="klxm-row-name-text">' . htmlspecialchars($filename) . '</span>' . $infoIndicator . '</span>' . $quotaInfo . '</button></td>';
         } else {
@@ -1335,7 +1333,7 @@ class BoardShareService
         $html .= '<div class="uk-card-media-top klxm-file-preview">' . $previewHtml . '</div>';
         $html .= '<div class="uk-card-body">';
         $html .= '<div class="klxm-file-card-title">' . htmlspecialchars($displayName) . '</div>';
-        $html .= '<span class="klxm-file-card-name"><span class="klxm-file-card-name-text">' . htmlspecialchars($filename) . '</span>' . ($hasDescription ? '<span class="klxm-info-indicator" uk-icon="icon: info; ratio: 0.58" aria-hidden="true" title="Beschreibung vorhanden"></span><span class="uk-hidden">Beschreibung vorhanden</span>' : '') . '</span>';
+        $html .= '<span class="klxm-file-card-name"><span class="klxm-file-card-name-text">' . htmlspecialchars($filename) . '</span>' . ($hasDescription ? '<span class="klxm-info-indicator uk-text-primary" uk-icon="icon: info; ratio: 0.7" aria-hidden="true" title="Beschreibung vorhanden"></span><span class="uk-hidden">Beschreibung vorhanden</span>' : '') . '</span>';
         if ($fileLimitMax > 0) {
             $quotaClass = $fileLimitReached ? ' klxm-file-card-quota--reached' : '';
             $html .= '<span class="klxm-file-card-quota' . $quotaClass . '">Kontingent: ' . $fileLimitCurrent . '/' . $fileLimitMax . '</span>';
