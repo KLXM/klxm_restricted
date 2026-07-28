@@ -818,11 +818,6 @@ class BoardShareService
         return '<style>.klxm-card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:20px}.klxm-file-card{border:1px solid var(--klxm-line);border-radius:16px;background:linear-gradient(180deg,#fff 0%,#fafcff 100%);padding:22px;display:flex;flex-direction:column;gap:16px;min-height:100%;width:100%;box-shadow:0 10px 28px rgba(15,23,36,.06)}.klxm-file-card .klxm-file-preview .klxm-preview-link,.klxm-file-card .klxm-file-preview .klxm-filetype-tile{width:168px;height:112px}.klxm-file-card-title{font-weight:700;font-size:1.08rem;line-height:1.35}.klxm-file-card-name{display:block;margin-top:4px;font-size:1rem}.klxm-file-card-meta{display:flex;flex-wrap:wrap;gap:10px;font-size:.95rem}.klxm-file-card-more{margin-top:-2px}.klxm-file-card-more .uk-button-text{padding:0;min-height:auto;font-weight:700}.klxm-file-card-actions{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}.klxm-display-wrap{display:flex;align-items:center;gap:8px;flex:0 1 250px;min-width:220px;max-width:100%}.klxm-display-wrap .uk-select{width:100%}.klxm-preview-link{display:inline-flex;width:84px;height:56px;align-items:center;justify-content:center;border:1px solid #e5e5e5;border-radius:4px;background:#fff;overflow:hidden}.klxm-filetype-tile{width:84px;height:56px;border:1px solid #e5e5e5;border-radius:4px;background:#f8f8f8;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}.klxm-filetype-icon{width:18px;height:18px;display:block;fill:#5f7286}.klxm-filetype-label{font-size:10px;line-height:1;color:#5f7286;font-weight:700;letter-spacing:.03em}.klxm-toolbar-controls{flex:0 1 360px;min-width:240px}.klxm-toolbar-menu{border:1px solid var(--klxm-line);border-radius:12px;background:#fff;padding:0 12px;box-shadow:0 8px 18px rgba(15,23,36,.04)}.klxm-toolbar-menu>summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;font-weight:700}.klxm-toolbar-menu>summary::-webkit-details-marker{display:none}.klxm-toolbar-menu-panel{display:grid;gap:10px;padding:0 0 12px}.klxm-toolbar-menu-row{display:grid;gap:6px}.klxm-toolbar-menu-label{font-size:.72rem;line-height:1.2;text-transform:uppercase;letter-spacing:.03em;color:var(--klxm-muted);font-weight:700}.klxm-toolbar-menu .uk-select{width:100%}.klxm-card-grid--compact{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}.klxm-card-grid--detail{grid-template-columns:repeat(auto-fit,minmax(340px,1fr))}.klxm-card-grid--tiles{grid-template-columns:repeat(auto-fit,minmax(420px,1fr))}.klxm-file-card--compact{gap:12px}.klxm-file-card--compact .klxm-file-preview .klxm-preview-link,.klxm-file-card--compact .klxm-file-preview .klxm-filetype-tile{width:128px;height:86px}.klxm-file-card--detail .klxm-file-preview .klxm-preview-link,.klxm-file-card--detail .klxm-file-preview .klxm-filetype-tile{width:156px;height:104px}.klxm-file-card--tiles{gap:18px}.klxm-file-card--tiles .klxm-file-preview .klxm-preview-link,.klxm-file-card--tiles .klxm-file-preview .klxm-filetype-tile{width:184px;height:122px}.klxm-preview-overlay{display:none;position:fixed;inset:0;z-index:11000;background:rgba(7,16,28,.86);padding:20px}.klxm-preview-overlay.is-open{display:flex;align-items:center;justify-content:center}.klxm-preview-dialog{position:relative;width:min(1120px,calc(100vw - 40px));max-height:calc(100vh - 40px);background:#fff;border-radius:10px;box-shadow:0 24px 56px rgba(0,0,0,.35);overflow:hidden}.klxm-preview-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px;border-bottom:1px solid var(--klxm-line)}.klxm-preview-title{font-size:.95rem;font-weight:700;color:var(--klxm-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.klxm-preview-close{border:1px solid var(--klxm-line);background:#fff;border-radius:8px;padding:6px 10px;cursor:pointer;font-weight:700}.klxm-preview-body{background:#0f1724;min-height:280px;max-height:calc(100vh - 110px);display:flex;align-items:center;justify-content:center}.klxm-preview-body img{max-width:100%;max-height:calc(100vh - 140px);display:block}.klxm-preview-body iframe{width:min(1040px,96vw);height:min(78vh,980px);border:0;background:#fff}.klxm-preview-body video{width:min(1040px,96vw);max-height:calc(100vh - 140px);background:#000;display:block}@media (max-width:980px){.klxm-sort-wrap,.klxm-jump-wrap{min-width:180px}.klxm-toolbar-controls{flex:1 1 100%;min-width:0}.klxm-toolbar-menu{width:100%}.klxm-card-grid--compact,.klxm-card-grid--detail,.klxm-card-grid--tiles{grid-template-columns:1fr}}@media (max-width:860px){.uk-card-body{padding:12px}.uk-button,.uk-input,.uk-select,.uk-textarea{font-size:14px}.uk-table th,.uk-table td{font-size:.86rem}.klxm-brand{align-items:flex-start;flex-direction:column}.klxm-toolbar-main{align-items:stretch}.klxm-toolbar-zip,.klxm-toolbar-status,.klxm-search-wrap,.klxm-sort-wrap,.klxm-jump-wrap{flex:1 1 100%;min-width:0;width:100%}.uk-button-group{display:flex;flex-wrap:wrap}.uk-button-group .uk-button{flex:1 1 auto}.klxm-preview-overlay{padding:10px}.klxm-preview-dialog{width:calc(100vw - 20px);max-height:calc(100vh - 20px)}.klxm-preview-body iframe{width:100%;height:74vh}}@media (max-width:760px){.klxm-group-block .uk-overflow-auto{overflow:visible}.klxm-mobile-group-actions{display:flex}.klxm-files-table,.klxm-files-table thead,.klxm-files-table tbody,.klxm-files-table tr,.klxm-files-table th,.klxm-files-table td{display:block;width:100%}.klxm-files-table thead{display:none}.klxm-files-table tr{margin:0 0 12px;padding:10px 12px;border:1px solid var(--klxm-line);border-radius:10px;background:#fff}.klxm-files-table td{border-bottom:0;padding:6px 0}.klxm-files-table td[data-label]::before{content:attr(data-label);display:block;margin-bottom:3px;font-size:.72rem;line-height:1.2;text-transform:uppercase;letter-spacing:.03em;color:var(--klxm-muted);font-weight:700}.klxm-files-table td:first-child{padding-top:0}.klxm-files-table td.uk-text-nowrap{text-align:left;white-space:normal}.klxm-files-table td:last-child{padding-bottom:0}.klxm-files-table .uk-icon-button{width:100%}.klxm-files-table .uk-text-right{text-align:left}.klxm-files-table .klxm-file-checkbox{transform:scale(1.05)}.klxm-file-main{gap:8px}.klxm-file-main .klxm-preview-link,.klxm-file-main .klxm-filetype-tile{width:54px;height:38px}.klxm-file-main .klxm-filetype-icon{width:14px;height:14px}.klxm-file-main .klxm-filetype-label{font-size:8px}.klxm-file-card .klxm-file-preview .klxm-preview-link,.klxm-file-card .klxm-file-preview .klxm-filetype-tile{width:112px;height:76px}.klxm-card-details-dialog{width:100vw}.klxm-card-details-body{padding:12px}.klxm-display-wrap{flex:1 1 100%;min-width:0;width:100%}.klxm-card-grid{grid-template-columns:1fr}.klxm-file-card{padding:16px}}</style>';
     }
 
-            private static function renderDownloadIconSvg(): string
-            {
-            return '<svg class="klxm-download-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3a1 1 0 0 1 1 1v8.59l2.3-2.29a1 1 0 1 1 1.4 1.42l-4 3.97a1 1 0 0 1-1.4 0l-4-3.97a1 1 0 0 1 1.4-1.42L11 12.59V4a1 1 0 0 1 1-1Zm-7 14a1 1 0 0 1 1 1v1h12v-1a1 1 0 1 1 2 0v2a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-2a1 1 0 0 1 1-1Z"/></svg>';
-            }
-
     private static function getMediaCategoryName(int $categoryId): string
     {
         if ($categoryId <= 0) {
@@ -974,7 +969,7 @@ class BoardShareService
         $statusCreateUrl = self::buildCurrentShareUrl($token, ['klxm_board_share_download' => 'zip_async_create']);
         $shareBaseUrl = self::buildShareUrl($share, $token, []);
         $hasJumpMenu = count($filesByGroup) > 2;
-        $sortLabel = 'Manuell';
+        $sortLabel = 'Standard';
         if ($sortDirection === 'asc') {
             $sortLabel = 'A-Z';
         } elseif ($sortDirection === 'desc') {
@@ -991,7 +986,8 @@ class BoardShareService
             . '.klxm-file-card-title{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;text-overflow:ellipsis;min-height:2.7em;overflow-wrap:anywhere;word-break:break-word}'
             . '.klxm-file-card-name{display:flex;align-items:center;gap:6px;max-width:100%}'
             . '.klxm-file-card-name-text{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;flex:1 1 auto}'
-            . '.klxm-file-card-name .klxm-info-indicator{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;margin-left:6px;border-radius:50%;background:#e8f1fd;color:#1e87f0;font-size:.72rem;font-weight:700;vertical-align:middle}'
+            . '.klxm-file-card-name .klxm-info-indicator{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;margin-left:6px;border-radius:50%;background:#e8f1fd;color:#1e87f0;vertical-align:middle}'
+            . '.klxm-file-card-name .klxm-info-indicator svg{width:10px;height:10px}'
             . '.klxm-file-card-quota{display:block;margin-top:4px;font-size:.86rem;color:#4f5f73}'
             . '.klxm-file-card-quota--reached{color:#b42318;font-weight:700}'
             . '.klxm-file-card .uk-card-body{display:flex;flex-direction:column;gap:10px}'
@@ -1015,7 +1011,8 @@ class BoardShareService
             . '.klxm-file-table .klxm-row-title{font-weight:700;line-height:1.3;overflow-wrap:anywhere;word-break:break-word}'
             . '.klxm-file-table .klxm-row-name{display:flex;align-items:center;gap:6px;color:#4f5f73;max-width:100%}'
             . '.klxm-file-table .klxm-row-name-text{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;flex:1 1 auto}'
-            . '.klxm-file-table .klxm-row-name .klxm-info-indicator{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;margin-left:6px;border-radius:50%;background:#e8f1fd;color:#1e87f0;font-size:.72rem;font-weight:700;vertical-align:middle}'
+            . '.klxm-file-table .klxm-row-name .klxm-info-indicator{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;margin-left:6px;border-radius:50%;background:#e8f1fd;color:#1e87f0;vertical-align:middle}'
+            . '.klxm-file-table .klxm-row-name .klxm-info-indicator svg{width:10px;height:10px}'
             . '.klxm-file-table .klxm-row-quota{display:block;margin-top:4px;font-size:.82rem;color:#4f5f73}'
             . '.klxm-file-table .klxm-row-quota--reached{color:#b42318;font-weight:700}'
             . '.klxm-file-table .klxm-row-preview .klxm-preview-link{display:inline-flex;align-items:center;justify-content:center;width:78px;height:auto;max-height:56px;border:0;background:transparent;padding:0}'
@@ -1242,7 +1239,7 @@ class BoardShareService
             $quotaClass = $fileLimitReached ? ' klxm-row-quota--reached' : '';
             $quotaInfo = '<span class="klxm-row-quota' . $quotaClass . '">Kontingent: ' . $fileLimitCurrent . '/' . $fileLimitMax . '</span>';
         }
-        $infoIndicator = $hasDescription ? '<span class="klxm-info-indicator" aria-hidden="true" title="Beschreibung vorhanden">i</span><span class="uk-hidden">Beschreibung vorhanden</span>' : '';
+        $infoIndicator = $hasDescription ? '<span class="klxm-info-indicator" uk-icon="icon: info; ratio: 0.58" aria-hidden="true" title="Beschreibung vorhanden"></span><span class="uk-hidden">Beschreibung vorhanden</span>' : '';
         if ($hasDescription) {
             $html .= '<td data-label="Datei"><button type="button" class="uk-button uk-button-text klxm-title-trigger is-clickable" uk-toggle="target: #' . htmlspecialchars($detailsId) . '" aria-label="Details öffnen: ' . htmlspecialchars($displayName) . '"><span class="klxm-row-title">' . htmlspecialchars($displayName) . '</span><span class="klxm-row-name"><span class="klxm-row-name-text">' . htmlspecialchars($filename) . '</span>' . $infoIndicator . '</span>' . $quotaInfo . '</button></td>';
         } else {
@@ -1257,7 +1254,7 @@ class BoardShareService
                 ? 'Datei wurde bereits als Einzeldownload geladen.'
                 : 'Kontingent für diese Datei ist erreicht.';
             $html .= '<button type="button" class="uk-icon-button" disabled title="' . htmlspecialchars($disabledReason) . '" aria-label="' . htmlspecialchars($disabledReason) . '">'
-                . self::renderDownloadIconSvg()
+                . '<span uk-icon="icon: download"></span>'
                 . '<span class="uk-hidden-visually">Download nicht verfügbar</span>'
                 . '</button>';
         } else {
@@ -1269,7 +1266,7 @@ class BoardShareService
                 . 'data-disabled-reason="Datei wurde bereits als Einzeldownload geladen." '
                 . 'title="Datei herunterladen" '
                 . 'aria-label="Datei herunterladen: ' . htmlspecialchars($displayName) . '">'
-                . self::renderDownloadIconSvg()
+                . '<span uk-icon="icon: download"></span>'
                 . '<span class="uk-hidden-visually">Datei herunterladen</span>'
                 . '</button>';
         }
@@ -1338,7 +1335,7 @@ class BoardShareService
         $html .= '<div class="uk-card-media-top klxm-file-preview">' . $previewHtml . '</div>';
         $html .= '<div class="uk-card-body">';
         $html .= '<div class="klxm-file-card-title">' . htmlspecialchars($displayName) . '</div>';
-        $html .= '<span class="klxm-file-card-name"><span class="klxm-file-card-name-text">' . htmlspecialchars($filename) . '</span>' . ($hasDescription ? '<span class="klxm-info-indicator" aria-hidden="true" title="Beschreibung vorhanden">i</span><span class="uk-hidden">Beschreibung vorhanden</span>' : '') . '</span>';
+        $html .= '<span class="klxm-file-card-name"><span class="klxm-file-card-name-text">' . htmlspecialchars($filename) . '</span>' . ($hasDescription ? '<span class="klxm-info-indicator" uk-icon="icon: info; ratio: 0.58" aria-hidden="true" title="Beschreibung vorhanden"></span><span class="uk-hidden">Beschreibung vorhanden</span>' : '') . '</span>';
         if ($fileLimitMax > 0) {
             $quotaClass = $fileLimitReached ? ' klxm-file-card-quota--reached' : '';
             $html .= '<span class="klxm-file-card-quota' . $quotaClass . '">Kontingent: ' . $fileLimitCurrent . '/' . $fileLimitMax . '</span>';
@@ -1359,7 +1356,7 @@ class BoardShareService
                 ? 'Datei wurde bereits als Einzeldownload geladen.'
                 : 'Kontingent für diese Datei ist erreicht.';
             $html .= '<button type="button" class="uk-icon-button" disabled title="' . htmlspecialchars($disabledReason) . '" aria-label="' . htmlspecialchars($disabledReason) . '">'
-                . self::renderDownloadIconSvg()
+                . '<span uk-icon="icon: download"></span>'
                 . '<span class="uk-hidden-visually">Download nicht verfügbar</span>'
                 . '</button>';
         } else {
@@ -1371,7 +1368,7 @@ class BoardShareService
                 . 'data-disabled-reason="Datei wurde bereits als Einzeldownload geladen." '
                 . 'title="Datei herunterladen" '
                 . 'aria-label="Datei herunterladen: ' . htmlspecialchars($displayName) . '">'
-                . self::renderDownloadIconSvg()
+                . '<span uk-icon="icon: download"></span>'
                 . '<span class="uk-hidden-visually">Datei herunterladen</span>'
                 . '</button>';
         }
