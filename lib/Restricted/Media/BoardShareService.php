@@ -991,6 +991,7 @@ class BoardShareService
             . '.klxm-file-card-title{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;text-overflow:ellipsis;min-height:2.7em;overflow-wrap:anywhere;word-break:break-word}'
             . '.klxm-file-card-name{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}'
             . '.klxm-file-card-quota{display:block;margin-top:4px;font-size:.86rem;color:#4f5f73}'
+            . '.klxm-file-card-quota--reached{color:#b42318;font-weight:700}'
             . '.klxm-file-card .uk-card-body{display:flex;flex-direction:column;gap:10px}'
             . '.klxm-file-card-actions{margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:nowrap}'
             . '.klxm-file-card-actions .uk-form-label{display:inline-flex;align-items:center;gap:8px;margin:0;flex:1 1 auto;min-width:0}'
@@ -1012,6 +1013,7 @@ class BoardShareService
             . '.klxm-file-table .klxm-row-title{font-weight:700;line-height:1.3;overflow-wrap:anywhere;word-break:break-word}'
             . '.klxm-file-table .klxm-row-name{display:block;color:#4f5f73;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}'
             . '.klxm-file-table .klxm-row-quota{display:block;margin-top:4px;font-size:.82rem;color:#4f5f73}'
+            . '.klxm-file-table .klxm-row-quota--reached{color:#b42318;font-weight:700}'
             . '.klxm-file-table .klxm-row-preview .klxm-preview-link{display:inline-flex;align-items:center;justify-content:center;width:78px;height:auto;max-height:56px;border:0;background:transparent;padding:0}'
             . '.klxm-file-table .klxm-row-preview .klxm-preview-thumb{display:block;width:78px!important;height:auto!important;max-height:56px;object-fit:contain}'
             . '.klxm-file-table .klxm-row-preview .klxm-filetype-tile{width:72px;height:48px}'
@@ -1231,7 +1233,8 @@ class BoardShareService
         $html .= '<td class="klxm-col-preview klxm-row-preview" data-label="Vorschau">' . $previewHtml . '</td>';
         $quotaInfo = '';
         if ($fileLimitMax > 0) {
-            $quotaInfo = '<span class="klxm-row-quota">Kontingent: ' . $fileLimitCurrent . '/' . $fileLimitMax . '</span>';
+            $quotaClass = $fileLimitReached ? ' klxm-row-quota--reached' : '';
+            $quotaInfo = '<span class="klxm-row-quota' . $quotaClass . '">Kontingent: ' . $fileLimitCurrent . '/' . $fileLimitMax . '</span>';
         }
         $html .= '<td data-label="Datei"><button type="button" class="uk-button uk-button-text klxm-title-trigger" uk-toggle="target: #' . htmlspecialchars($detailsId) . '" aria-label="Details öffnen: ' . htmlspecialchars($displayName) . '"><span class="klxm-row-title">' . htmlspecialchars($displayName) . '</span><span class="klxm-row-name">' . htmlspecialchars($filename) . '</span>' . $quotaInfo . '</button></td>';
         $html .= '<td class="klxm-col-type" data-label="Typ">' . htmlspecialchars($fileTypeLabel) . '</td>';
@@ -1323,7 +1326,8 @@ class BoardShareService
         $html .= '<div class="klxm-file-card-title">' . htmlspecialchars($displayName) . '</div>';
         $html .= '<span class="klxm-file-card-name">' . htmlspecialchars($filename) . '</span>';
         if ($fileLimitMax > 0) {
-            $html .= '<span class="klxm-file-card-quota">Kontingent: ' . $fileLimitCurrent . '/' . $fileLimitMax . '</span>';
+            $quotaClass = $fileLimitReached ? ' klxm-file-card-quota--reached' : '';
+            $html .= '<span class="klxm-file-card-quota' . $quotaClass . '">Kontingent: ' . $fileLimitCurrent . '/' . $fileLimitMax . '</span>';
         }
         $html .= '<div class="klxm-file-card-meta">';
         $html .= '<span>' . htmlspecialchars(self::formatBytes((int) ($file['filesize'] ?? 0))) . '</span>';
