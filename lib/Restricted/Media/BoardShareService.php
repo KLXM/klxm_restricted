@@ -990,6 +990,7 @@ class BoardShareService
             . '.klxm-file-preview .klxm-preview-thumb{width:100%;height:100%;object-fit:contain;display:block}'
             . '.klxm-file-card-title{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;text-overflow:ellipsis;min-height:2.7em;overflow-wrap:anywhere;word-break:break-word}'
             . '.klxm-file-card-name{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}'
+            . '.klxm-file-card-name .klxm-info-indicator{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;margin-left:6px;border-radius:50%;background:#e8f1fd;color:#1e87f0;font-size:.72rem;font-weight:700;vertical-align:middle}'
             . '.klxm-file-card-quota{display:block;margin-top:4px;font-size:.86rem;color:#4f5f73}'
             . '.klxm-file-card-quota--reached{color:#b42318;font-weight:700}'
             . '.klxm-file-card .uk-card-body{display:flex;flex-direction:column;gap:10px}'
@@ -1012,6 +1013,7 @@ class BoardShareService
             . '.klxm-file-table .klxm-col-preview,.klxm-file-table td.klxm-col-preview{overflow:hidden}'
             . '.klxm-file-table .klxm-row-title{font-weight:700;line-height:1.3;overflow-wrap:anywhere;word-break:break-word}'
             . '.klxm-file-table .klxm-row-name{display:block;color:#4f5f73;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}'
+            . '.klxm-file-table .klxm-row-name .klxm-info-indicator{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;margin-left:6px;border-radius:50%;background:#e8f1fd;color:#1e87f0;font-size:.72rem;font-weight:700;vertical-align:middle}'
             . '.klxm-file-table .klxm-row-quota{display:block;margin-top:4px;font-size:.82rem;color:#4f5f73}'
             . '.klxm-file-table .klxm-row-quota--reached{color:#b42318;font-weight:700}'
             . '.klxm-file-table .klxm-row-preview .klxm-preview-link{display:inline-flex;align-items:center;justify-content:center;width:78px;height:auto;max-height:56px;border:0;background:transparent;padding:0}'
@@ -1221,6 +1223,7 @@ class BoardShareService
         int $fileLimitMax
     ): string {
         $filename = (string) ($file['filename'] ?? '');
+        $hasDescription = trim((string) ($file['description'] ?? '')) !== '';
         $singleActionUrl = self::buildShareUrl($share, $token, [
             'klxm_board_share_download' => 'file',
             'file' => $filename,
@@ -1236,7 +1239,12 @@ class BoardShareService
             $quotaClass = $fileLimitReached ? ' klxm-row-quota--reached' : '';
             $quotaInfo = '<span class="klxm-row-quota' . $quotaClass . '">Kontingent: ' . $fileLimitCurrent . '/' . $fileLimitMax . '</span>';
         }
-        $html .= '<td data-label="Datei"><button type="button" class="uk-button uk-button-text klxm-title-trigger" uk-toggle="target: #' . htmlspecialchars($detailsId) . '" aria-label="Details öffnen: ' . htmlspecialchars($displayName) . '"><span class="klxm-row-title">' . htmlspecialchars($displayName) . '</span><span class="klxm-row-name">' . htmlspecialchars($filename) . '</span>' . $quotaInfo . '</button></td>';
+        $infoIndicator = $hasDescription ? '<span class="klxm-info-indicator" aria-hidden="true">i</span><span class="uk-hidden">Beschreibung vorhanden</span>' : '';
+        if ($hasDescription) {
+            $html .= '<td data-label="Datei"><button type="button" class="uk-button uk-button-text klxm-title-trigger" uk-toggle="target: #' . htmlspecialchars($detailsId) . '" aria-label="Details öffnen: ' . htmlspecialchars($displayName) . '"><span class="klxm-row-title">' . htmlspecialchars($displayName) . '</span><span class="klxm-row-name">' . htmlspecialchars($filename) . $infoIndicator . '</span>' . $quotaInfo . '</button></td>';
+        } else {
+            $html .= '<td data-label="Datei"><div class="klxm-title-trigger"><span class="klxm-row-title">' . htmlspecialchars($displayName) . '</span><span class="klxm-row-name">' . htmlspecialchars($filename) . '</span>' . $quotaInfo . '</div></td>';
+        }
         $html .= '<td class="klxm-col-type" data-label="Typ">' . htmlspecialchars($fileTypeLabel) . '</td>';
         $html .= '<td class="klxm-col-size" data-label="Größe">' . htmlspecialchars(self::formatBytes((int) ($file['filesize'] ?? 0))) . '</td>';
         $html .= '<td class="klxm-col-updated" data-label="Aktualisiert">' . htmlspecialchars(self::formatDateOnly((string) ($file['updatedate'] ?? ''))) . '</td>';
@@ -1263,21 +1271,23 @@ class BoardShareService
                 . '</button>';
         }
         $html .= '</div>';
-        $html .= '<div id="' . htmlspecialchars($detailsId) . '" uk-modal>';
-        $html .= '<div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">';
-        $html .= '<button type="button" class="uk-modal-close-default" uk-close aria-label="Details schließen"></button>';
-        $html .= '<h3 class="uk-modal-title">' . htmlspecialchars($displayName) . '</h3>';
-        $html .= '<div class="klxm-file-details-modal">';
-        $html .= '<div class="klxm-file-details-row"><span class="klxm-file-details-label">Dateiname</span><span class="klxm-file-details-value">' . htmlspecialchars($filename) . '</span></div>';
-        $html .= '<div class="klxm-file-details-row"><span class="klxm-file-details-label">Größe</span><span class="klxm-file-details-value">' . htmlspecialchars(self::formatBytes((int) ($file['filesize'] ?? 0))) . '</span></div>';
-        $html .= '<div class="klxm-file-details-row"><span class="klxm-file-details-label">Typ</span><span class="klxm-file-details-value">' . htmlspecialchars($fileTypeLabel) . '</span></div>';
-        $html .= '<div class="klxm-file-details-row"><span class="klxm-file-details-label">Aktualisiert</span><span class="klxm-file-details-value">' . htmlspecialchars(self::formatDate((string) ($file['updatedate'] ?? ''))) . '</span></div>';
-        if ($fileLimitMax > 0) {
-            $html .= '<div class="klxm-file-details-row"><span class="klxm-file-details-label">Kontingent</span><span class="klxm-file-details-value">' . $fileLimitCurrent . '/' . $fileLimitMax . '</span></div>';
+        if ($hasDescription) {
+            $html .= '<div id="' . htmlspecialchars($detailsId) . '" uk-modal>';
+            $html .= '<div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">';
+            $html .= '<button type="button" class="uk-modal-close-default" uk-close aria-label="Details schließen"></button>';
+            $html .= '<h3 class="uk-modal-title">' . htmlspecialchars($displayName) . '</h3>';
+            $html .= '<div class="klxm-file-details-modal">';
+            $html .= '<div class="klxm-file-details-row"><span class="klxm-file-details-label">Dateiname</span><span class="klxm-file-details-value">' . htmlspecialchars($filename) . '</span></div>';
+            $html .= '<div class="klxm-file-details-row"><span class="klxm-file-details-label">Größe</span><span class="klxm-file-details-value">' . htmlspecialchars(self::formatBytes((int) ($file['filesize'] ?? 0))) . '</span></div>';
+            $html .= '<div class="klxm-file-details-row"><span class="klxm-file-details-label">Typ</span><span class="klxm-file-details-value">' . htmlspecialchars($fileTypeLabel) . '</span></div>';
+            $html .= '<div class="klxm-file-details-row"><span class="klxm-file-details-label">Aktualisiert</span><span class="klxm-file-details-value">' . htmlspecialchars(self::formatDate((string) ($file['updatedate'] ?? ''))) . '</span></div>';
+            if ($fileLimitMax > 0) {
+                $html .= '<div class="klxm-file-details-row"><span class="klxm-file-details-label">Kontingent</span><span class="klxm-file-details-value">' . $fileLimitCurrent . '/' . $fileLimitMax . '</span></div>';
+            }
+            $html .= '<div class="klxm-file-details-row"><span class="klxm-file-details-label">Beschreibung</span><span class="klxm-file-details-value">' . $descriptionHtml . '</span></div>';
+            $html .= '</div>';
+            $html .= '</div></div>';
         }
-        $html .= '<div class="klxm-file-details-row"><span class="klxm-file-details-label">Beschreibung</span><span class="klxm-file-details-value">' . $descriptionHtml . '</span></div>';
-        $html .= '</div>';
-        $html .= '</div></div>';
         $html .= '</td>';
         $html .= '</tr>';
 
@@ -1313,6 +1323,7 @@ class BoardShareService
         string $displayMode
     ): string {
         $filename = (string) ($file['filename'] ?? '');
+        $hasDescription = trim((string) ($file['description'] ?? '')) !== '';
         $singleActionUrl = self::buildShareUrl($share, $token, [
             'klxm_board_share_download' => 'file',
             'file' => $filename,
@@ -1324,7 +1335,7 @@ class BoardShareService
         $html .= '<div class="uk-card-media-top klxm-file-preview">' . $previewHtml . '</div>';
         $html .= '<div class="uk-card-body">';
         $html .= '<div class="klxm-file-card-title">' . htmlspecialchars($displayName) . '</div>';
-        $html .= '<span class="klxm-file-card-name">' . htmlspecialchars($filename) . '</span>';
+        $html .= '<span class="klxm-file-card-name">' . htmlspecialchars($filename) . ($hasDescription ? '<span class="klxm-info-indicator" aria-hidden="true">i</span><span class="uk-hidden">Beschreibung vorhanden</span>' : '') . '</span>';
         if ($fileLimitMax > 0) {
             $quotaClass = $fileLimitReached ? ' klxm-file-card-quota--reached' : '';
             $html .= '<span class="klxm-file-card-quota' . $quotaClass . '">Kontingent: ' . $fileLimitCurrent . '/' . $fileLimitMax . '</span>';
@@ -1337,7 +1348,9 @@ class BoardShareService
         $html .= '<div class="klxm-file-card-actions">';
         $html .= '<label class="uk-form-label" title="' . htmlspecialchars($displayName) . '"><input class="uk-checkbox klxm-file-checkbox" type="checkbox" name="selected_files[]" value="' . htmlspecialchars($filename) . '" aria-label="Datei ' . htmlspecialchars($displayName) . ' auswählen"' . ($fileLimitReached ? ' disabled' : '') . '> <span class="uk-hidden">Wählen: ' . htmlspecialchars($displayName) . '</span></label>';
         $html .= '<div class="klxm-file-card-action-links">';
-        $html .= '<button type="button" class="uk-button uk-button-text klxm-details-trigger" uk-toggle="target: #' . htmlspecialchars($detailsId) . '">Mehr Details</button>';
+        if ($hasDescription) {
+            $html .= '<button type="button" class="uk-button uk-button-text klxm-details-trigger" uk-toggle="target: #' . htmlspecialchars($detailsId) . '">Mehr Infos</button>';
+        }
         if ($singleAlreadyDownloaded || $fileLimitReached) {
             $disabledReason = $singleAlreadyDownloaded
                 ? 'Datei wurde bereits als Einzeldownload geladen.'
@@ -1363,21 +1376,23 @@ class BoardShareService
         $html .= '</div>';
         $html .= '</div>';
         $html .= '</article>';
-        $html .= '<div id="' . htmlspecialchars($detailsId) . '" uk-modal>';
-        $html .= '<div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">';
-        $html .= '<button type="button" class="uk-modal-close-default" uk-close aria-label="Details schließen"></button>';
-        $html .= '<h3 class="uk-modal-title">' . htmlspecialchars($displayName) . '</h3>';
-        $html .= '<div class="klxm-file-details-modal">';
-        $html .= '<div class="klxm-file-details-row"><span class="klxm-file-details-label">Dateiname</span><span class="klxm-file-details-value">' . htmlspecialchars($filename) . '</span></div>';
-        $html .= '<div class="klxm-file-details-row"><span class="klxm-file-details-label">Größe</span><span class="klxm-file-details-value">' . htmlspecialchars(self::formatBytes((int) ($file['filesize'] ?? 0))) . '</span></div>';
-        $html .= '<div class="klxm-file-details-row"><span class="klxm-file-details-label">Typ</span><span class="klxm-file-details-value">' . htmlspecialchars($fileTypeLabel) . '</span></div>';
-        $html .= '<div class="klxm-file-details-row"><span class="klxm-file-details-label">Aktualisiert</span><span class="klxm-file-details-value">' . htmlspecialchars(self::formatDate((string) ($file['updatedate'] ?? ''))) . '</span></div>';
-        if ($fileLimitMax > 0) {
-            $html .= '<div class="klxm-file-details-row"><span class="klxm-file-details-label">Kontingent</span><span class="klxm-file-details-value">' . $fileLimitCurrent . '/' . $fileLimitMax . '</span></div>';
+        if ($hasDescription) {
+            $html .= '<div id="' . htmlspecialchars($detailsId) . '" uk-modal>';
+            $html .= '<div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical">';
+            $html .= '<button type="button" class="uk-modal-close-default" uk-close aria-label="Details schließen"></button>';
+            $html .= '<h3 class="uk-modal-title">' . htmlspecialchars($displayName) . '</h3>';
+            $html .= '<div class="klxm-file-details-modal">';
+            $html .= '<div class="klxm-file-details-row"><span class="klxm-file-details-label">Dateiname</span><span class="klxm-file-details-value">' . htmlspecialchars($filename) . '</span></div>';
+            $html .= '<div class="klxm-file-details-row"><span class="klxm-file-details-label">Größe</span><span class="klxm-file-details-value">' . htmlspecialchars(self::formatBytes((int) ($file['filesize'] ?? 0))) . '</span></div>';
+            $html .= '<div class="klxm-file-details-row"><span class="klxm-file-details-label">Typ</span><span class="klxm-file-details-value">' . htmlspecialchars($fileTypeLabel) . '</span></div>';
+            $html .= '<div class="klxm-file-details-row"><span class="klxm-file-details-label">Aktualisiert</span><span class="klxm-file-details-value">' . htmlspecialchars(self::formatDate((string) ($file['updatedate'] ?? ''))) . '</span></div>';
+            if ($fileLimitMax > 0) {
+                $html .= '<div class="klxm-file-details-row"><span class="klxm-file-details-label">Kontingent</span><span class="klxm-file-details-value">' . $fileLimitCurrent . '/' . $fileLimitMax . '</span></div>';
+            }
+            $html .= '<div class="klxm-file-details-row"><span class="klxm-file-details-label">Beschreibung</span><span class="klxm-file-details-value">' . $descriptionHtml . '</span></div>';
+            $html .= '</div>';
+            $html .= '</div></div>';
         }
-        $html .= '<div class="klxm-file-details-row"><span class="klxm-file-details-label">Beschreibung</span><span class="klxm-file-details-value">' . $descriptionHtml . '</span></div>';
-        $html .= '</div>';
-        $html .= '</div></div>';
 
         return $html;
     }
