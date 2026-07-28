@@ -12,6 +12,10 @@ $addon = rex_addon::get('klxm_restricted');
 
 $form = rex_config_form::factory($addon->getName());
 
+$field = $form->addInputField('text', 'backend_menu_title', null, ['class' => 'form-control']);
+$field->setLabel('Backend-Menüeintrag: Titel');
+$field->setNotice('Optional. Überschreibt den Namen des Addon-Menüeintrags in der REDAXO-Navigation. Leer lassen verwendet den Standardtitel.');
+
 $field = $form->addLinkmapField('login_article');
 $field->setLabel('Login Artikel');
 $field->setNotice('Der Artikel, auf den Weitergeleitet wird, wenn Rechte fehlen.');

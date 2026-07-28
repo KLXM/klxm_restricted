@@ -11,7 +11,12 @@ use rex_view;
 
 $addon = rex_addon::get('klxm_restricted');
 
-echo rex_view::title($addon->i18n('klxm_restricted_title'));
+$pageTitle = trim((string) $addon->getConfig('backend_menu_title', ''));
+if ($pageTitle === '') {
+	$pageTitle = $addon->i18n('klxm_restricted_title');
+}
+
+echo rex_view::title($pageTitle);
 
 if (rex_addon::get('ycom')->isAvailable()) {
 	$currentSubpage = (string) rex_be_controller::getCurrentPagePart(2);

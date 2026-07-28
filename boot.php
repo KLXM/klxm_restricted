@@ -72,7 +72,32 @@ if (rex_addon::get('cronjob')->isAvailable() && !rex::isSafeMode()) {
 
 // Setup in the backend navigation for admin panel
 if (rex::isBackend() && rex::getUser()) {
+    rex_extension::register('PACKAGES_INCLUDED', static function (): void {
+        $addon = rex_addon::get('klxm_restricted');
+        $customMenuTitle = trim((string) $addon->getConfig('backend_menu_title', ''));
+
+        if ($customMenuTitle === '') {
+            return;
+        }
+
+        $page = $addon->getProperty('page');
+        if (!is_array($page)) {
+            return;
+        }
+
+        $page['title'] = $customMenuTitle;
+        $addon->setProperty('page', $page);
+    }, rex_extension::EARLY);
+
     rex_extension::register('PAGES_PREPARED', static function (): void {
+        $addon = rex_addon::get('klxm_restricted');
+        $customMenuTitle = trim((string) $addon->getConfig('backend_menu_title', ''));
+        $pageObject = rex_be_controller::getPageObject('klxm_restricted');
+
+        if ($pageObject instanceof rex_be_page && $customMenuTitle !== '') {
+            $pageObject->setTitle($customMenuTitle);
+        }
+
         if (!rex_addon::get('ycom')->isAvailable()) {
             return;
         }

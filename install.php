@@ -176,6 +176,10 @@ if ((string) $addon->getConfig('request_ip_hash_salt', '') === '') {
     $addon->setConfig('request_ip_hash_salt', bin2hex(random_bytes(16)));
 }
 
+if ((string) $addon->getConfig('backend_menu_title', '') === '') {
+    $addon->setConfig('backend_menu_title', 'KLXM Restricted');
+}
+
 // 10. Import YForm tables for Users and Roles
 $tablesetPath = $addon->getPath('install/tablesets/yform_restricted.json');
 if (file_exists($tablesetPath)) {
