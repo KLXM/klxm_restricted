@@ -7,7 +7,7 @@ Alle nennenswerten Änderungen an diesem Addon werden in dieser Datei dokumentie
 ## [2.0.0] - 2026-07-27
 
 ### Neu
-- Neues Filesharing im Mediapool mit direktem Freigabe-Workflow.
+- Neues Filesharing im Mediapool mit artikelgebundenem Freigabe-Workflow.
 - Neue Seite Dateiablage teilen unter Mediapool.
 - Neues Frontend-Modul für Dateifreigaben mit optionaler fester Freigabe-Zuordnung pro Modul.
 - Neuer Bereich Freigabe-Anfragen im Backend mit Auswertungen und Export.
@@ -23,6 +23,7 @@ Alle nennenswerten Änderungen an diesem Addon werden in dieser Datei dokumentie
 ### Geändert
 - Version auf 2.0.0 erhöht.
 - Navigation und Berechtigungen für Share-Workflows überarbeitet.
+- Freigaben laufen ausschließlich artikelgebunden; die klassische Freigabeseite wurde entfernt.
 - Share-URLs robuster aufgebaut, inklusive sauberer Normalisierung von relativen Pfaden.
 - Mailvorlage für Freigabe-Anfragen vollständig auf clienttaugliches HTML mit Plaintext-Fallback umgestellt.
 - Deutsche Texte in Share- und Mail-Flow auf korrekte Umlaute und ß vereinheitlicht.
@@ -32,7 +33,6 @@ Alle nennenswerten Änderungen an diesem Addon werden in dieser Datei dokumentie
 - Verhalten bei erreichtem Kontingent visuell verbessert (deaktivierte Zeile ausgegraut inkl. Hinweis Kontingent erreicht).
 
 ### Korrigiert
-- Einzeldownload in nicht seitengebundenen Freigaben korrigiert.
 - Fehler bei Dateiname fehlt im Download-Flow behoben.
 - Doppelt encodierte Query-Parameter in Share-Links korrigiert.
 - ZIP-Statusfehler im Async-Flow behoben.

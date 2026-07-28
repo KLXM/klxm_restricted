@@ -61,9 +61,7 @@ Pfad im Backend:
 Typischer Ablauf:
 
 1. Neue Freigabe anlegen.
-2. Freigabe-Modus festlegen:
-    - `seitengebunden` (an einen Artikel gebunden)
-    - `direkt` (Token-Link ohne Artikelbindung)
+2. Zielartikel für die Freigabe festlegen.
 3. Quelle wählen:
     - ganze Medienpool-Kategorie
     - manuelle Dateiauswahl
@@ -220,7 +218,7 @@ Dort werden technische und organisatorische Defaults gepflegt, z. B. Mailtexte, 
 
 Checkliste vor Versand eines Freigabelinks:
 
-1. Stimmt der Freigabe-Modus?
+1. Ist der richtige Zielartikel hinterlegt?
 2. Sind nur die richtigen Dateien enthalten?
 3. Ist ein Ablaufdatum gesetzt (wenn gewünscht)?
 4. Passt das Download-Limit?

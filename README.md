@@ -8,7 +8,7 @@ Der aktuelle Schwerpunkt liegt auf dem Freigabe-Workflow mit Anfrageformular, An
 
 ## Einordnung im Vergleich zu YCOM
 
-KLXM Restricted ist als leichte Alternative für typische Freigabe- und Schutzszenarien gedacht und bringt dafür ein paar praxisnahe Extras mit (z. B. direkter Mediapool-Freigabe-Workflow, abgesicherte Download-Flows und Share-Auswertung).
+KLXM Restricted ist als leichte Alternative für typische Freigabe- und Schutzszenarien gedacht und bringt dafür ein paar praxisnahe Extras mit (z. B. Mediapool-Freigabe-Workflow mit Artikelbezug, abgesicherte Download-Flows und Share-Auswertung).
 
 YCOM bleibt die mächtigere und umfassendere Lösung, insbesondere wenn es um große Community-, Mitglieds- und Authentifizierungsanforderungen geht.
 
@@ -40,7 +40,7 @@ Backend-Seite: Mediapool > Dateiablage teilen (`mediapool/klxm_restricted_file_s
 
 Pro Share konfigurierbar:
 
-- Freigabe-Modus: seitengebunden (`article`) oder direkt (`direct`)
+- Zielartikel für die Freigabeausgabe (artikelgebundener Flow)
 - Quellenmodus:
 - komplette Medienpool-Kategorie
 - manuelle Gruppierung
@@ -172,6 +172,8 @@ Alle Endpunkte werden über `index.php?rex-api-call=<name>` aufgerufen.
 ### Frontend-Share-Endpunkte (Query-basierter Flow)
 
 Die Share-Logik arbeitet über URL-Parameter und Formular-POSTs.
+
+Wichtig: Die Auslieferung erfolgt artikelgebunden über den konfigurierten Zielartikel.
 
 Basisparameter:
 

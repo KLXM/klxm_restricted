@@ -27,7 +27,7 @@ rex_view::addJsFile($addon->getAssetsUrl('file-share.js'));
 
 $csrf = rex_csrf_token::factory('klxm_restricted_file_share');
 $func = rex_request('func', 'string', '');
-$shareMode = rex_request('share_mode', 'string', 'article');
+$shareMode = 'article';
 $selectedCategoryId = rex_request('media_category_id', 'int', 0);
 $sourceMode = rex_request('source_mode', 'string', 'category');
 $selectedArticleId = rex_request('article_id', 'int', 0);
@@ -143,12 +143,7 @@ if ($func === 'edit_share') {
             echo rex_view::error('Freigabe zum Bearbeiten nicht gefunden.');
             $editShareId = 0;
         } else {
-            $shareModeRequest = rex_request('share_mode', 'string', '');
-            if ($shareModeRequest === 'article' || $shareModeRequest === 'direct') {
-                $shareMode = $shareModeRequest;
-            } else {
-                $shareMode = (string) ($editShare['share_mode'] ?? 'article');
-            }
+            $shareMode = 'article';
 
             $sourceModeRequest = rex_request('source_mode', 'string', '');
             if ($sourceModeRequest === 'category' || $sourceModeRequest === 'manual' || $sourceModeRequest === 'categorized') {
@@ -274,7 +269,7 @@ if (rex_request('create_file_share', 'int', 0) === 1) {
     } else {
         $articleId = rex_request('article_id', 'int', 0);
         $editShareIdPost = rex_request('edit_share_id', 'int', 0);
-        $shareMode = rex_request('share_mode', 'string', 'article');
+        $shareMode = 'article';
         $sourceMode = rex_request('source_mode', 'string', 'category');
         $mediaCategoryId = rex_request('media_category_id', 'int', 0);
         $manualFiles = rex_request('manual_files', 'array', []);
@@ -349,9 +344,7 @@ if (rex_request('create_file_share', 'int', 0) === 1) {
             ];
         }
 
-        if ($shareMode !== 'article' && $shareMode !== 'direct') {
-            echo rex_view::error('Ungültiger Freigabe-Modus.');
-        } elseif ($shareMode === 'article' && ($articleId <= 0 || !rex_article::get($articleId))) {
+        if ($articleId <= 0 || !rex_article::get($articleId)) {
             echo rex_view::error('Bitte eine gültige REDAXO-Seite für die Ausgabe wählen.');
         } elseif ($sourceMode !== 'category' && $sourceMode !== 'manual' && $sourceMode !== 'categorized') {
             echo rex_view::error('Ungueltiger Quellenmodus.');
@@ -605,7 +598,6 @@ $newShareUrl = rex_url::backendController([
     'func' => 'new_share',
     'media_category_id' => $selectedCategoryId,
     'source_mode' => $sourceMode,
-    'share_mode' => $shareMode,
 ]);
 $listUrl = rex_url::backendController([
     'page' => 'mediapool/klxm_restricted_file_share',
@@ -615,7 +607,7 @@ if ($showForm) {
 echo '<div class="panel panel-primary">';
 echo '<div class="panel-heading"><h3 class="panel-title">Dateiablage teilen</h3></div>';
 echo '<div class="panel-body">';
-echo '<p>Modus "Seitengebunden": Ausgabe auf REDAXO-Seite. Modus "Direkt (klassisch)": Freigabe ohne Artikelauswahl nur über Link.</p>';
+echo '<p>Ausgabe erfolgt immer seitengebunden über einen REDAXO-Artikel.</p>';
 echo '<p><a class="btn btn-default" href="' . $listUrl . '">Zur Liste</a></p>';
 
 echo '<form method="get" class="form-inline" style="margin-bottom:15px;">';
@@ -629,13 +621,6 @@ if ($func === 'edit_share' && $editShareId > 0) {
 echo '<div class="form-group" style="min-width:360px; margin-right:12px;">';
 echo '<label for="media_category_id" style="margin-right:8px;">Medienpool-Kategorie</label>';
 echo $categorySelectHtml;
-echo '</div>';
-echo '<div class="form-group" style="margin-right:12px;">';
-echo '<label for="share_mode" style="margin-right:8px;">Freigabe-Modus</label>';
-echo '<select id="share_mode" name="share_mode" class="form-control" onchange="this.form.submit();">';
-echo '<option value="article"' . ($shareMode === 'article' ? ' selected' : '') . '>Seitengebunden</option>';
-echo '<option value="direct"' . ($shareMode === 'direct' ? ' selected' : '') . '>Direkt (klassisch)</option>';
-echo '</select>';
 echo '</div>';
 echo '<div class="form-group">';
 echo '<label for="source_mode" style="margin-right:8px;">Quellenmodus</label>';
@@ -688,7 +673,7 @@ if ($selectedCategoryId <= 0) {
 
     echo '<div class="row">';
     echo '<div class="col-md-6">';
-    echo '<div class="form-group" data-share-mode-article="1"' . ($shareMode === 'article' ? '' : ' style="display:none;"') . '>';
+    echo '<div class="form-group" data-share-mode-article="1">';
     echo '<label for="article_id">Ausgabeseite (REDAXO-Artikel)</label>';
     echo \rex_var_link::getWidget(1, 'article_id', $selectedArticleId);
     echo '<p class="help-block">Diese Seite legt der Redakteur normal an (Text, Hinweise etc.). Das Modul "KLXM Restricted Dateiablage" zeigt die Dateien an.</p>';
@@ -787,9 +772,6 @@ if ($selectedCategoryId <= 0) {
 
     echo '<hr>';
     echo '<h4>Anfrageformular fuer externe Besucher</h4>';
-    if ($shareMode === 'direct') {
-        echo '<div class="alert alert-warning">Hinweis: Bei <strong>Direkt (klassisch)</strong> wird kein Anfrageformular abgefragt. Dieser Modus ist fuer direkten Linkzugriff gedacht.</div>';
-    }
     echo '<div class="checkbox">';
     echo '<label><input type="checkbox" name="request_enabled" value="1"' . ((bool) $defaultFormData['request_enabled'] ? ' checked' : '') . '> Anfrageformular aktivieren</label>';
     echo '</div>';
@@ -1013,12 +995,11 @@ if ($shares === []) {
             'share_id' => (int) $share['id'],
             'media_category_id' => (int) ($share['media_category_id'] ?? 0),
             'source_mode' => (string) ($share['source_mode'] ?? 'category'),
-            'share_mode' => (string) ($share['share_mode'] ?? 'article'),
         ]);
 
         $tokenPlain = trim((string) ($share['token_plain'] ?? ''));
         $shareUrl = '';
-        $shareModeRow = (string) ($share['share_mode'] ?? 'article');
+        $shareModeRow = 'article';
         $shareIdRow = (int) ($share['id'] ?? 0);
         if ($tokenPlain !== '') {
             $relative = BoardShareService::buildPublicShareUrl($shareModeRow, $articleId, $tokenPlain);
@@ -1061,7 +1042,7 @@ if ($shares === []) {
         echo '<td>';
         echo '<strong>' . htmlspecialchars((string) ($share['title'] ?? '')) . '</strong><br>';
         echo '<small class="text-muted">'
-            . htmlspecialchars($shareModeRow === 'direct' ? 'Direkt (klassisch)' : 'Seitengebunden')
+            . 'Seitengebunden'
             . ' | '
             . htmlspecialchars((string) ($share['source_mode'] ?? ''))
             . ' | Kat. ' . (int) ($share['media_category_id'] ?? 0)

@@ -73,7 +73,7 @@ class BoardShareService
         $sql->setValue('token_hash', $tokenHash);
         $sql->setValue('token_plain', $token);
         $sql->setValue('token_hint', substr($token, 0, 12));
-        $sql->setValue('share_mode', $shareMode);
+        $sql->setValue('share_mode', 'article');
         $sql->setValue('article_id', $articleId);
         $sql->setValue('source_mode', $sourceMode);
         $sql->setValue('media_category_id', $mediaCategoryId > 0 ? $mediaCategoryId : null);
@@ -165,7 +165,7 @@ class BoardShareService
         $sql = rex_sql::factory();
         $sql->setTable(rex::getTable('klxm_restricted_file_share'));
         $sql->setWhere('id = :id', ['id' => $shareId]);
-        $sql->setValue('share_mode', $shareMode);
+        $sql->setValue('share_mode', 'article');
         $sql->setValue('article_id', $articleId);
         $sql->setValue('source_mode', $sourceMode);
         $sql->setValue('media_category_id', $mediaCategoryId > 0 ? $mediaCategoryId : null);
@@ -424,6 +424,10 @@ class BoardShareService
         }
 
         if ($shareFromToken === null) {
+            if ($token !== '') {
+                return self::renderLockedMessage($token);
+            }
+
             return self::renderRequestArea($share, $token);
         }
 
@@ -1697,6 +1701,21 @@ class BoardShareService
         }
 
         $html = self::renderShareBaseStyles($branding['accent']);
+        $html .= '<style>'
+            . '.klxm-radio-group{display:flex;flex-wrap:wrap;gap:12px 16px;align-items:center}'
+            . '.klxm-radio-option{display:inline-flex;align-items:center;gap:10px;padding:8px 12px;border:1px solid #dbe4ef;border-radius:999px;background:#fff;line-height:1.2;cursor:pointer;transition:border-color .2s ease,box-shadow .2s ease,background-color .2s ease}'
+            . '.klxm-radio-option .uk-radio{margin:0;flex:0 0 auto;vertical-align:middle}'
+            . '.klxm-radio-option:hover{border-color:#b9c9dd}'
+            . '.klxm-radio-option:has(.uk-radio:focus-visible){box-shadow:0 0 0 3px rgba(30,135,240,.2)}'
+            . '.klxm-radio-option:has(.uk-radio:checked){font-weight:700;border-color:#1e87f0;background:#eff6ff}'
+            . '.klxm-rating{display:inline-flex;flex-direction:row-reverse;justify-content:flex-end;align-items:center;gap:2px}'
+            . '.klxm-rating input[type="radio"]{position:absolute;opacity:0;pointer-events:none;width:1px;height:1px}'
+            . '.klxm-rating label{font-size:1.7rem;line-height:1;color:#c9d3df;cursor:pointer;padding:0 2px;transition:color .2s ease,transform .15s ease}'
+            . '.klxm-rating label:hover,.klxm-rating label:hover ~ label{color:#f5bf2d}'
+            . '.klxm-rating input[type="radio"]:checked ~ label{color:#f5bf2d}'
+            . '.klxm-rating input[type="radio"]:focus-visible + label{outline:2px solid rgba(30,135,240,.55);outline-offset:2px;border-radius:3px}'
+            . '@media (max-width:639px){.klxm-radio-group{gap:10px 12px}.klxm-radio-option{padding:7px 10px;font-size:.95rem}}'
+            . '</style>';
         $html .= '<section class="uk-section uk-section-small"><div class="uk-container"><div class="uk-card uk-card-default uk-card-body">';
         $html .= self::renderShareBrandingHeader($branding);
         $html .= '<h3>Freigabe anfragen</h3>';
@@ -1729,10 +1748,14 @@ class BoardShareService
             $fieldId = 'req_' . $field['key'];
             $requiredAttr = $field['required'] ? ' required' : '';
             $requiredMark = $field['required'] ? ' *' : '';
+            $labelForId = $fieldId;
+            if ($field['type'] === 'rating') {
+                $labelForId = $fieldId . '_star_1';
+            }
 
             $html .= '<div class="uk-margin">';
-            if ($field['type'] !== 'checkbox' && $field['type'] !== 'rating') {
-                $html .= '<label class="uk-form-label" for="' . htmlspecialchars($fieldId) . '">' . htmlspecialchars($field['label']) . $requiredMark . '</label>';
+            if ($field['type'] !== 'checkbox') {
+                $html .= '<label class="uk-form-label" for="' . htmlspecialchars($labelForId) . '">' . htmlspecialchars($field['label']) . $requiredMark . '</label>';
             }
             $html .= '<div class="uk-form-controls">';
 
@@ -1751,7 +1774,6 @@ class BoardShareService
                 }
                 $html .= '</div>';
             } elseif ($field['type'] === 'rating') {
-                $html .= '<label class="uk-form-label" for="' . htmlspecialchars($fieldId) . '_star_1">' . htmlspecialchars($field['label']) . $requiredMark . '</label>';
                 $html .= '<div class="klxm-rating" role="radiogroup" aria-label="' . htmlspecialchars($field['label']) . '">';
                 foreach (array_reverse($field['options']) as $optionIndex => $option) {
                     $optionId = $fieldId . '_star_' . ($optionIndex + 1);
@@ -2633,8 +2655,7 @@ class BoardShareService
     {
         $share = self::findByToken($token);
         if ($share !== null) {
-            $mode = (string) ($share['share_mode'] ?? 'article');
-            if ($mode !== 'direct' && $articleId !== null && (int) ($share['article_id'] ?? 0) !== $articleId) {
+            if ($articleId !== null && (int) ($share['article_id'] ?? 0) !== $articleId) {
                 return ['share' => null, 'password_unlocked' => false, 'request_id' => null];
             }
 
@@ -2656,8 +2677,7 @@ class BoardShareService
             return ['share' => null, 'password_unlocked' => false, 'request_id' => null];
         }
 
-        $mode = (string) ($share['share_mode'] ?? 'article');
-        if ($mode !== 'direct' && $articleId !== null && (int) ($share['article_id'] ?? 0) !== $articleId) {
+        if ($articleId !== null && (int) ($share['article_id'] ?? 0) !== $articleId) {
             return ['share' => null, 'password_unlocked' => false, 'request_id' => null];
         }
 
@@ -2698,78 +2718,8 @@ class BoardShareService
 
     public static function handleFrontendDirectShareRequest(): bool
     {
-        $token = trim(rex_request::get('klxm_board_share', 'string', ''));
-        if ($token === '') {
-            return false;
-        }
-
-        $downloadMode = trim(rex_request::get('klxm_board_share_download', 'string', ''));
-        if ($downloadMode === '') {
-            $downloadMode = trim(rex_request::post('klxm_board_share_download', 'string', ''));
-        }
-        if ($downloadMode !== '') {
-            return false;
-        }
-
-        $access = self::resolveGuestAccessContext($token, null);
-        $share = $access['share'];
-        if ($share === null || (string) ($share['share_mode'] ?? 'article') !== 'direct') {
-            return false;
-        }
-
-        rex_login::startSession();
-
-        if (self::isRedaxoUserLoggedIn()) {
-            $filesByGroup = self::getDisplayGroups($share);
-            if ($filesByGroup === []) {
-                self::sendText('Aktuell sind keine Dateien verfügbar.', rex_response::HTTP_OK);
-            }
-
-            $html = '<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Dateifreigabe</title></head><body>';
-            $html .= self::renderShareList($share, $token, $filesByGroup);
-            $html .= '</body></html>';
-            rex_response::cleanOutputBuffers();
-            rex_response::sendContent($html, 'text/html; charset=utf-8');
-            exit;
-        }
-
-        $passwordUnlocked = $access['password_unlocked'];
-        $sessionKey = 'klxm_restricted_file_share_auth_' . (int) $share['id'];
-        $requiresPassword = (string) ($share['password_hash'] ?? '') !== '';
-        $passwordUnlocked = $passwordUnlocked || rex_session($sessionKey, 'int', 0) === 1;
-
-        if ($requiresPassword && !$passwordUnlocked) {
-            $submittedPassword = rex_request::post('klxm_board_share_password', 'string', '');
-            if ($submittedPassword !== '' && password_verify($submittedPassword, (string) $share['password_hash'])) {
-                rex_set_session($sessionKey, 1);
-                $passwordUnlocked = true;
-            }
-        }
-
-        if (!self::isAccessAllowed($share, $passwordUnlocked)) {
-            self::sendText('Kein Zugriff auf diese Freigabe.', rex_response::HTTP_FORBIDDEN);
-        }
-
-        if ($requiresPassword && !$passwordUnlocked) {
-            $html = '<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Dateifreigabe</title></head><body>';
-            $html .= self::renderPasswordForm($token, '');
-            $html .= '</body></html>';
-            rex_response::cleanOutputBuffers();
-            rex_response::sendContent($html, 'text/html; charset=utf-8');
-            exit;
-        }
-
-        $filesByGroup = self::getDisplayGroups($share);
-        if ($filesByGroup === []) {
-            self::sendText('Aktuell sind keine Dateien verfügbar.', rex_response::HTTP_OK);
-        }
-
-        $html = '<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Dateifreigabe</title></head><body>';
-        $html .= self::renderShareList($share, $token, $filesByGroup);
-        $html .= '</body></html>';
-        rex_response::cleanOutputBuffers();
-        rex_response::sendContent($html, 'text/html; charset=utf-8');
-        exit;
+        // Klassische Direktfreigaben sind abgeschaltet.
+        return false;
     }
 
     /**
@@ -3014,10 +2964,9 @@ class BoardShareService
         }
 
         $query = array_merge(['klxm_board_share' => $token], $params);
-        $mode = (string) ($share['share_mode'] ?? 'article');
         $articleId = (int) ($share['article_id'] ?? 0);
 
-        if ($mode === 'direct' || $articleId <= 0) {
+        if ($articleId <= 0) {
             $path = self::normalizeFrontendPath(rex_url::frontendController([], false));
             if (!rex::isBackend()) {
                 $requestPath = (string) parse_url((string) rex_request::server('REQUEST_URI', 'string', ''), PHP_URL_PATH);
@@ -3092,7 +3041,7 @@ class BoardShareService
     public static function buildPublicShareUrl(string $shareMode, int $articleId, string $token, array $params = []): string
     {
         $query = array_merge(['klxm_board_share' => $token], $params);
-        if ($shareMode === 'direct' || $articleId <= 0) {
+        if ($articleId <= 0) {
             $path = self::normalizeFrontendPath(rex_url::frontendController([], false));
 
             return $path . '?' . http_build_query($query);
