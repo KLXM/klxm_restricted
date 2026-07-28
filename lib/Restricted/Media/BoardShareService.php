@@ -1024,6 +1024,7 @@ class BoardShareService
             . '.klxm-file-table .klxm-row-preview .klxm-filetype-tile{width:72px;height:48px}'
             . '.klxm-file-table .klxm-row-actions{display:inline-flex;align-items:center;gap:10px;justify-content:center;width:100%}'
             . '.klxm-file-table .klxm-row-actions .uk-icon-button{flex:0 0 auto}'
+            . '.klxm-tooltip-wrap{display:inline-flex;align-items:center}'
             . '.klxm-row-actions .uk-icon-button,.klxm-file-card-action-links .uk-icon-button{appearance:none;-webkit-appearance:none;border:1px solid #c7d4e3;background:#fff;color:#155fa0;box-shadow:none;outline:none}'
             . '.klxm-row-actions .uk-icon-button:hover,.klxm-file-card-action-links .uk-icon-button:hover{background:#f3f8ff;color:#0f4f8a;border-color:#a9bfd8}'
             . '.klxm-row-actions .uk-icon-button[disabled],.klxm-file-card-action-links .uk-icon-button[disabled]{background:#f7f9fc;color:#9aa8ba;border-color:#d7e0ea;cursor:not-allowed}'
@@ -1261,10 +1262,12 @@ class BoardShareService
             $disabledReason = $singleAlreadyDownloaded
                 ? 'Datei wurde bereits als Einzeldownload geladen.'
                 : 'Kontingent für diese Datei ist erreicht.';
+            $html .= '<span class="klxm-tooltip-wrap" uk-tooltip="title: ' . htmlspecialchars($disabledReason) . '">';
             $html .= '<button type="button" class="uk-icon-button" disabled title="' . htmlspecialchars($disabledReason) . '" aria-label="' . htmlspecialchars($disabledReason) . '">'
                 . '<span class="klxm-download-icon" uk-icon="icon: download"></span>'
                 . '<span class="uk-hidden-visually">Download nicht verfügbar</span>'
                 . '</button>';
+            $html .= '</span>';
         } else {
             $html .= '<button type="submit" class="uk-icon-button klxm-single-download-btn" '
                 . 'formaction="' . htmlspecialchars($singleActionUrl) . '" '
@@ -1363,10 +1366,12 @@ class BoardShareService
             $disabledReason = $singleAlreadyDownloaded
                 ? 'Datei wurde bereits als Einzeldownload geladen.'
                 : 'Kontingent für diese Datei ist erreicht.';
+            $html .= '<span class="klxm-tooltip-wrap" uk-tooltip="title: ' . htmlspecialchars($disabledReason) . '">';
             $html .= '<button type="button" class="uk-icon-button" disabled title="' . htmlspecialchars($disabledReason) . '" aria-label="' . htmlspecialchars($disabledReason) . '">'
                 . '<span class="klxm-download-icon" uk-icon="icon: download"></span>'
                 . '<span class="uk-hidden-visually">Download nicht verfügbar</span>'
                 . '</button>';
+            $html .= '</span>';
         } else {
             $html .= '<button type="submit" class="uk-icon-button klxm-single-download-btn" '
                 . 'formaction="' . htmlspecialchars($singleActionUrl) . '" '
