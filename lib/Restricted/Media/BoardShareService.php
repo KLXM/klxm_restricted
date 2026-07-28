@@ -36,7 +36,7 @@ class BoardShareService
 
     private static ?string $mediaDescriptionSelect = null;
     /** @var array<string, string|null> */
-    private static array $pdfThumbnailUrlCache = [];
+    private static array $pdfThumbnailPathCache = [];
     /** @var array<int, string> */
     private static array $mediaCategoryNameCache = [];
 
@@ -279,6 +279,12 @@ class BoardShareService
         if ($downloadMode === 'preview') {
             $filename = trim(rex_request::get('file', 'string', ''));
             self::sendInlinePreview($share, $filename);
+        }
+
+        if ($downloadMode === 'preview_thumb') {
+            $filename = trim(rex_request::get('file', 'string', ''));
+            $variant = trim(rex_request::get('variant', 'string', 'small'));
+            self::sendPdfThumbnailPreview($share, $filename, $variant);
         }
 
         if ($downloadMode === 'zip_async_create') {
@@ -2566,15 +2572,25 @@ class BoardShareService
         $caption = $displayName . ' (' . $filename . ')';
 
         if (self::isImageExtension($extension)) {
-            $thumb = '<img class="klxm-preview-thumb" src="' . htmlspecialchars($previewUrl) . '" alt="' . htmlspecialchars($displayName) . '">';
+            $thumb = '<img class="klxm-preview-thumb" src="' . htmlspecialchars($previewUrl) . '" alt="' . htmlspecialchars($displayName) . '" loading="lazy" decoding="async">';
             return '<a href="#" class="klxm-preview-trigger klxm-preview-link" data-preview-type="image" data-preview-url="' . htmlspecialchars($previewUrl) . '" data-preview-title="' . htmlspecialchars($caption) . '">' . $thumb . '</a>';
         }
 
         if ($extension === 'pdf') {
-            $thumbUrl = self::getPdfThumbnailUrl($filename);
-            if ($thumbUrl !== null) {
-                $thumb = '<img class="klxm-preview-thumb" src="' . htmlspecialchars($thumbUrl) . '" alt="' . htmlspecialchars($displayName) . '">';
-                return '<a href="#" class="klxm-preview-trigger klxm-preview-link" data-preview-type="image" data-preview-url="' . htmlspecialchars($thumbUrl) . '" data-preview-title="' . htmlspecialchars($caption) . '">' . $thumb . '</a>';
+            $thumbPath = self::getPdfThumbnailPath($filename, 'small');
+            if ($thumbPath !== null && is_file($thumbPath)) {
+                $thumbPreviewUrl = self::buildShareUrl($share, $token, [
+                    'klxm_board_share_download' => 'preview_thumb',
+                    'file' => $filename,
+                    'variant' => 'small',
+                ]);
+                $largePreviewUrl = self::buildShareUrl($share, $token, [
+                    'klxm_board_share_download' => 'preview_thumb',
+                    'file' => $filename,
+                    'variant' => 'large',
+                ]);
+                $thumb = '<img class="klxm-preview-thumb" src="' . htmlspecialchars($thumbPreviewUrl) . '" alt="' . htmlspecialchars($displayName) . '" loading="lazy" decoding="async">';
+                return '<a href="#" class="klxm-preview-trigger klxm-preview-link" data-preview-type="image" data-preview-url="' . htmlspecialchars($largePreviewUrl) . '" data-preview-title="' . htmlspecialchars($caption) . '">' . $thumb . '</a>';
             }
 
             return '<div class="klxm-filetype-tile">'
@@ -2619,6 +2635,42 @@ class BoardShareService
      */
     private static function sendInlinePreview(array $share, string $filename): never
     {
+        $path = self::resolveSharedMediaPath($share, $filename);
+
+        $mimeType = (string) (rex_file::mimeType($path) ?: 'application/octet-stream');
+        rex_response::sendFile($path, $mimeType, 'inline', $filename);
+        exit;
+    }
+
+    /**
+     * @param array<string, mixed> $share
+     */
+    private static function sendPdfThumbnailPreview(array $share, string $filename, string $variant): never
+    {
+        $path = self::resolveSharedMediaPath($share, $filename);
+        if (strtolower(rex_file::extension($filename)) !== 'pdf') {
+            self::sendText('Vorschau für diesen Dateityp nicht verfügbar.', rex_response::HTTP_BAD_REQUEST);
+        }
+
+        if ($variant !== 'large') {
+            $variant = 'small';
+        }
+
+        $thumbPath = self::getPdfThumbnailPath($filename, $variant);
+        if ($thumbPath === null || !is_file($thumbPath)) {
+            self::sendText('PDF-Vorschau nicht verfügbar.', rex_response::HTTP_NOT_FOUND);
+        }
+
+        $mimeType = (string) (rex_file::mimeType($thumbPath) ?: 'image/jpeg');
+        rex_response::sendFile($thumbPath, $mimeType, 'inline', basename($thumbPath));
+        exit;
+    }
+
+    /**
+     * @param array<string, mixed> $share
+     */
+    private static function resolveSharedMediaPath(array $share, string $filename): string
+    {
         if ($filename === '' || basename($filename) !== $filename || str_contains($filename, '/') || str_contains($filename, '\\')) {
             self::sendText('Ungültiger Dateiname.', rex_response::HTTP_BAD_REQUEST);
         }
@@ -2633,9 +2685,7 @@ class BoardShareService
             self::sendText('Datei nicht gefunden.', rex_response::HTTP_NOT_FOUND);
         }
 
-        $mimeType = (string) (rex_file::mimeType($path) ?: 'application/octet-stream');
-        rex_response::sendFile($path, $mimeType, 'inline', $filename);
-        exit;
+        return $path;
     }
 
     private static function resolveUikitIconForExtension(string $extension): string
@@ -2665,13 +2715,19 @@ class BoardShareService
         return 'file-edit';
     }
 
-    private static function getPdfThumbnailUrl(string $filename): ?string
+    private static function getPdfThumbnailPath(string $filename, string $variant = 'small'): ?string
     {
-        if (array_key_exists($filename, self::$pdfThumbnailUrlCache)) {
-            return self::$pdfThumbnailUrlCache[$filename];
+        if ($variant !== 'large') {
+            $variant = 'small';
         }
 
-        self::$pdfThumbnailUrlCache[$filename] = null;
+        $cacheKey = $variant . '::' . $filename;
+
+        if (array_key_exists($cacheKey, self::$pdfThumbnailPathCache)) {
+            return self::$pdfThumbnailPathCache[$cacheKey];
+        }
+
+        self::$pdfThumbnailPathCache[$cacheKey] = null;
 
         $pdfout = rex_addon::get('pdfout');
         if (!$pdfout->isAvailable() || !class_exists(\FriendsOfRedaxo\PdfOut\PdfThumbnail::class)) {
@@ -2685,43 +2741,26 @@ class BoardShareService
 
         try {
             $thumbnail = new \FriendsOfRedaxo\PdfOut\PdfThumbnail();
+            $maxWidth = $variant === 'large' ? 1600 : 320;
+            $quality = $variant === 'large' ? 84 : 72;
             $thumbnail
                 ->setFormat('jpg')
                 ->setDpi(120)
-                ->setQuality(82)
+                ->setQuality($quality)
                 ->setPage(1)
-                ->setMaxWidth(1200);
+                ->setMaxWidth($maxWidth);
 
             $thumbnailPath = $thumbnail->generate($pdfPath);
             if (!is_string($thumbnailPath) || $thumbnailPath === '' || !is_file($thumbnailPath)) {
                 return null;
             }
 
-            $thumbnailUrl = self::toPublicUrlFromAbsolutePath($thumbnailPath);
-            self::$pdfThumbnailUrlCache[$filename] = $thumbnailUrl;
+            self::$pdfThumbnailPathCache[$cacheKey] = $thumbnailPath;
 
-            return $thumbnailUrl;
+            return $thumbnailPath;
         } catch (\Throwable) {
             return null;
         }
-    }
-
-    private static function toPublicUrlFromAbsolutePath(string $absolutePath): ?string
-    {
-        $basePath = rtrim(rex_path::base(), '/');
-        $normalized = str_replace('\\', '/', $absolutePath);
-        $normalizedBase = str_replace('\\', '/', $basePath);
-
-        if (!str_starts_with($normalized, $normalizedBase . '/')) {
-            return null;
-        }
-
-        $relative = substr($normalized, strlen($normalizedBase));
-        if (!is_string($relative) || $relative === '') {
-            return null;
-        }
-
-        return '/' . ltrim($relative, '/');
     }
 
     /**

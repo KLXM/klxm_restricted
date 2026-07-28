@@ -965,7 +965,7 @@ if ($shares === []) {
         echo '<td>' . $downloadText . '<br><small class="text-muted">ZIP ' . ((int) ($share['allow_zip'] ?? 0) === 1 ? 'ja' : 'nein') . '</small></td>';
         echo '<td>';
         echo '<button type="button" class="btn btn-xs btn-default" data-toggle="modal" data-target="#' . $statsModalId . '" title="' . htmlspecialchars($statsSummary) . '">Stats</button> ';
-        echo '<a class="btn btn-xs btn-link" href="' . $statsUrl . '">Detail</a>';
+        echo '<a class="btn btn-xs btn-link klxm-stats-detail-link" data-open-parent="1" target="_blank" rel="noopener noreferrer" href="' . $statsUrl . '">Detail</a>';
         echo '</td>';
 
         if ($shareUrl !== '') {

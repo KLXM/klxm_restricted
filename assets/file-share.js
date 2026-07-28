@@ -239,6 +239,36 @@
         }
     }
 
+    function bindStatsDetailLinks() {
+        document.addEventListener('click', function (event) {
+            var link = event.target.closest('.klxm-stats-detail-link[data-open-parent="1"]');
+            if (!link) {
+                return;
+            }
+
+            var url = link.getAttribute('href') || '';
+            if (url === '') {
+                return;
+            }
+
+            if (window.opener && !window.opener.closed) {
+                event.preventDefault();
+                window.opener.location.href = url;
+                window.opener.focus();
+                // In popup context we return control to the parent and close this helper window.
+                window.setTimeout(function () {
+                    window.close();
+                }, 60);
+                return;
+            }
+
+            if (window.parent && window.parent !== window) {
+                event.preventDefault();
+                window.parent.location.href = url;
+            }
+        });
+    }
+
     function init() {
         var mode = document.getElementById('source_mode');
         if (mode) {
@@ -254,6 +284,7 @@
 
         bindRequestBuilder();
         bindCategorizedRepeater();
+        bindStatsDetailLinks();
         initSelectpickers(document);
     }
 
