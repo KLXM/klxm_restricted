@@ -277,6 +277,7 @@ if (rex_request('create_file_share', 'int', 0) === 1) {
         $categorizedGroupSources = rex_request('categorized_group_source', 'array', []);
         $categorizedGroupCategoryIds = rex_request('categorized_group_media_category_id', 'array', []);
         $categorizedGroupManualFiles = rex_request('categorized_group_manual_files', 'array', []);
+        $categorizedGroupManualMedialists = rex_request('categorized_group_manual_medialist', 'array', []);
 
         $requestFields = [];
         $rowCount = max(count($requestFieldKeys), count($requestFieldLabels), count($requestFieldTypes));
@@ -334,7 +335,8 @@ if (rex_request('create_file_share', 'int', 0) === 1) {
                     array_keys($categorizedGroupNames),
                     array_keys($categorizedGroupSources),
                     array_keys($categorizedGroupCategoryIds),
-                    array_keys($categorizedGroupManualFiles)
+                    array_keys($categorizedGroupManualFiles),
+                    array_keys($categorizedGroupManualMedialists)
                 )));
                 sort($groupKeys);
 
@@ -370,6 +372,22 @@ if (rex_request('create_file_share', 'int', 0) === 1) {
                             }
                             if (in_array($item, $allowedFiles, true)) {
                                 $manualList[] = $item;
+                            }
+                        }
+                    }
+
+                    if ($manualList === []) {
+                        $rawMedialist = $categorizedGroupManualMedialists[$groupKey] ?? '';
+                        if (is_string($rawMedialist) && trim($rawMedialist) !== '') {
+                            $rawItems = explode(',', $rawMedialist);
+                            foreach ($rawItems as $item) {
+                                $filename = trim((string) $item);
+                                if ($filename === '') {
+                                    continue;
+                                }
+                                if (in_array($filename, $allowedFiles, true)) {
+                                    $manualList[] = $filename;
+                                }
                             }
                         }
                     }
@@ -753,7 +771,7 @@ if ($selectedCategoryId <= 0) {
         echo '</div>';
     } elseif ($sourceMode === 'categorized') {
         echo '<h4>Kategorisierter Share</h4>';
-        echo '<p class="help-block">Jeder Repeater-Block ist eine Kategorie. Quelle pro Block: einzelne Medien oder komplette Medienpool-Kategorie. Reihenfolge wird exakt übernommen.</p>';
+        echo '<p class="help-block">Jeder Repeater-Block ist eine Kategorie. Quelle pro Block: Medialist (inkl. Reihenfolge) oder komplette Medienpool-Kategorie. Reihenfolge aus dem Medialist wird übernommen.</p>';
 
         $categorizedGroupsData = is_array($defaultFormData['categorized_groups']) ? $defaultFormData['categorized_groups'] : [];
         if ($categorizedGroupsData === []) {
@@ -788,22 +806,22 @@ if ($selectedCategoryId <= 0) {
             echo '<div class="panel-body">';
             echo '<div class="row" style="margin-bottom:8px;">';
             echo '<div class="col-sm-4"><label>Kategorie</label><input class="form-control" type="text" name="categorized_group_name[' . (int) $groupIndex . ']" placeholder="z.B. Angebote" value="' . $groupName . '"></div>';
-            echo '<div class="col-sm-3"><label>Quelle</label><select class="form-control klxm-categorized-source" name="categorized_group_source[' . (int) $groupIndex . ']"><option value="manual"' . ($groupSource === 'manual' ? ' selected' : '') . '>Medien auswählen</option><option value="media_category"' . ($groupSource === 'media_category' ? ' selected' : '') . '>Medienpool-Kategorie</option></select></div>';
+            echo '<div class="col-sm-3"><label>Quelle</label><select class="form-control klxm-categorized-source" name="categorized_group_source[' . (int) $groupIndex . ']"><option value="manual"' . ($groupSource === 'manual' ? ' selected' : '') . '>Medien auswählen (Medialist)</option><option value="media_category"' . ($groupSource === 'media_category' ? ' selected' : '') . '>Medienpool-Kategorie</option></select></div>';
 
             $selectedCategoryOptions = $buildMediaCategoryOptionsSelected(rex_media_category::getRootCategories(false), $groupCategoryId);
             echo '<div class="col-sm-4 klxm-categorized-category-block"' . ($groupSource === 'media_category' ? '' : ' style="display:none;"') . '><label>Medienpool-Kategorie</label><select class="form-control selectpicker" data-live-search="true" data-size="8" name="categorized_group_media_category_id[' . (int) $groupIndex . ']"><option value="0">Bitte wählen</option>' . $selectedCategoryOptions . '</select></div>';
             echo '<div class="col-sm-1"><label>&nbsp;</label><button type="button" class="btn btn-default form-control klxm-categorized-remove">-</button></div>';
             echo '</div>';
             echo '<div class="klxm-categorized-manual-block"' . ($groupSource === 'media_category' ? ' style="display:none;"' : '') . '>';
-            echo '<label>Medien auswählen</label>';
-            echo '<select class="form-control selectpicker" data-live-search="true" data-actions-box="true" data-selected-text-format="count > 3" data-size="10" name="categorized_group_manual_files[' . (int) $groupIndex . '][]" multiple>';
-            foreach ($mediaRows as $media) {
-                $filename = $media['filename'];
-                $display = $media['title'] !== '' ? $media['title'] . ' (' . $filename . ')' : $filename;
-                echo '<option value="' . htmlspecialchars($filename) . '"' . (in_array($filename, $groupFiles, true) ? ' selected' : '') . '>' . htmlspecialchars($display) . '</option>';
-            }
-            echo '</select>';
-            echo '<p class="help-block">Mehrfachauswahl mit Cmd/Ctrl.</p>';
+            echo '<label>Medien auswählen (inkl. Reihenfolge)</label>';
+            $groupMedialistValue = implode(',', $groupFiles);
+            echo \rex_var_medialist::getWidget(
+                'klxm_categorized_manual_' . (int) $groupIndex,
+                'categorized_group_manual_medialist[' . (int) $groupIndex . ']',
+                $groupMedialistValue,
+                ['category' => $selectedCategoryId]
+            );
+            echo '<p class="help-block">Mit den Pfeilen im Medialist die Reihenfolge festlegen. Frontend-Besucher können weiterhin A-Z/Z-A sortieren.</p>';
             echo '</div>';
             echo '</div>';
             echo '</div>';
@@ -816,20 +834,19 @@ if ($selectedCategoryId <= 0) {
         echo '<div class="panel-body">';
         echo '<div class="row" style="margin-bottom:8px;">';
         echo '<div class="col-sm-4"><label>Kategorie</label><input class="form-control" type="text" name="categorized_group_name[__INDEX__]" placeholder="z.B. Angebote"></div>';
-        echo '<div class="col-sm-3"><label>Quelle</label><select class="form-control klxm-categorized-source" name="categorized_group_source[__INDEX__]"><option value="manual">Medien auswählen</option><option value="media_category">Medienpool-Kategorie</option></select></div>';
+        echo '<div class="col-sm-3"><label>Quelle</label><select class="form-control klxm-categorized-source" name="categorized_group_source[__INDEX__]"><option value="manual">Medien auswählen (Medialist)</option><option value="media_category">Medienpool-Kategorie</option></select></div>';
         echo '<div class="col-sm-4 klxm-categorized-category-block" style="display:none;"><label>Medienpool-Kategorie</label><select class="form-control selectpicker" data-live-search="true" data-size="8" name="categorized_group_media_category_id[__INDEX__]"><option value="0">Bitte wählen</option>' . $mediaCategoryOptionsHtml . '</select></div>';
         echo '<div class="col-sm-1"><label>&nbsp;</label><button type="button" class="btn btn-default form-control klxm-categorized-remove">-</button></div>';
         echo '</div>';
         echo '<div class="klxm-categorized-manual-block">';
-        echo '<label>Medien auswählen</label>';
-        echo '<select class="form-control selectpicker" data-live-search="true" data-actions-box="true" data-selected-text-format="count > 3" data-size="10" name="categorized_group_manual_files[__INDEX__][]" multiple>';
-        foreach ($mediaRows as $media) {
-            $filename = $media['filename'];
-            $display = $media['title'] !== '' ? $media['title'] . ' (' . $filename . ')' : $filename;
-            echo '<option value="' . htmlspecialchars($filename) . '">' . htmlspecialchars($display) . '</option>';
-        }
-        echo '</select>';
-        echo '<p class="help-block">Mehrfachauswahl mit Cmd/Ctrl.</p>';
+        echo '<label>Medien auswählen (inkl. Reihenfolge)</label>';
+        echo \rex_var_medialist::getWidget(
+            'klxm_categorized_manual___INDEX__',
+            'categorized_group_manual_medialist[__INDEX__]',
+            '',
+            ['category' => $selectedCategoryId]
+        );
+        echo '<p class="help-block">Mit den Pfeilen im Medialist die Reihenfolge festlegen. Frontend-Besucher können weiterhin A-Z/Z-A sortieren.</p>';
         echo '</div>';
         echo '</div>';
         echo '</div>';

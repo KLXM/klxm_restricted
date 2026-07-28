@@ -20,6 +20,8 @@ use rex_addon;
 use rex_config;
 use rex_csrf_token;
 use rex_clang;
+use rex_dir;
+use rex_file;
 use rex_request;
 use rex_path;
 use rex_cronjob_manager;
@@ -128,17 +130,34 @@ if (rex::isBackend() && rex::getUser()) {
         $addon = rex_addon::get('klxm_restricted');
         $ycomActive = rex_addon::get('ycom')->isAvailable();
         $currentPage = rawurldecode(rex_request::get('page', 'string'));
+        $syncAsset = static function (string $filename): void {
+            $source = rex_path::addon('klxm_restricted', 'assets/' . $filename);
+            $target = rex_path::addonAssets('klxm_restricted', $filename);
+
+            if (!is_file($source)) {
+                return;
+            }
+
+            if (!is_file($target) || (int) @filemtime($target) < (int) @filemtime($source)) {
+                rex_dir::create(dirname($target));
+                rex_file::copy($source, $target);
+            }
+        };
 
         if ($currentPage === 'klxm_restricted/matrix') {
+            $syncAsset('matrix.js');
             rex_view::addJsFile($addon->getAssetsUrl('matrix.js'));
         }
 
         if ($currentPage === 'mediapool/klxm_restricted_file_share') {
+            $syncAsset('share-links.js');
+            $syncAsset('file-share.js');
             rex_view::addJsFile($addon->getAssetsUrl('share-links.js'));
             rex_view::addJsFile($addon->getAssetsUrl('file-share.js'));
         }
 
         if ($currentPage === 'klxm_restricted/share_requests') {
+            $syncAsset('share-requests.js');
             $echartsAddon = rex_addon::get('echarts');
             if ($echartsAddon->isAvailable()) {
                 rex_view::addJsFile($echartsAddon->getAssetsUrl('echarts.min.js'));

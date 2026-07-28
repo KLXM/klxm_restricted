@@ -1,4 +1,28 @@
 (function () {
+    function appendCategorizedGroup(container, template) {
+        if (!container || !template) {
+            return false;
+        }
+
+        var nextIndex = Number(container.getAttribute('data-next-index') || container.querySelectorAll('.klxm-categorized-group').length || 0);
+        if (!isFinite(nextIndex) || nextIndex < 0) {
+            nextIndex = container.querySelectorAll('.klxm-categorized-group').length;
+        }
+
+        var html = template.innerHTML.replace(/__INDEX__/g, String(nextIndex));
+        container.setAttribute('data-next-index', String(nextIndex + 1));
+
+        var wrap = document.createElement('div');
+        wrap.innerHTML = html;
+        var group = wrap.firstElementChild;
+        if (!group) {
+            return false;
+        }
+
+        container.appendChild(group);
+        return group;
+    }
+
     function initSelectpickers(root) {
         if (!window.jQuery || typeof window.jQuery.fn.selectpicker !== 'function') {
             return;
@@ -135,8 +159,7 @@
         }
 
         var template = document.getElementById('klxm-categorized-template');
-        var addButton = document.getElementById('klxm-categorized-add');
-        var indexCounter = container.querySelectorAll('.klxm-categorized-group').length;
+        container.setAttribute('data-next-index', String(container.querySelectorAll('.klxm-categorized-group').length));
 
         container.querySelectorAll('.klxm-categorized-group').forEach(function (group) {
             toggleCategorizedGroupSource(group);
@@ -167,6 +190,14 @@
                     row.querySelectorAll('select').forEach(function (select) {
                         select.selectedIndex = 0;
                     });
+                    row.querySelectorAll('input[id^="REX_MEDIALIST_"]').forEach(function (hiddenField) {
+                        hiddenField.value = '';
+                    });
+                    row.querySelectorAll('select[id^="REX_MEDIALIST_SELECT_"]').forEach(function (listSelect) {
+                        while (listSelect.options.length > 0) {
+                            listSelect.remove(0);
+                        }
+                    });
                     toggleCategorizedGroupSource(row);
                     initSelectpickers(row);
                     return;
@@ -177,29 +208,34 @@
             }
 
             var add = event.target.closest('#klxm-categorized-add');
-            if (!add || !template) {
+            if (add) {
                 return;
             }
-
-            var html = template.innerHTML.replace(/__INDEX__/g, String(indexCounter));
-            indexCounter += 1;
-
-            var wrap = document.createElement('div');
-            wrap.innerHTML = html;
-            var group = wrap.firstElementChild;
-            if (!group) {
-                return;
-            }
-
-            container.appendChild(group);
-            toggleCategorizedGroupSource(group);
-            initSelectpickers(group);
         });
 
-        if (addButton) {
-            addButton.addEventListener('click', function () {
-                // handled via delegated click above
-            });
+        if (!window.__klxmCategorizedAddCaptureBound) {
+            window.__klxmCategorizedAddCaptureBound = true;
+            document.addEventListener('click', function (event) {
+                var add = event.target.closest('#klxm-categorized-add');
+                if (!add) {
+                    return;
+                }
+
+                var liveContainer = document.getElementById('klxm-categorized-groups');
+                var liveTemplate = document.getElementById('klxm-categorized-template');
+                if (!liveContainer || !liveTemplate) {
+                    return;
+                }
+
+                event.preventDefault();
+                var group = appendCategorizedGroup(liveContainer, liveTemplate);
+                if (!group) {
+                    return;
+                }
+
+                toggleCategorizedGroupSource(group);
+                initSelectpickers(group);
+            }, true);
         }
     }
 

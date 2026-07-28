@@ -820,6 +820,10 @@ class BoardShareService
             . '.klxm-brand{display:flex;align-items:center;gap:12px;margin-bottom:12px}.klxm-brand-logo{max-height:56px;max-width:220px;object-fit:contain}.klxm-brand h2{margin:0;color:var(--klxm-accent);font-size:1rem;letter-spacing:.04em;text-transform:uppercase}.klxm-brand p{margin:4px 0 0;color:var(--klxm-muted)}'
             . '.uk-alert-warning,.uk-alert-danger,.uk-alert-primary,.uk-alert-success{padding:10px 12px;border-radius:8px;border:1px solid var(--klxm-line);margin:8px 0}'
             . '.uk-alert-warning{background:#fff8e6;color:#7a5f00}.uk-alert-danger{background:#fff0f0;color:#8f2f2f}.uk-alert-primary{background:#eef5ff;color:#2a4d7a}.uk-alert-success{background:#ecf9f0;color:#2d6b46}'
+            . '.klxm-files-table{table-layout:fixed;width:100%}.klxm-files-table th,.klxm-files-table td{vertical-align:top;word-wrap:break-word}'
+            . '.klxm-desc-excerpt{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:break-word}'
+            . '.klxm-desc-full{margin-top:6px;word-break:break-word}.klxm-desc-full[hidden]{display:none!important}'
+            . '.klxm-desc-toggle{margin-top:6px;padding:0;min-height:auto;font-size:.82rem;line-height:1.2}'
             . '.klxm-zip-status-modal{display:none;position:fixed;z-index:10050;inset:0;background:rgba(0,0,0,.42)}.klxm-zip-status-modal .uk-modal-dialog{max-width:520px;margin:10vh auto;background:#fff;border-radius:10px;padding:16px;border:1px solid var(--klxm-line)}'
                 . '.klxm-preview-link{display:inline-flex;width:84px;height:56px;align-items:center;justify-content:center;border:1px solid #e5e5e5;border-radius:4px;background:#fff;overflow:hidden}'
                 . '.klxm-preview-thumb{display:block;max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain}'
@@ -867,7 +871,10 @@ class BoardShareService
     private static function sortFilesByCategoryAndTitle(array $groups, string $direction): array
     {
         $dir = strtolower(trim($direction));
-        if ($dir !== 'desc') {
+        if ($dir === 'manual') {
+            return $groups;
+        }
+        if ($dir !== 'asc' && $dir !== 'desc') {
             $dir = 'asc';
         }
 
@@ -917,9 +924,9 @@ class BoardShareService
     private static function renderShareList(array $share, string $token, array $filesByGroup): string
     {
         $branding = self::getShareBranding();
-        $sortDirection = strtolower(trim(rex_request::get('klxm_sort', 'string', 'asc')));
-        if ($sortDirection !== 'desc') {
-            $sortDirection = 'asc';
+        $sortDirection = strtolower(trim(rex_request::get('klxm_sort', 'string', 'manual')));
+        if (!in_array($sortDirection, ['manual', 'asc', 'desc'], true)) {
+            $sortDirection = 'manual';
         }
         $filesByGroup = self::sortFilesByCategoryAndTitle($filesByGroup, $sortDirection);
 
@@ -973,6 +980,7 @@ class BoardShareService
 
         $html .= '<div class="uk-width-auto@s klxm-sort-wrap">';
         $html .= '<select class="uk-select klxm-sort-select" title="Sortierung">';
+        $html .= '<option value="manual"' . ($sortDirection === 'manual' ? ' selected' : '') . '>Sortierung: Manuelle Reihenfolge</option>';
         $html .= '<option value="asc"' . ($sortDirection === 'asc' ? ' selected' : '') . '>Sortierung: Kategorie + Titel A-Z</option>';
         $html .= '<option value="desc"' . ($sortDirection === 'desc' ? ' selected' : '') . '>Sortierung: Kategorie + Titel Z-A</option>';
         $html .= '</select></div>';
@@ -1023,26 +1031,36 @@ class BoardShareService
             $html .= '<form method="post" class="klxm-zip-selected-form" data-share-token="' . htmlspecialchars($token) . '">';
             $html .= '<input type="hidden" name="_csrf_token" value="' . htmlspecialchars($downloadCsrf) . '">';
             $html .= '<div class="uk-overflow-auto">';
-            $html .= '<table class="uk-table uk-table-divider uk-table-small uk-table-hover">';
+            $html .= '<table class="uk-table uk-table-divider uk-table-small uk-table-hover klxm-files-table">';
+            $html .= '<colgroup>';
+            $html .= '<col style="width:40px">';
+            $html .= '<col style="width:110px">';
+            $html .= '<col style="width:28%">';
+            $html .= '<col style="width:32%">';
+            $html .= '<col style="width:130px">';
+            $html .= '<col style="width:110px">';
+            $html .= '<col style="width:78px">';
+            $html .= '</colgroup>';
             $html .= '<thead><tr>';
             $html .= '<th style="width:40px;"><input class="klxm-select-group" type="checkbox" data-target="' . htmlspecialchars($groupId) . '"></th>';
             $html .= '<th style="width:110px;">Vorschau</th>';
             $html .= '<th>Datei</th><th>Beschreibung</th><th>Aktualisiert</th><th class="uk-text-right">Groesse</th><th></th>';
             $html .= '</tr></thead><tbody id="' . htmlspecialchars($groupId) . '">';
 
-            foreach ($group['files'] as $file) {
+            foreach ($group['files'] as $fileIndex => $file) {
                 $displayName = trim($file['title']) !== '' ? $file['title'] : $file['filename'];
                 $singleActionUrl = self::buildShareUrl($share, $token, [
                     'klxm_board_share_download' => 'file',
                     'file' => $file['filename'],
                 ]);
                 $previewHtml = self::renderFilePreview($share, $token, $file, $displayName);
+                $descriptionHtml = self::renderDescriptionCell((string) $file['description'], (int) $share['id'], (int) $groupIndex, (int) $fileIndex);
                 $searchText = strtolower($displayName . ' ' . $file['filename'] . ' ' . $file['description']);
                 $html .= '<tr data-search="' . htmlspecialchars($searchText) . '">';
                 $html .= '<td><input class="klxm-file-checkbox" type="checkbox" name="selected_files[]" value="' . htmlspecialchars($file['filename']) . '"></td>';
                 $html .= '<td>' . $previewHtml . '</td>';
                 $html .= '<td><strong>' . htmlspecialchars($displayName) . '</strong><br><span class="uk-text-meta">' . htmlspecialchars($file['filename']) . '</span></td>';
-                $html .= '<td>' . htmlspecialchars($file['description']) . '</td>';
+                $html .= '<td>' . $descriptionHtml . '</td>';
                 $html .= '<td>' . htmlspecialchars(self::formatDate($file['updatedate'])) . '</td>';
                 $html .= '<td class="uk-text-right">' . htmlspecialchars(self::formatBytes($file['filesize'])) . '</td>';
                 $html .= '<td class="uk-text-nowrap">';
@@ -1085,14 +1103,36 @@ class BoardShareService
             . 'function poll(job){var u=new URL(decodeUrl(createUrl),window.location.origin);u.searchParams.set("klxm_board_share_download","zip_async_status");u.searchParams.set("zip_job",job);fetch(u.toString(),{credentials:"same-origin"}).then(function(r){return r.json();}).then(function(data){if(!data||!data.ok){setStatus((data&&data.message)?data.message:"ZIP-Statusfehler");return;}if(data.status==="queued"||data.status==="processing"){setStatus("ZIP wird erstellt ...");window.setTimeout(function(){poll(job);},1200);return;}if(data.status==="ready"){setStatus("ZIP bereit, Download startet ...");window.location.href=decodeUrl(data.download_url||"");window.setTimeout(function(){setStatus("");},2800);return;}setStatus(data.message||"ZIP fehlgeschlagen");}).catch(function(){setStatus("ZIP-Statusfehler");});}'
             . 'function create(kind,selected){setModalState("ZIP wird vorbereitet ...",false,false);showModal();var formData=new FormData();formData.set("zip_kind",kind);selected.forEach(function(name){formData.append("selected_files[]",name);});fetch(decodeUrl(createUrl),{method:"POST",body:formData,credentials:"same-origin"}).then(function(r){return r.json();}).then(function(data){if(!data||!data.ok){setStatus((data&&data.message)?data.message:"ZIP konnte nicht gestartet werden");return;}setStatus("ZIP wird erstellt ...");poll(data.job);}).catch(function(){setStatus("ZIP konnte nicht gestartet werden");});}'
             . 'function applySearch(needle){var query=(needle||"").toLowerCase().trim();root.querySelectorAll("tbody tr[data-search]").forEach(function(row){var hay=(row.getAttribute("data-search")||"").toLowerCase();row.style.display=(query===""||hay.indexOf(query)!==-1)?"":"none";});root.querySelectorAll(".klxm-group-block").forEach(function(block){var visibleRows=block.querySelectorAll("tbody tr[data-search]:not([style*=\"display: none\"])").length;block.style.display=visibleRows>0?"":"none";});}'
-            . 'root.addEventListener("change",function(e){var t=e.target;if(t.classList.contains("klxm-select-group")){var id=t.getAttribute("data-target")||"";var wrap=document.getElementById(id);if(wrap){wrap.querySelectorAll(".klxm-file-checkbox").forEach(function(cb){cb.checked=t.checked;});}refreshSelectedButton();return;}if(t.classList.contains("klxm-file-checkbox")){refreshSelectedButton();return;}if(t.classList.contains("klxm-jump-menu")){var target=t.value||"";if(target!==""){var el=document.querySelector(target);if(el){el.scrollIntoView({behavior:"smooth",block:"start"});}}return;}if(t.classList.contains("klxm-sort-select")){var value=(t.value||"asc").toLowerCase();if(value!=="desc"){value="asc";}var u=new URL(window.location.href);if(value==="asc"){u.searchParams.delete("klxm_sort");}else{u.searchParams.set("klxm_sort",value);}window.location.href=u.toString();return;}});'
+            . 'root.addEventListener("change",function(e){var t=e.target;if(t.classList.contains("klxm-select-group")){var id=t.getAttribute("data-target")||"";var wrap=document.getElementById(id);if(wrap){wrap.querySelectorAll(".klxm-file-checkbox").forEach(function(cb){cb.checked=t.checked;});}refreshSelectedButton();return;}if(t.classList.contains("klxm-file-checkbox")){refreshSelectedButton();return;}if(t.classList.contains("klxm-jump-menu")){var target=t.value||"";if(target!==""){var el=document.querySelector(target);if(el){el.scrollIntoView({behavior:"smooth",block:"start"});}}return;}if(t.classList.contains("klxm-sort-select")){var value=(t.value||"manual").toLowerCase();if(value!=="asc"&&value!=="desc"&&value!=="manual"){value="manual";}var u=new URL(window.location.href);if(value==="manual"){u.searchParams.delete("klxm_sort");}else{u.searchParams.set("klxm_sort",value);}window.location.href=u.toString();return;}});'
             . 'root.addEventListener("input",function(e){var t=e.target;if(t.classList.contains("klxm-live-search")){applySearch(t.value||"");}});'
-            . 'root.addEventListener("click",function(e){var preview=e.target.closest(".klxm-preview-trigger");if(preview){e.preventDefault();openPreview(decodeUrl(preview.getAttribute("data-preview-url")||""),preview.getAttribute("data-preview-title")||"",preview.getAttribute("data-preview-type")||"image");return;}var allBtn=e.target.closest(".klxm-zip-all-btn");if(allBtn){e.preventDefault();create("all",[]);return;}var selectedBtn=e.target.closest(".klxm-zip-selected-btn");if(selectedBtn){e.preventDefault();var selected=collectSelected();if(selected.length===0){setStatus("Bitte zuerst Dateien auswählen.");return;}create("selected",selected);}});'
+            . 'root.addEventListener("click",function(e){var descToggle=e.target.closest(".klxm-desc-toggle");if(descToggle){e.preventDefault();var targetId=descToggle.getAttribute("data-target")||"";var full=document.getElementById(targetId);if(full){var show=full.hasAttribute("hidden");if(show){full.removeAttribute("hidden");descToggle.textContent="Weniger";descToggle.setAttribute("aria-expanded","true");}else{full.setAttribute("hidden","");descToggle.textContent="Mehr";descToggle.setAttribute("aria-expanded","false");}}return;}var preview=e.target.closest(".klxm-preview-trigger");if(preview){e.preventDefault();openPreview(decodeUrl(preview.getAttribute("data-preview-url")||""),preview.getAttribute("data-preview-title")||"",preview.getAttribute("data-preview-type")||"image");return;}var allBtn=e.target.closest(".klxm-zip-all-btn");if(allBtn){e.preventDefault();create("all",[]);return;}var selectedBtn=e.target.closest(".klxm-zip-selected-btn");if(selectedBtn){e.preventDefault();var selected=collectSelected();if(selected.length===0){setStatus("Bitte zuerst Dateien auswählen.");return;}create("selected",selected);}});'
             . 'if(previewModal){previewModal.addEventListener("click",function(e){if(e.target===previewModal||e.target.closest(".klxm-preview-close")){closePreview();}});document.addEventListener("keydown",function(e){if(e.key==="Escape"&&previewModal.classList.contains("is-open")){closePreview();}});}'
             . 'refreshSelectedButton();'
             . '})();</script>';
 
         return $html;
+    }
+
+    private static function renderDescriptionCell(string $description, int $shareId, int $groupIndex, int $fileIndex): string
+    {
+        $text = trim($description);
+        if ($text === '') {
+            return '<span class="uk-text-meta">-</span>';
+        }
+
+        $maxLength = 140;
+        $needsToggle = mb_strlen($text) > $maxLength;
+        $escapedText = htmlspecialchars($text);
+
+        if (!$needsToggle) {
+            return $escapedText;
+        }
+
+        $fullId = 'klxm-desc-full-' . $shareId . '-' . $groupIndex . '-' . $fileIndex;
+
+        return '<div class="klxm-desc-excerpt">' . $escapedText . '</div>'
+            . '<button type="button" class="uk-button uk-button-text klxm-desc-toggle" data-target="' . htmlspecialchars($fullId) . '" aria-expanded="false">Mehr</button>'
+            . '<div id="' . htmlspecialchars($fullId) . '" class="klxm-desc-full" hidden>' . $escapedText . '</div>';
     }
 
     private static function renderLockedMessage(string $token): string
