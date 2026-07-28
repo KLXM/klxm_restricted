@@ -986,7 +986,10 @@ class BoardShareService
             . '.klxm-file-card-title{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;text-overflow:ellipsis;min-height:2.7em;overflow-wrap:anywhere;word-break:break-word}'
             . '.klxm-file-card-name{display:flex;align-items:center;gap:6px;max-width:100%}'
             . '.klxm-file-card-name-text{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;flex:1 1 auto}'
-            . '.klxm-file-card-name .klxm-info-indicator{display:inline-flex;align-items:center;justify-content:center;margin-left:6px;color:#1e87f0;vertical-align:middle}'
+            . '.klxm-file-card-name .klxm-info-indicator{display:inline-flex;align-items:center;justify-content:center;margin-left:6px;color:#0f5fa8;vertical-align:middle}'
+            . '.klxm-file-card-name .klxm-info-indicator svg{width:16px;height:16px}'
+            . '.klxm-file-card-name .klxm-info-indicator svg path{fill:currentColor!important}'
+            . '.klxm-file-card-name .klxm-info-indicator svg circle{stroke:currentColor!important}'
             . '.klxm-file-card-quota{display:block;margin-top:4px;font-size:.86rem;color:#4f5f73}'
             . '.klxm-file-card-quota--reached{color:#b42318;font-weight:700}'
             . '.klxm-file-card .uk-card-body{display:flex;flex-direction:column;gap:10px}'
@@ -1010,7 +1013,10 @@ class BoardShareService
             . '.klxm-file-table .klxm-row-title{font-weight:700;line-height:1.3;overflow-wrap:anywhere;word-break:break-word}'
             . '.klxm-file-table .klxm-row-name{display:flex;align-items:center;gap:6px;color:#4f5f73;max-width:100%}'
             . '.klxm-file-table .klxm-row-name-text{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;flex:1 1 auto}'
-            . '.klxm-file-table .klxm-row-name .klxm-info-indicator{display:inline-flex;align-items:center;justify-content:center;margin-left:6px;color:#1e87f0;vertical-align:middle}'
+            . '.klxm-file-table .klxm-row-name .klxm-info-indicator{display:inline-flex;align-items:center;justify-content:center;margin-left:6px;color:#0f5fa8;vertical-align:middle}'
+            . '.klxm-file-table .klxm-row-name .klxm-info-indicator svg{width:16px;height:16px}'
+            . '.klxm-file-table .klxm-row-name .klxm-info-indicator svg path{fill:currentColor!important}'
+            . '.klxm-file-table .klxm-row-name .klxm-info-indicator svg circle{stroke:currentColor!important}'
             . '.klxm-file-table .klxm-row-quota{display:block;margin-top:4px;font-size:.82rem;color:#4f5f73}'
             . '.klxm-file-table .klxm-row-quota--reached{color:#b42318;font-weight:700}'
             . '.klxm-file-table .klxm-row-preview .klxm-preview-link{display:inline-flex;align-items:center;justify-content:center;width:78px;height:auto;max-height:56px;border:0;background:transparent;padding:0}'
@@ -1018,6 +1024,10 @@ class BoardShareService
             . '.klxm-file-table .klxm-row-preview .klxm-filetype-tile{width:72px;height:48px}'
             . '.klxm-file-table .klxm-row-actions{display:inline-flex;align-items:center;gap:10px;justify-content:center;width:100%}'
             . '.klxm-file-table .klxm-row-actions .uk-icon-button{flex:0 0 auto}'
+            . '.klxm-row-actions .uk-icon-button,.klxm-file-card-action-links .uk-icon-button{appearance:none;-webkit-appearance:none;border:1px solid #c7d4e3;background:#fff;color:#155fa0;box-shadow:none;outline:none}'
+            . '.klxm-row-actions .uk-icon-button:hover,.klxm-file-card-action-links .uk-icon-button:hover{background:#f3f8ff;color:#0f4f8a;border-color:#a9bfd8}'
+            . '.klxm-row-actions .uk-icon-button[disabled],.klxm-file-card-action-links .uk-icon-button[disabled]{background:#f7f9fc;color:#9aa8ba;border-color:#d7e0ea;cursor:not-allowed}'
+            . '.klxm-row-actions .uk-icon-button .klxm-download-icon svg line,.klxm-row-actions .uk-icon-button .klxm-download-icon svg polyline,.klxm-row-actions .uk-icon-button .klxm-download-icon svg path,.klxm-row-actions .uk-icon-button .klxm-download-icon svg circle,.klxm-file-card-action-links .uk-icon-button .klxm-download-icon svg line,.klxm-file-card-action-links .uk-icon-button .klxm-download-icon svg polyline,.klxm-file-card-action-links .uk-icon-button .klxm-download-icon svg path,.klxm-file-card-action-links .uk-icon-button .klxm-download-icon svg circle{stroke:currentColor!important;fill:none!important}'
             . '.klxm-file-table .klxm-row-actions .klxm-details-trigger{white-space:nowrap;padding:0;min-height:auto}'
             . '.klxm-file-table .klxm-title-trigger{padding:0;min-height:auto;display:block;text-align:left;width:100%}'
             . '.klxm-file-table .klxm-title-trigger.is-clickable{cursor:pointer}'
@@ -1237,7 +1247,7 @@ class BoardShareService
             $quotaClass = $fileLimitReached ? ' klxm-row-quota--reached' : '';
             $quotaInfo = '<span class="klxm-row-quota' . $quotaClass . '">Kontingent: ' . $fileLimitCurrent . '/' . $fileLimitMax . '</span>';
         }
-        $infoIndicator = $hasDescription ? '<span class="klxm-info-indicator uk-text-primary" uk-icon="icon: info; ratio: 0.7" aria-hidden="true" title="Beschreibung vorhanden"></span><span class="uk-hidden">Beschreibung vorhanden</span>' : '';
+        $infoIndicator = $hasDescription ? '<span class="klxm-info-indicator" uk-icon="icon: info; ratio: 0.7" aria-hidden="true" title="Beschreibung vorhanden"></span><span class="uk-hidden">Beschreibung vorhanden</span>' : '';
         if ($hasDescription) {
             $html .= '<td data-label="Datei"><button type="button" class="uk-button uk-button-text klxm-title-trigger is-clickable" uk-toggle="target: #' . htmlspecialchars($detailsId) . '" aria-label="Details öffnen: ' . htmlspecialchars($displayName) . '"><span class="klxm-row-title">' . htmlspecialchars($displayName) . '</span><span class="klxm-row-name"><span class="klxm-row-name-text">' . htmlspecialchars($filename) . '</span>' . $infoIndicator . '</span>' . $quotaInfo . '</button></td>';
         } else {
@@ -1252,7 +1262,7 @@ class BoardShareService
                 ? 'Datei wurde bereits als Einzeldownload geladen.'
                 : 'Kontingent für diese Datei ist erreicht.';
             $html .= '<button type="button" class="uk-icon-button" disabled title="' . htmlspecialchars($disabledReason) . '" aria-label="' . htmlspecialchars($disabledReason) . '">'
-                . '<span uk-icon="icon: download"></span>'
+                . '<span class="klxm-download-icon" uk-icon="icon: download"></span>'
                 . '<span class="uk-hidden-visually">Download nicht verfügbar</span>'
                 . '</button>';
         } else {
@@ -1264,7 +1274,7 @@ class BoardShareService
                 . 'data-disabled-reason="Datei wurde bereits als Einzeldownload geladen." '
                 . 'title="Datei herunterladen" '
                 . 'aria-label="Datei herunterladen: ' . htmlspecialchars($displayName) . '">'
-                . '<span uk-icon="icon: download"></span>'
+                . '<span class="klxm-download-icon" uk-icon="icon: download"></span>'
                 . '<span class="uk-hidden-visually">Datei herunterladen</span>'
                 . '</button>';
         }
@@ -1333,7 +1343,7 @@ class BoardShareService
         $html .= '<div class="uk-card-media-top klxm-file-preview">' . $previewHtml . '</div>';
         $html .= '<div class="uk-card-body">';
         $html .= '<div class="klxm-file-card-title">' . htmlspecialchars($displayName) . '</div>';
-        $html .= '<span class="klxm-file-card-name"><span class="klxm-file-card-name-text">' . htmlspecialchars($filename) . '</span>' . ($hasDescription ? '<span class="klxm-info-indicator uk-text-primary" uk-icon="icon: info; ratio: 0.7" aria-hidden="true" title="Beschreibung vorhanden"></span><span class="uk-hidden">Beschreibung vorhanden</span>' : '') . '</span>';
+        $html .= '<span class="klxm-file-card-name"><span class="klxm-file-card-name-text">' . htmlspecialchars($filename) . '</span>' . ($hasDescription ? '<span class="klxm-info-indicator" uk-icon="icon: info; ratio: 0.7" aria-hidden="true" title="Beschreibung vorhanden"></span><span class="uk-hidden">Beschreibung vorhanden</span>' : '') . '</span>';
         if ($fileLimitMax > 0) {
             $quotaClass = $fileLimitReached ? ' klxm-file-card-quota--reached' : '';
             $html .= '<span class="klxm-file-card-quota' . $quotaClass . '">Kontingent: ' . $fileLimitCurrent . '/' . $fileLimitMax . '</span>';
@@ -1354,7 +1364,7 @@ class BoardShareService
                 ? 'Datei wurde bereits als Einzeldownload geladen.'
                 : 'Kontingent für diese Datei ist erreicht.';
             $html .= '<button type="button" class="uk-icon-button" disabled title="' . htmlspecialchars($disabledReason) . '" aria-label="' . htmlspecialchars($disabledReason) . '">'
-                . '<span uk-icon="icon: download"></span>'
+                . '<span class="klxm-download-icon" uk-icon="icon: download"></span>'
                 . '<span class="uk-hidden-visually">Download nicht verfügbar</span>'
                 . '</button>';
         } else {
@@ -1366,7 +1376,7 @@ class BoardShareService
                 . 'data-disabled-reason="Datei wurde bereits als Einzeldownload geladen." '
                 . 'title="Datei herunterladen" '
                 . 'aria-label="Datei herunterladen: ' . htmlspecialchars($displayName) . '">'
-                . '<span uk-icon="icon: download"></span>'
+                . '<span class="klxm-download-icon" uk-icon="icon: download"></span>'
                 . '<span class="uk-hidden-visually">Datei herunterladen</span>'
                 . '</button>';
         }
